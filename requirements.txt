@@ -1,0 +1,13 @@
+alembic==1.19.1
+certifi==2026.7.22
+charset-normalizer==3.4.9
+greenlet==3.5.5
+idna==3.18
+Mako==1.4.1
+MarkupSafe==3.0.3
+PyMySQL==1.2.0
+requests==2.34.2
+SQLAlchemy==2.0.52
+typing_extensions==4.16.0
+urllib3==2.7.0
+uv==0.12.5
