@@ -2,7 +2,7 @@
 from sqlalchemy import String, ForeignKey, Boolean, DateTime, func
 from sqlalchemy.orm import  Mapped, mapped_column
 from src.database.database import Base
-from datetime import datetime
+from datetime import datetime, timedelta
 
 #Criação da entidade Reserva
 class Reserva(Base):
@@ -38,3 +38,25 @@ class Reserva(Base):
         nullable=False,
         default=True
     )
+
+    #[RN-RES-006] Cancelamento Automático da Reserva
+    #[RN-RES-005] Prazo da Reserva
+    def verificar_expiração(self):
+        if self.is_active:
+            prazo = self.data + timedelta(days=10)
+            
+            if datetime.now() > prazo:
+                self.is_active = False
+                return True
+        else:    
+            return False
+    
+    #[RN-RES-007] Cancelamento de Reserva Ativa
+    def cancelar(self):
+        if self.is_active:
+            self.is_active = False
+        else:
+            raise ValueError("Essa reserva já foi desativada")
+
+    def validar_reserva(self):
+        return self.is_active
