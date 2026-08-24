@@ -1,4 +1,4 @@
-#importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Revista
+#importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Cliente
 from sqlalchemy import String, Integer, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 from src.database.database import Base
@@ -47,3 +47,31 @@ class Cliente(Base):
         nullable=False,
         default=True
     )
+
+    #[RF-CLI-003] Atualização de Cliente
+    """def atualizar_cliente(self,nome,bairro,rua,numero,complemento,telefone):
+        if self.is_active:
+            self.nome = nome
+            self.bairro = bairro
+            self.rua = rua
+            self.numero = numero
+            self.complemento = complemento
+            self.telefone = telefone
+        else:
+            raise ValueError("Cliente inativo")"""
+
+    #[RF-CLI-004] Inativação de Cliente
+    def inativar_cliente(self):
+        if self.is_active:
+            self.is_active = False
+        else:
+            raise ValueError("Cliente já inativado")
+
+    def ativar_cliente(self):
+        if not self.is_active:
+            self.is_active = True
+        else:
+            raise ValueError("Cliente já ativado")
+
+    def validar_cliente(self):
+        return self.is_active
