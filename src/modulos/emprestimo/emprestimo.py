@@ -2,7 +2,7 @@
 from sqlalchemy import String, ForeignKey, Boolean, DateTime, func
 from sqlalchemy.orm import  Mapped, mapped_column
 from src.database.database import Base
-from datetime import datetime
+from datetime import datetime, timedelta
 
 #Criação da entidade Emprestimo
 class Emprestimo(Base):
@@ -44,3 +44,26 @@ class Emprestimo(Base):
         nullable=False,
         default=True
     )
+
+    #[RF-DEV-001] Registro de Devolução
+    def devolver(self):
+        if self.is_active:
+            self.data_devolucao = datetime.now()
+            self.status = "DEVOLVIDO"
+            self.is_active = False
+        else:
+            raise ValueError("Este empréstimo já foi encerrado.")
+
+    #[RN-EMP-002] Prazo do Empréstimo
+    def verificar_atraso(self):
+        if self.is_active:
+            prazo = self.data_emprestimo + timedelta(days=30)
+
+            if datetime.now() > prazo:
+                self.status = "ATRASADO"
+                return True
+        else:    
+            return False
+
+    def validar_emprestimo(self):
+        return self.data_devolucao is None
