@@ -78,7 +78,7 @@ Outra decisão importante foi determinar quais informações pertencem ao concei
 
 ## Reflexão sobre o conceito aprendido
 
-A primeira missão permitiu compreender a importância de analisar o problema antes de iniciar a implementação do código.
+A primeira missão permitiu compreender a importância de analisar o problema antes de iniciar a implementação efetiva do código.
 
 A principal aprendizagem foi perceber que a orientação a objetos começa antes da criação das classes. É necessário compreender o domínio, identificar seus elementos e determinar quais conceitos precisam ser representados pelo software.
 
