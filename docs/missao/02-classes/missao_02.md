@@ -12,7 +12,7 @@ O planejamento também considerou a utilização do SQLAlchemy com ORM, permitin
 
 ## O que foi implementado e por quê
 
-Foram implementadas as classes responsáveis por representar as principais entidades do sistema.
+Foram implementadas as classes responsáveis por representar as principais entidades do sistema bibliotecário.
 
 ### Material
 
