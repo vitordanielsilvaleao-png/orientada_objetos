@@ -13,7 +13,8 @@ class TestLivro(unittest.TestCase):
             editora_id=1,
             tipo="livro",
             isbn="1234567890",
-            autor_id=1
+            autor_id=1,
+            is_active=True
         )
 
         livro.atualizar_livro(
@@ -40,7 +41,8 @@ class TestLivro(unittest.TestCase):
             editora_id=1,
             tipo="livro",
             isbn="1234567890",
-            autor_id=2
+            autor_id=2,
+            is_active=True
         )
 
         resultado = livro.descricao()
