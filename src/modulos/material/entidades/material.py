@@ -1,9 +1,11 @@
-#importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Material
+# importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Material
 from sqlalchemy import Integer, String, ForeignKey, Boolean
-from sqlalchemy.orm import  Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 from src.database.database import Base
 
-#Criação da entidade Material
+# Criação da entidade Material
+
+
 class Material(Base):
     __tablename__ = "material"
 
@@ -52,3 +54,20 @@ class Material(Base):
         "polymorphic_on": tipo,
         "polymorphic_identity": "material",
     }
+
+    # [RF-ACER-002] Atualização do Acervo
+    def atualizar_material(self, titulo, ano_publi, categoria_id, editora_id):
+        if not self.is_active:
+            raise ValueError("Material inativo")
+
+        self.titulo = titulo
+        self.ano_publi = ano_publi
+        self.categoria_id = categoria_id
+        self.editora_id = editora_id
+
+    # [RF-ACER-003] [RN-ACER-013] Inativação do Material
+    def inativar_material(self):
+        if self.is_active:
+            self.is_active = False
+        else:
+            raise ValueError("Material já inativado")
