@@ -1,13 +1,11 @@
-from abc import ABC, abstractmethod
 # importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Material
 from sqlalchemy import Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 from src.database.database import Base
 
+
 # Criação da entidade Material
-
-
-class Material(Base, ABC):
+class Material(Base):
     __tablename__ = "material"
 
     id: Mapped[int] = mapped_column(
@@ -57,7 +55,13 @@ class Material(Base, ABC):
     }
 
     # [RF-ACER-002] Atualização do Acervo
-    def atualizar_material(self, titulo, ano_publi, categoria_id, editora_id):
+    def atualizar_material(
+        self,
+        titulo,
+        ano_publi,
+        categoria_id,
+        editora_id
+    ):
         if not self.is_active:
             raise ValueError("Material inativo")
 
@@ -88,7 +92,8 @@ class Material(Base, ABC):
     def esta_disponivel(self):
         return self.is_active and self.status == "DISPONIVEL"
 
-    # Método abstrato implementado obrigatoriamente pelas subclasses
-    @abstractmethod
+    # Método que deve ser implementado pelas subclasses
     def descricao(self):
-        pass
+        raise NotImplementedError(
+            "O método descricao() deve ser implementado pela subclasse"
+        )
