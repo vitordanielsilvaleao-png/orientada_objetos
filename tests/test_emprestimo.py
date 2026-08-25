@@ -45,7 +45,7 @@ class TestEmprestimo(unittest.TestCase):
 
         emprestimo.data_devolucao = None
 
-        resultado = emprestimo.validar_emprestimo()
+        resultado = emprestimo.validar_emprestimo_ativo()
 
         self.assertTrue(resultado)
 
@@ -54,7 +54,7 @@ class TestEmprestimo(unittest.TestCase):
 
         emprestimo.data_devolucao = datetime.now()
 
-        resultado = emprestimo.validar_emprestimo()
+        resultado = emprestimo.validar_emprestimo_ativo()
 
         self.assertFalse(resultado)
 

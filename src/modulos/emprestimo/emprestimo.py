@@ -62,8 +62,10 @@ class Emprestimo(Base):
             if datetime.now() > prazo:
                 self.status = "ATRASADO"
                 return True
+            else:
+                return False
         else:    
             return False
 
-    def validar_emprestimo(self):
+    def validar_emprestimo_ativo(self):
         return self.data_devolucao is None
