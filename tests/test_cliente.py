@@ -4,7 +4,7 @@ from src.modulos.cliente.cliente import Cliente
 
 
 class TestCliente(unittest.TestCase):
-    """def test_atualizar_cliente(self):
+    def test_atualizar_cliente(self):
         cliente = Cliente()
 
         cliente.is_active = True
@@ -23,9 +23,9 @@ class TestCliente(unittest.TestCase):
         self.assertEqual(cliente.rua, "Rua A")
         self.assertEqual(cliente.numero, 100)
         self.assertEqual(cliente.complemento, "Apto 2")
-        self.assertEqual(cliente.telefone, "34999999999")"""
+        self.assertEqual(cliente.telefone, "34999999999")
 
-    """def test_atualizar_cliente_inativo(self):
+    def test_atualizar_cliente_inativo(self):
         cliente = Cliente()
 
         cliente.is_active = False
@@ -38,7 +38,7 @@ class TestCliente(unittest.TestCase):
                 100,
                 "Apto 2",
                 "34999999999"
-            )"""
+            )
 
     def test_inativar_cliente(self):
         cliente = Cliente()
@@ -79,7 +79,7 @@ class TestCliente(unittest.TestCase):
 
         cliente.is_active = True
 
-        resultado = cliente.validar_cliente()
+        resultado = cliente.validar_cliente_ativo()
 
         self.assertTrue(resultado)
 
@@ -88,7 +88,7 @@ class TestCliente(unittest.TestCase):
 
         cliente.is_active = False
 
-        resultado = cliente.validar_cliente()
+        resultado = cliente.validar_cliente_ativo()
 
         self.assertFalse(resultado)
 

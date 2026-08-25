@@ -49,7 +49,7 @@ class Cliente(Base):
     )
 
     #[RF-CLI-003] Atualização de Cliente
-    """def atualizar_cliente(self,nome,bairro,rua,numero,complemento,telefone):
+    def atualizar_cliente(self,nome,bairro,rua,numero,complemento,telefone):
         if self.is_active:
             self.nome = nome
             self.bairro = bairro
@@ -58,7 +58,7 @@ class Cliente(Base):
             self.complemento = complemento
             self.telefone = telefone
         else:
-            raise ValueError("Cliente inativo")"""
+            raise ValueError("Cliente inativo")
 
     #[RF-CLI-004] Inativação de Cliente
     def inativar_cliente(self):
@@ -73,5 +73,5 @@ class Cliente(Base):
         else:
             raise ValueError("Cliente já ativado")
 
-    def validar_cliente(self):
+    def validar_cliente_ativo(self):
         return self.is_active
