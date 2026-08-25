@@ -4,8 +4,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 from src.modulos.material.entidades.material import Material
 
 # Criação da entidade Livro que herda atributos da entidade Material
-
-
 class Livro(Material):
     __tablename__ = "livro"
 
@@ -31,19 +29,25 @@ class Livro(Material):
     }
 
     # [RF-ACER-002] Atualização dos dados do Livro
-    def atualizar_livro(self, isbn, autor_id):
-        if not self.is_active:
-            raise ValueError("Livro inativo")
+    def atualizar_livro(
+        self,
+        titulo,
+        ano_publi,
+        categoria_id,
+        editora_id,
+        isbn,
+        autor_id
+    ):
+        super().atualizar_material(
+            titulo,
+            ano_publi,
+            categoria_id,
+            editora_id
+        )
 
         self.isbn = isbn
         self.autor_id = autor_id
 
-    # [RN-ACER-003] Validação dos dados obrigatórios do Livro
-    def validar_livro(self):
-        return (
-            bool(self.titulo)
-            and bool(self.autor_id)
-            and bool(self.editora_id)
-            and bool(self.isbn)
-            and bool(self.ano_publi)
-        )
+    # Implementação do método abstrato herdado de Material
+    def descricao(self):
+        return f"Título: {self.titulo} | Autor: {self.autor_id} | ISBN: {self.isbn}"
