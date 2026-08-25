@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 # importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Material
 from sqlalchemy import Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
@@ -6,7 +7,7 @@ from src.database.database import Base
 # Criação da entidade Material
 
 
-class Material(Base):
+class Material(Base, ABC):
     __tablename__ = "material"
 
     id: Mapped[int] = mapped_column(
@@ -71,3 +72,23 @@ class Material(Base):
             self.is_active = False
         else:
             raise ValueError("Material já inativado")
+
+    # Ativação do Material
+    def ativar_material(self):
+        if not self.is_active:
+            self.is_active = True
+        else:
+            raise ValueError("Material já ativado")
+
+    # Verifica se o Material está ativo
+    def esta_ativo(self):
+        return self.is_active
+
+    # Verifica se o Material está ativo e disponível
+    def esta_disponivel(self):
+        return self.is_active and self.status == "DISPONIVEL"
+
+    # Método abstrato implementado obrigatoriamente pelas subclasses
+    @abstractmethod
+    def descricao(self):
+        pass
