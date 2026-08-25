@@ -48,6 +48,8 @@ class Reserva(Base):
             if datetime.now() > prazo:
                 self.is_active = False
                 return True
+            else:
+                return False
         else:    
             return False
     
@@ -58,5 +60,5 @@ class Reserva(Base):
         else:
             raise ValueError("Essa reserva já foi desativada")
 
-    def validar_reserva(self):
+    def validar_reserva_ativa(self):
         return self.is_active
