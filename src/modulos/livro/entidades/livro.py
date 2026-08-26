@@ -47,7 +47,3 @@ class Livro(Material):
 
         self.isbn = isbn
         self.autor_id = autor_id
-
-    # Implementação do método abstrato herdado de Material
-    def descricao(self):
-        return f"Título: {self.titulo} | Autor: {self.autor_id} | ISBN: {self.isbn}"

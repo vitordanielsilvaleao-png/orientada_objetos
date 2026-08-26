@@ -33,24 +33,5 @@ class TestLivro(unittest.TestCase):
         self.assertEqual(livro.isbn, "9876543210")
         self.assertEqual(livro.autor_id, 4)
 
-    def test_descricao_livro(self):
-        livro = Livro(
-            titulo="Python POO",
-            ano_publi=2026,
-            categoria_id=1,
-            editora_id=1,
-            tipo="livro",
-            isbn="1234567890",
-            autor_id=2,
-            is_active=True
-        )
-
-        resultado = livro.descricao()
-
-        self.assertIn("Python POO", resultado)
-        self.assertIn("2", resultado)
-        self.assertIn("1234567890", resultado)
-
-
 if __name__ == "__main__":
     unittest.main()
