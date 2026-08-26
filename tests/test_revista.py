@@ -33,24 +33,5 @@ class TestRevista(unittest.TestCase):
         self.assertEqual(revista.issn, "87654321")
         self.assertEqual(revista.edicao, 10)
 
-    def test_descricao_revista(self):
-        revista = Revista(
-            titulo="Tecnologia Hoje",
-            ano_publi=2026,
-            categoria_id=1,
-            editora_id=1,
-            tipo="revista",
-            issn="12345678",
-            edicao=5,
-            is_active=True
-        )
-
-        resultado = revista.descricao()
-
-        self.assertIn("Tecnologia Hoje", resultado)
-        self.assertIn("5", resultado)
-        self.assertIn("12345678", resultado)
-
-
 if __name__ == "__main__":
     unittest.main()

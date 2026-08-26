@@ -49,7 +49,3 @@ class Revista(Material):
 
         self.issn = issn
         self.edicao = edicao
-
-    # Implementação do método descricao herdado de Material
-    def descricao(self):
-        return f"Título: {self.titulo} | Edição: {self.edicao} | ISSN: {self.issn}"
