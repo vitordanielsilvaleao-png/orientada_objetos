@@ -55,7 +55,7 @@ class Material(Base):
     }
 
     # [RF-ACER-002] Atualização do Acervo
-    def atualizar_material(
+    def atualizar(
         self,
         titulo,
         ano_publi,

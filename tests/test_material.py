@@ -7,12 +7,7 @@ class TestMaterial(unittest.TestCase):
 
         material.is_active = True
 
-        material.atualizar_material(
-            "Orientação a Objetos",
-            2026,
-            1,
-            1
-        )
+        material.atualizar("Orientação a Objetos", 2026, 1, 1)
 
         self.assertEqual(material.titulo, "Orientação a Objetos")
         self.assertEqual(material.ano_publi, 2026)
@@ -25,12 +20,7 @@ class TestMaterial(unittest.TestCase):
         material.is_active = False
 
         with self.assertRaises(ValueError):
-            material.atualizar_material(
-                "Orientação a Objetos",
-                2026,
-                1,
-                1
-            )
+            material.atualizar("Orientação a Objetos", 2026, 1, 1)
 
     def test_inativar_material_ativo(self):
         material = Material()
