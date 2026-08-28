@@ -30,22 +30,17 @@ class Revista(Material):
         "polymorphic_identity": "revista",
     }
 
-    # [RF-ACER-002] Atualização dos dados da Revista
-    def atualizar_revista(
+    # [RF-ACER-002] Atualização dos dados da Revista - Sobreescrição do método da classe pai Material
+    def atualizar(
         self,
         titulo,
         ano_publi,
         categoria_id,
         editora_id,
-        issn,
-        edicao
+        issn=None,
+        edicao=None
     ):
-        super().atualizar_material(
-            titulo,
-            ano_publi,
-            categoria_id,
-            editora_id
-        )
+        super().atualizar(titulo, ano_publi, categoria_id, editora_id)
 
         self.issn = issn
         self.edicao = edicao
