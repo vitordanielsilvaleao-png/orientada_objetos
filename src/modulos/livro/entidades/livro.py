@@ -29,16 +29,16 @@ class Livro(Material):
     }
 
     # [RF-ACER-002] Atualização dos dados do Livro
-    def atualizar_livro(
+    def atualizar(
         self,
         titulo,
         ano_publi,
         categoria_id,
         editora_id,
-        isbn,
-        autor_id
+        isbn=None,
+        autor_id=None
     ):
-        super().atualizar_material(
+        super().atualizar(
             titulo,
             ano_publi,
             categoria_id,

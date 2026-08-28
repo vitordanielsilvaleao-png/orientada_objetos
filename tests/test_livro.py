@@ -17,7 +17,7 @@ class TestLivro(unittest.TestCase):
             is_active=True
         )
 
-        livro.atualizar_livro(
+        livro.atualizar(
             "Livro Novo",
             2026,
             2,
