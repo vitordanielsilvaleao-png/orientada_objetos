@@ -55,7 +55,7 @@ class Material(Base):
     }
 
     # [RF-ACER-002] Atualização do Acervo
-    def atualizar_material(
+    def atualizar(
         self,
         titulo,
         ano_publi,
@@ -91,9 +91,3 @@ class Material(Base):
     # Verifica se o Material está ativo e disponível
     def esta_disponivel(self):
         return self.is_active and self.status == "DISPONIVEL"
-
-    # Método que deve ser implementado pelas subclasses
-    def descricao(self):
-        raise NotImplementedError(
-            "O método descricao() deve ser implementado pela subclasse"
-        )
