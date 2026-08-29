@@ -1,9 +1,9 @@
-#importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Livro
+# importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Livro
 from sqlalchemy import String, ForeignKey
-from sqlalchemy.orm import  Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 from src.modulos.material.entidades.material import Material
 
-#Criação da entidade Livro que herda atributos da entidade Material
+# Criação da entidade Livro que herda atributos da entidade Material
 class Livro(Material):
     __tablename__ = "livro"
 
@@ -27,3 +27,23 @@ class Livro(Material):
     __mapper_args__ = {
         "polymorphic_identity": "livro",
     }
+
+    # [RF-ACER-002] Atualização dos dados do Livro
+    def atualizar(
+        self,
+        titulo,
+        ano_publi,
+        categoria_id,
+        editora_id,
+        isbn=None,
+        autor_id=None
+    ):
+        super().atualizar(
+            titulo,
+            ano_publi,
+            categoria_id,
+            editora_id
+        )
+
+        self.isbn = isbn
+        self.autor_id = autor_id
