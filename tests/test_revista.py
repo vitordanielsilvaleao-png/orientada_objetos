@@ -17,7 +17,7 @@ class TestRevista(unittest.TestCase):
             is_active=True
         )
 
-        revista.atualizar(
+        revista.atualizar_material(
             "Revista Nova",
             2026,
             2,
