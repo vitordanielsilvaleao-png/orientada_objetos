@@ -1,9 +1,11 @@
-#importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Revista
+# importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Revista
 from sqlalchemy import String, ForeignKey, Integer
-from sqlalchemy.orm import  Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 from src.modulos.material.entidades.material import Material
 
-#Criação da entidade Revista que herda atributos da entidade Material
+# Criação da entidade Revista que herda atributos da entidade Material
+
+
 class Revista(Material):
     __tablename__ = "revista"
 

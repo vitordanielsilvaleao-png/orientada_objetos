@@ -1,9 +1,10 @@
-#importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Material
+# importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Material
 from sqlalchemy import Integer, String, ForeignKey, Boolean
-from sqlalchemy.orm import  Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 from src.database.database import Base
 
-#Criação da entidade Material
+
+# Criação da entidade Material
 class Material(Base):
     __tablename__ = "material"
 

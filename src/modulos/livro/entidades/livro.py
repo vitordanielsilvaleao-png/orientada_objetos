@@ -1,9 +1,9 @@
-#importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Livro
+# importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Livro
 from sqlalchemy import String, ForeignKey
-from sqlalchemy.orm import  Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 from src.modulos.material.entidades.material import Material
 
-#Criação da entidade Livro que herda atributos da entidade Material
+# Criação da entidade Livro que herda atributos da entidade Material
 class Livro(Material):
     __tablename__ = "livro"
 
