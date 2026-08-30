@@ -27,3 +27,22 @@ class Revista(Material):
     __mapper_args__ = {
         "polymorphic_identity": "revista",
     }
+
+    # [RF-ACER-002] Atualização dos dados da Revista - Sobreescrição do método da classe pai Material
+    def atualizar(
+            self,
+            titulo=None,
+            ano_publi=None,
+            categoria_id=None,
+            editora_id=None,
+            edicao=None
+    ):
+        super().atualizar(
+            titulo,
+            ano_publi,
+            categoria_id,
+            editora_id
+        )
+
+        if edicao is not None:
+            self.edicao = edicao

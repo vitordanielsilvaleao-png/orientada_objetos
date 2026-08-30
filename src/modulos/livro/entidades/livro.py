@@ -27,3 +27,21 @@ class Livro(Material):
     __mapper_args__ = {
         "polymorphic_identity": "livro",
     }
+
+    def atualizar(
+            self,
+            titulo=None,
+            ano_publi=None,
+            categoria_id=None,
+            editora_id=None,
+            autor_id=None
+    ):
+        super().atualizar(
+            titulo,
+            ano_publi,
+            categoria_id,
+            editora_id
+        )
+
+        if autor_id is not None:
+            self.autor_id = autor_id

@@ -52,3 +52,45 @@ class Material(Base):
         "polymorphic_on": tipo,
         "polymorphic_identity": "material",
     }
+
+#Método para atualização de materiais
+    def atualizar(
+            self,
+            titulo=None,
+            ano_publi=None,
+            categoria_id=None,
+            editora_id=None
+    ):
+        if titulo is not None:
+            self.titulo = titulo
+
+        if ano_publi is not None:
+            self.ano_publi = ano_publi
+
+        if categoria_id is not None:
+            self.categoria_id = categoria_id
+
+        if editora_id is not None:
+            self.editora_id = editora_id
+
+    # [RF-ACER-003] [RN-ACER-013] Inativação do Material
+    def inativar(self):
+        if self.is_active:
+            self.is_active = False
+        else:
+            raise ValueError("Material já inativado")
+
+    # Ativação do Material
+    def ativar(self):
+        if not self.is_active:
+            self.is_active = True
+        else:
+            raise ValueError("Material já ativado")
+
+    # Verifica se o Material está ativo
+    def esta_ativo(self):
+        return self.is_active
+
+    # Verifica se o Material está ativo e disponível
+    def esta_disponivel(self):
+        return self.is_active and self.status == "DISPONIVEL"
