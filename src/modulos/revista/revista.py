@@ -31,16 +31,20 @@ class Revista(Material):
     }
 
     # [RF-ACER-002] Atualização dos dados da Revista - Sobreescrição do método da classe pai Material
-    def atualizar_material(
-        self,
-        titulo,
-        ano_publi,
-        categoria_id,
-        editora_id,
-        issn=None,
-        edicao=None
+    def atualizar(
+            self,
+            titulo=None,
+            ano_publi=None,
+            categoria_id=None,
+            editora_id=None,
+            edicao=None
     ):
-        super().atualizar_material(titulo, ano_publi, categoria_id, editora_id)
+        super().atualizar(
+            titulo,
+            ano_publi,
+            categoria_id,
+            editora_id
+        )
 
-        self.issn = issn
-        self.edicao = edicao
+        if edicao is not None:
+            self.edicao = edicao

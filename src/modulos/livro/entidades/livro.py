@@ -28,15 +28,13 @@ class Livro(Material):
         "polymorphic_identity": "livro",
     }
 
-    # [RF-ACER-002] Atualização dos dados do Livro
     def atualizar(
-        self,
-        titulo,
-        ano_publi,
-        categoria_id,
-        editora_id,
-        isbn=None,
-        autor_id=None
+            self,
+            titulo=None,
+            ano_publi=None,
+            categoria_id=None,
+            editora_id=None,
+            autor_id=None
     ):
         super().atualizar(
             titulo,
@@ -45,5 +43,5 @@ class Livro(Material):
             editora_id
         )
 
-        self.isbn = isbn
-        self.autor_id = autor_id
+        if autor_id is not None:
+            self.autor_id = autor_id
