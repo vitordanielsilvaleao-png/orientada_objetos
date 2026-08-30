@@ -1,0 +1,59 @@
+from fastapi import FastAPI, HTTPException, Request
+from starlette.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from modulos.livro.routers.livro_router import LivroRouter
+
+#Instanciação da classe FastAPI
+app = FastAPI()
+
+#Liberações necessárias para receber requisições do Frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+#Instancia um objeto da Router da Classe LivroRouter
+livro_router = LivroRouter()
+app.include_router(livro_router.router, prefix="/livro")
+
+
+#Tratamento de erro de ValueError
+@app.exception_handler(ValueError)
+async def generic_exception_handler(request: Request, exc: ValueError):
+    return JSONResponse(
+        status_code=400,
+        content={
+            "success": False,
+            "message": str(exc),
+            "data": {"status_code": 400}
+        }
+    )
+
+#Tratamentos de erro de HTTPException
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    print(exc)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "success": False,
+            "message": exc.detail,
+            "data": {"status_code": exc.status_code}
+        }
+    )
+
+#Tratamento de erros inesperados
+@app.exception_handler(Exception)
+async def generic_exception_handler(request: Request, exc: Exception):
+    print(exc)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "message": "Internal_Error!",
+            "data": {"status_code": 500}
+        }
+    )
