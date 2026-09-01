@@ -4,10 +4,10 @@ from depends.depends_autor import obter_autor_service
 from services.autor_service import AutorService
 
 
-#Declaração da classe LivroRouter
+#Declaração da classe AutorRouter
 class AutorRouter:
 
-    #Declaração do construtor da classe LivroRouter
+    #Declaração do construtor da classe
     def __init__(self):
         self.router = APIRouter()
         self.adicionar_rotas()
