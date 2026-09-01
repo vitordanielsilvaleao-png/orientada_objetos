@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from src.modulos.material.routers.editora_router import EditoraRouter
 from src.modulos.material.routers.categoria_router import CategoriaRouter
 from src.modulos.livro.routers.livro_router import LivroRouter
 from src.modulos.livro.routers.autor_router import AutorRouter
@@ -29,6 +30,10 @@ app.include_router(autor_router.router, prefix="/autor")
 #Instancia um objeto da Router da Classe CategoriaRouter
 categoria_router = CategoriaRouter()
 app.include_router(categoria_router.router, prefix="/categoria")
+
+#Instancia um objeto da Router da Classe EditoraRouter
+editora_router = EditoraRouter()
+app.include_router(editora_router.router, prefix="/editora")
 
 
 #Tratamento de erro de ValueError
