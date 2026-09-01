@@ -2,11 +2,11 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from compartilhado.base_service import BaseService
-from modulos.livro.schemas.schemas_livro import SchemaLivroCadastro, SchemaLivroAtualizacao
-from modulos.livro.entidades.autor import Autor
-from modulos.material.entidades.editora import Editora
-from modulos.material.entidades.categoria import Categoria
-from modulos.livro.entidades.livro import Livro
+from src.modulos.livro.schemas.schemas_livro import SchemaLivroCadastro, SchemaLivroAtualizacao
+from src.modulos.livro.entidades.autor import Autor
+from src.modulos.material.entidades.editora import Editora
+from src.modulos.material.entidades.categoria import Categoria
+from ..entidades.livro import Livro
 
 #Declaração da classe LivroService
 class LivroService(BaseService):
@@ -33,19 +33,19 @@ class LivroService(BaseService):
          if not autor_cadastrar:
              raise HTTPException(
                  status_code=404,
-                 detail="O autor_cadastrar informado não existe"
+                 detail="O autor informado não existe"
              )
 
          if not editora_cadastrar:
              raise HTTPException(
                  status_code=404,
-                 detail="A editora_cadastrar informada não existe"
+                 detail="A editora informada não existe"
              )
 
          if not categoria_cadastrar:
              raise HTTPException(
                  status_code=404,
-                 detail="A categoria_cadastrar informada não existe"
+                 detail="A categoria informada não existe"
              )
 
          livro_cadastrar = Livro(
@@ -88,6 +88,9 @@ class LivroService(BaseService):
          )
 
          self.session.commit()
+         self.session.refresh(livro_atualizar)
+
+         return livro_atualizar
 
     #Método para inativar livros
      def inativar(self, id:int):
