@@ -5,7 +5,7 @@ from compartilhado.base_service import BaseService
 
 class AutorService(BaseService):
 
-    # Declaração do construtor da classe LivroService
+    # Declaração do construtor da classe AutorService
     def __init__(self, session: Session):
         super().__init__(session)
 
