@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from src.modulos.revista.router.revista_router import RevistaRouter
 from src.modulos.material.routers.editora_router import EditoraRouter
 from src.modulos.material.routers.categoria_router import CategoriaRouter
 from src.modulos.livro.routers.livro_router import LivroRouter
@@ -22,6 +23,10 @@ app.add_middleware(
 #Instancia um objeto da Router da Classe LivroRouter
 livro_router = LivroRouter()
 app.include_router(livro_router.router, prefix="/livro")
+
+#Instancia um objeto da Router da Classe RevistaRouter
+revista_router = RevistaRouter()
+app.include_router(revista_router.router, prefix="/revista")
 
 #Instancia um objeto da Router da Classe AutorRouter
 autor_router = AutorRouter()
