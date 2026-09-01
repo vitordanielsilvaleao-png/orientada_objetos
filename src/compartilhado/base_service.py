@@ -14,3 +14,7 @@ class BaseService(ABC):
     @abstractmethod
     def cadastrar(self, data):
         pass
+
+    @abstractmethod
+    def visualizar(self):
+        pass
