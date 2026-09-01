@@ -16,5 +16,4 @@ class SchemaLivroAtualizacao(BaseModel):
     ano_publi: int | None = None
     categoria_id: int | None = None
     editora_id: int | None = None
-    isbn: str | None = None
     autor_id: int | None = None
