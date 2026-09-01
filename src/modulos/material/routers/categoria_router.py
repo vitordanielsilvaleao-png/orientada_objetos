@@ -34,11 +34,11 @@ class CategoriaRouter:
 
         return categoria_service.visualizar()
 
-    #Método para atualização de livros
+    #Método para atualização de categorias
     @staticmethod
     def atualizar(categoria_id:int, nome_categoria:str, categoria_service:CategoriaService = Depends(obter_categoria_service)):
 
-        """Rota usada para atualizar um autor no sistema"""
+        """Rota usada para atualizar uma categoria no sistema"""
 
         categoria_atualizar = categoria_service.atualizar(categoria_id, nome_categoria)
         return categoria_atualizar
