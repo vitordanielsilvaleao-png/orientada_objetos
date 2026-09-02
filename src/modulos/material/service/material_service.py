@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from src.modulos.material.entidades.material import Material
+from modulos.livro.entidades.livro import Livro
+from modulos.revista.revista import Revista
 
 #Declaração da classe MaterialService:
 class MaterialService:
