@@ -21,7 +21,7 @@ class AutorRouter:
 
     #Método para cadastro de autores
     @staticmethod
-    def cadastrar(nome_autor:str, data:SchemaAutorCadastro, autor_service:AutorService = Depends(obter_autor_service)):
+    def cadastrar(data:SchemaAutorCadastro, autor_service:AutorService = Depends(obter_autor_service)):
 
         """Rota usada para cadastrar um novo autor no sistema"""
 
