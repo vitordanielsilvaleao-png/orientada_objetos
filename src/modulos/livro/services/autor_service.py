@@ -1,5 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+
+from src.modulos.livro.schemas.schemas_autor import SchemaAutorCadastro
 from src.modulos.livro.entidades.autor import Autor
 from compartilhado.base_service import BaseService
 
@@ -9,7 +11,7 @@ class AutorService(BaseService):
     def __init__(self, session: Session):
         super().__init__(session)
 
-    def cadastrar(self, data):
+    def cadastrar(self, data:SchemaAutorCadastro):
         autor_existente = self.session.query(Autor).filter_by(nome=data.nome).first()
         if autor_existente:
             raise HTTPException(

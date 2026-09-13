@@ -1,5 +1,7 @@
 import unittest
 from fastapi import HTTPException
+
+from src.modulos.livro.schemas.schemas_autor import SchemaAutorCadastro
 from src.modulos.livro.services.autor_service import AutorService
 from src.modulos.livro.entidades.autor import Autor
 from src.database.database import db
@@ -11,12 +13,12 @@ class TestAutorService(unittest.TestCase):
 
         try:
 
-            data = "Autor"
+            data = SchemaAutorCadastro(nome="Autor1")
 
             autor_service = AutorService(sessao)
             autor = autor_service.cadastrar(data)
 
-            self.assertEqual(autor.nome, "Autor")
+            self.assertEqual(autor.nome, "Autor1")
 
             sessao.delete(autor)
             sessao.commit()
@@ -31,7 +33,7 @@ class TestAutorService(unittest.TestCase):
 
             autor_novo = self.criar_autor(sessao)
             
-            data = autor_novo.nome
+            data = SchemaAutorCadastro(nome=autor_novo.nome)
 
             autor_service = AutorService(sessao)
 
@@ -109,7 +111,7 @@ class TestAutorService(unittest.TestCase):
             autor_service = AutorService(sessao)
                     
             autor_novo = self.criar_autor(sessao)
-            autor_para_atualizar = self.criar_autor_atualizar_para_existente(sessao)
+            autor_para_atualizar = self.criar_autor_para_atualizacao(sessao)
                     
             data = autor_novo.nome
 
@@ -124,8 +126,9 @@ class TestAutorService(unittest.TestCase):
             sessao.close()
 
     def criar_autor(self, sessao):
+
        autor_novo = Autor(
-           nome="Autor"
+           nome="Autor1"
        )
 
        sessao.add(autor_novo)
@@ -133,7 +136,7 @@ class TestAutorService(unittest.TestCase):
        sessao.refresh(autor_novo)
        return autor_novo
 
-    def criar_autor_atualizar_para_existente(self, sessao):
+    def criar_autor_para_atualizacao(self, sessao):
         autor_novo = Autor(
             nome="Atualizar Autor"
         )

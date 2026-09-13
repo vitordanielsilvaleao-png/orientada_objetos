@@ -1,6 +1,7 @@
 #Import das bibliotecas necessárias para o funcionamento do sistema
 from fastapi import APIRouter, Depends
 from depends.depends_autor import obter_autor_service
+from src.modulos.livro.schemas.schemas_autor import SchemaAutorCadastro
 from services.autor_service import AutorService
 
 
@@ -14,17 +15,17 @@ class AutorRouter:
 
     #Método para adicionar rotas
     def adicionar_rotas(self):
-        self.router.add_api_route("/{nome_autor}", self.cadastrar, methods=["POST"])
+        self.router.add_api_route("", self.cadastrar, methods=["POST"])
         self.router.add_api_route("", self.visualizar, methods=["GET"])
         self.router.add_api_route("/{autor_id}/{nome_autor}", self.atualizar, methods=["PATCH"])
 
     #Método para cadastro de autores
     @staticmethod
-    def cadastrar(nome_autor:str, autor_service:AutorService = Depends(obter_autor_service)):
+    def cadastrar(nome_autor:str, data:SchemaAutorCadastro, autor_service:AutorService = Depends(obter_autor_service)):
 
         """Rota usada para cadastrar um novo autor no sistema"""
 
-        autor_cadastrar = autor_service.cadastrar(nome_autor)
+        autor_cadastrar = autor_service.cadastrar(data)
         return autor_cadastrar
 
     #Método para visualização de autores
