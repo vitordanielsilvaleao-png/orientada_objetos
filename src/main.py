@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from emprestimo.router.emprestimo_router import EmprestimoRouter
+from src.modulos.emprestimo.router.emprestimo_router import EmprestimoRouter
 from src.modulos.reserva.router.reserva_router import ReservaRouter
 from src.modulos.cliente.router.cliente_router import ClienteRouter
 from src.modulos.revista.router.revista_router import RevistaRouter
