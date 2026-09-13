@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from compartilhado.base_service import BaseService
+from src.modulos.material.schemas.schemas_editora import SchemaEditoraCadastro
 from src.modulos.material.entidades.editora import Editora
 
 class EditoraService(BaseService):
@@ -10,7 +11,7 @@ class EditoraService(BaseService):
         super().__init__(session)
 
     # método para cadastrar editora
-    def cadastrar(self, data):
+    def cadastrar(self, data:SchemaEditoraCadastro):
         # verifica se já existe uma editora com este nome no banco
         editora_existente = self.session.query(Editora).filter_by(nome=data.nome).first()
         if editora_existente:

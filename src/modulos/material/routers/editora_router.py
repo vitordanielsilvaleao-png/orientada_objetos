@@ -23,7 +23,6 @@ class EditoraRouter:
     def cadastrar(data:SchemaEditoraCadastro, editora_service:EditoraService = Depends(obter_editora_service)):
 
         """Rota usada para cadastrar uma nova editora no sistema"""
-
         editora_cadastrar = editora_service.cadastrar(data)
         return editora_cadastrar
 
