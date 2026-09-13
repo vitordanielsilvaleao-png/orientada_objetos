@@ -1,6 +1,6 @@
 #Import das bibliotecas necessárias para o funcionamento do sistema
 from fastapi import APIRouter, Depends
-from depends.depends_autor import obter_autor_service
+from ..depends.depends_autor import obter_autor_service
 from src.modulos.livro.services.autor_service import AutorService
 
 
