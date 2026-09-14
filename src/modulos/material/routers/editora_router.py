@@ -1,5 +1,6 @@
 #Import das bibliotecas necessárias para o funcionamento do sistema
 from fastapi import APIRouter, Depends
+from src.modulos.material.schemas.schemas_editora import SchemaEditoraCadastro
 from src.modulos.material.depends.depends_editora import obter_editora_service
 from src.modulos.material.service.editora_service import EditoraService
 
@@ -13,17 +14,16 @@ class EditoraRouter:
 
     #Método para adicionar rotas
     def adicionar_rotas(self):
-        self.router.add_api_route("/{nome_editora}", self.cadastrar, methods=["POST"])
+        self.router.add_api_route("/", self.cadastrar, methods=["POST"])
         self.router.add_api_route("", self.visualizar, methods=["GET"])
         self.router.add_api_route("/{editora_id}/{nome_editora}", self.atualizar, methods=["PATCH"])
 
     #Método para cadastro de editoras
     @staticmethod
-    def cadastrar(nome_editora:str, editora_service:EditoraService = Depends(obter_editora_service)):
+    def cadastrar(data:SchemaEditoraCadastro, editora_service:EditoraService = Depends(obter_editora_service)):
 
         """Rota usada para cadastrar uma nova editora no sistema"""
-
-        editora_cadastrar = editora_service.cadastrar(nome_editora)
+        editora_cadastrar = editora_service.cadastrar(data)
         return editora_cadastrar
 
     #Método para visualização de editoras
