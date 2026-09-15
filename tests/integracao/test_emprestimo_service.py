@@ -51,6 +51,93 @@ class TestEmprestimoService(unittest.TestCase):
         finally:
             sessao.close()
 
+    def test_cadastrar_emprestimo_com_reserva(self):
+        sessao = db.session()
+        try:
+
+            livro = self.criar_livro(sessao)
+            cliente = self.criar_cliente(sessao)
+
+            reserva_nova = Reserva(
+                cliente_id=cliente.id,
+                titulo=livro.titulo,
+                material_id=livro.id
+            )
+
+            livro.status = "RESERVADO"
+
+            sessao.add(reserva_nova)
+            sessao.commit()
+
+            data = SchemaEmprestimoCadastro(
+                cliente_id=cliente.id,
+                material_id=livro.id,
+            )
+
+            emprestimo_service = EmprestimoService(sessao)
+
+            emprestimo = emprestimo_service.cadastrar(data)
+
+            self.assertEqual(emprestimo.cliente_id, cliente.id)
+            self.assertEqual(emprestimo.material_id, livro.id)
+            self.assertTrue(emprestimo.is_active)
+            self.assertEqual(emprestimo.status, "ABERTO")
+            self.assertEqual(emprestimo.data_devolucao, None)
+            self.assertEqual(livro.status, "EMPRESTADO")
+
+            sessao.delete(emprestimo)
+            sessao.delete(reserva_nova)
+            sessao.commit()
+
+            sessao.delete(livro)
+            sessao.delete(cliente)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
+    def test_cadastrar_emprestimo_com_reserva_usuario_diferente(self):
+        sessao = db.session()
+        try:
+
+            livro = self.criar_livro(sessao)
+            cliente = self.criar_cliente(sessao)
+            cliente2 = self.criar_cliente(sessao)
+
+            reserva_nova = Reserva(
+                cliente_id=cliente.id,
+                titulo=livro.titulo,
+                material_id=livro.id
+            )
+
+            livro.status = "RESERVADO"
+
+            sessao.add(reserva_nova)
+            sessao.commit()
+
+            data = SchemaEmprestimoCadastro(
+                cliente_id=cliente2.id,
+                material_id=livro.id,
+            )
+
+            emprestimo_service = EmprestimoService(sessao)
+
+            with self.assertRaises(HTTPException) as contexto:
+                emprestimo_service.cadastrar(data)
+
+            self.assertEqual(contexto.exception.status_code, 409)
+
+            sessao.delete(reserva_nova)
+            sessao.commit()
+
+            sessao.delete(livro)
+            sessao.delete(cliente)
+            sessao.delete(cliente2)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
     def test_cadastrar_emprestimo_usuario_inativo(self):
         sessao = db.session()
         try:
@@ -143,7 +230,7 @@ class TestEmprestimoService(unittest.TestCase):
                 material_id=livro.id,
             )
 
-            livro.status = "RESERVADO"
+            livro.status = "EMPRESTADO"
 
             emprestimo_service = EmprestimoService(sessao)
 
