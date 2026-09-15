@@ -47,7 +47,19 @@ class EmprestimoService(BaseService):
                 detail="O empréstimo não pode ser registrado, pois o material está inativo"
             )
 
-        if material_existente.status != "DISPONIVEL":
+        reserva_existente = self.session.query(Reserva).filter_by(
+            cliente_id=data.cliente_id,
+            material_id=data.material_id,
+            is_active=True
+        ).first()
+
+        if material_existente.status == "DISPONIVEL":
+            pass
+
+        elif material_existente.status == "RESERVADO" and reserva_existente:
+            pass
+
+        else:
             raise HTTPException(
                 status_code=409,
                 detail="O empréstimo não pode ser registrado, pois o material informado não está disponível"
