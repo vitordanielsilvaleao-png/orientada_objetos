@@ -18,26 +18,58 @@ class TestReservaService(unittest.TestCase):
     def test_cadastrar_reserva_corretamente(self):
         sessao = db.session()
         try:
-            cliente = self.criar_cliente(sessao)
+            cliente = self.criar_cliente(sessao, "Cliente Cadastro")
             material, categoria, editora = self.criar_material(sessao)
 
             data = SchemaReservaCadastro(
-                titulo="Livro Teste",
-                cliente_id=cliente.id,
-                material_id=material.id
+                titulo=material.titulo,
+                cliente_id=cliente.id
             )
 
             reserva_service = ReservaService(sessao)
 
             reserva = reserva_service.cadastrar(data)
 
-            self.assertEqual(reserva.titulo, "Livro Teste")
+            self.assertEqual(reserva.titulo, material.titulo)
             self.assertEqual(reserva.cliente_id, cliente.id)
             self.assertEqual(reserva.material_id, material.id)
             self.assertTrue(reserva.is_active)
+            self.assertEqual(material.status, "RESERVADO")
 
             sessao.delete(reserva)
             sessao.commit()
+
+            sessao.delete(material)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(cliente)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
+    def test_cadastrar_reserva_usuario_inativo(self):
+        sessao = db.session()
+        try:
+
+            cliente = self.criar_cliente(sessao, "Cliente Inativo")
+            material, categoria, editora = self.criar_material(sessao)
+
+            data = SchemaReservaCadastro(
+                titulo=material.titulo,
+                cliente_id=cliente.id
+            )
+
+            cliente.inativar_cliente()
+
+            reserva_service = ReservaService(sessao)
+
+            with self.assertRaises(HTTPException) as contexto:
+                reserva_service.cadastrar(data)
+
+            self.assertEqual(contexto.exception.status_code, 409)
 
             sessao.delete(material)
             sessao.commit()
@@ -55,19 +87,19 @@ class TestReservaService(unittest.TestCase):
         try:
             reserva_service = ReservaService(sessao)
 
-            cliente = self.criar_cliente(sessao)
+            cliente = self.criar_cliente(sessao, "Cliente Reserva Existente")
             material, categoria, editora = self.criar_material(sessao)
 
             reserva_nova = self.criar_reserva(
                 sessao,
                 cliente.id,
-                material.id
+                material.id,
+                material.titulo
             )
 
             data = SchemaReservaCadastro(
-                titulo="Livro Teste",
-                cliente_id=cliente.id,
-                material_id=material.id
+                titulo=material.titulo,
+                cliente_id=cliente.id
             )
 
             with self.assertRaises(HTTPException) as erro:
@@ -101,20 +133,24 @@ class TestReservaService(unittest.TestCase):
             reserva1 = self.criar_reserva(
                 sessao,
                 cliente1.id,
-                material.id
+                material.id,
+                material.titulo
             )
 
+            material.status = "RESERVADO"
+            sessao.commit()
+
             data = SchemaReservaCadastro(
-                titulo="Livro Teste",
-                cliente_id=cliente2.id,
-                material_id=material.id
+                titulo=material.titulo,
+                cliente_id=cliente2.id
             )
 
             reserva2 = reserva_service.cadastrar(data)
 
             self.assertIsInstance(reserva2, Reserva)
             self.assertEqual(reserva2.cliente_id, cliente2.id)
-            self.assertEqual(reserva2.material_id, material.id)
+            self.assertEqual(reserva2.titulo, material.titulo)
+            self.assertIsNone(reserva2.material_id)
 
             sessao.delete(reserva1)
             sessao.delete(reserva2)
@@ -150,13 +186,14 @@ class TestReservaService(unittest.TestCase):
         try:
             reserva_service = ReservaService(sessao)
 
-            cliente = self.criar_cliente(sessao)
+            cliente = self.criar_cliente(sessao, "Cliente Reserva Expirada")
             material, categoria, editora = self.criar_material(sessao)
 
             reserva = self.criar_reserva(
                 sessao,
                 cliente.id,
-                material.id
+                material.id,
+                material.titulo
             )
 
             # Simula uma reserva com mais de 10 dias
@@ -187,13 +224,14 @@ class TestReservaService(unittest.TestCase):
         try:
             reserva_service = ReservaService(sessao)
 
-            cliente = self.criar_cliente(sessao)
+            cliente = self.criar_cliente(sessao, "Cliente Reserva Nao Expirada")
             material, categoria, editora = self.criar_material(sessao)
 
             reserva = self.criar_reserva(
                 sessao,
                 cliente.id,
-                material.id
+                material.id,
+                material.titulo
             )
 
             reservas_expiradas = reserva_service.visualizar_expiradas()
@@ -220,13 +258,14 @@ class TestReservaService(unittest.TestCase):
         try:
             reserva_service = ReservaService(sessao)
 
-            cliente = self.criar_cliente(sessao)
+            cliente = self.criar_cliente(sessao, "Cliente Reserva Ativa")
             material, categoria, editora = self.criar_material(sessao)
 
             reserva = self.criar_reserva(
                 sessao,
                 cliente.id,
-                material.id
+                material.id,
+                material.titulo
             )
 
             reserva_service.inativar(reserva.id)
@@ -254,13 +293,14 @@ class TestReservaService(unittest.TestCase):
         try:
             reserva_service = ReservaService(sessao)
 
-            cliente = self.criar_cliente(sessao)
+            cliente = self.criar_cliente(sessao, "Cliente Reserva Inativa")
             material, categoria, editora = self.criar_material(sessao)
 
             reserva = self.criar_reserva(
                 sessao,
                 cliente.id,
-                material.id
+                material.id,
+                material.titulo
             )
 
             reserva_service.inativar(reserva.id)
@@ -297,10 +337,10 @@ class TestReservaService(unittest.TestCase):
         finally:
             sessao.close()
 
-    def criar_reserva(self, sessao, cliente_id, material_id):
+    def criar_reserva(self, sessao, cliente_id, material_id, titulo):
 
         reserva_nova = Reserva(
-            titulo="Teste Livro",
+            titulo= titulo,
             cliente_id=cliente_id,
             material_id=material_id
         )
@@ -311,10 +351,7 @@ class TestReservaService(unittest.TestCase):
 
         return reserva_nova
 
-    def criar_cliente(self, sessao, nome=None):
-
-        if nome is None:
-            nome = "Teste Cliente"
+    def criar_cliente(self, sessao, nome):
 
         cliente_novo = Cliente(
             nome=nome,
