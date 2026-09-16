@@ -1,5 +1,7 @@
 #Import das bibliotecas necessárias para o funcionamento do sistema
 from fastapi import APIRouter, Depends
+
+from src.modulos.material.schemas.schemas_categoria import SchemaCategoriaCadastro, SchemaCategoriaAtualizacao
 from src.modulos.material.depends.depends_categoria import obter_categoria_service
 from src.modulos.material.service.categoria_service import CategoriaService
 
@@ -13,17 +15,17 @@ class CategoriaRouter:
 
     #Método para adicionar rotas
     def adicionar_rotas(self):
-        self.router.add_api_route("/{nome_categoria}", self.cadastrar, methods=["POST"])
+        self.router.add_api_route("", self.cadastrar, methods=["POST"])
         self.router.add_api_route("", self.visualizar, methods=["GET"])
-        self.router.add_api_route("/{categoria_id}/{nome_categoria}", self.atualizar, methods=["PATCH"])
+        self.router.add_api_route("/{categoria_id}", self.atualizar, methods=["PATCH"])
 
     #Método para cadastro de categorias
     @staticmethod
-    def cadastrar(nome_categoria:str, categoria_service:CategoriaService = Depends(obter_categoria_service)):
+    def cadastrar(data:SchemaCategoriaCadastro, categoria_service:CategoriaService = Depends(obter_categoria_service)):
 
         """Rota usada para cadastrar uma nova categoria no sistema"""
 
-        categoria_cadastrar = categoria_service.cadastrar(nome_categoria)
+        categoria_cadastrar = categoria_service.cadastrar(data)
         return categoria_cadastrar
 
     #Método para visualização de categorias
@@ -34,11 +36,11 @@ class CategoriaRouter:
 
         return categoria_service.visualizar()
 
-    #Método para atualização de livros
+    #Método para atualização de categorias
     @staticmethod
-    def atualizar(categoria_id:int, nome_categoria:str, categoria_service:CategoriaService = Depends(obter_categoria_service)):
+    def atualizar(categoria_id:int, data:SchemaCategoriaAtualizacao, categoria_service:CategoriaService = Depends(obter_categoria_service)):
 
-        """Rota usada para atualizar um autor no sistema"""
+        """Rota usada para atualizar uma categoria no sistema"""
 
-        categoria_atualizar = categoria_service.atualizar(categoria_id, nome_categoria)
+        categoria_atualizar = categoria_service.atualizar(categoria_id, data)
         return categoria_atualizar
