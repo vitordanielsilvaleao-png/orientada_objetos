@@ -17,3 +17,6 @@ class Categoria(Base):
         unique=True
     )
 
+#Método para atualização do nome da categoria
+    def atualizar(self, nome:str):
+            self.nome = nome
