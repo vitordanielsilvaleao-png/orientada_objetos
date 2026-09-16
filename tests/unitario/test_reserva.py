@@ -29,7 +29,7 @@ class TestReserva(unittest.TestCase):
             datetime.now() - timedelta(days=11)
         )
 
-        resultado = reserva.verificar_expiração()
+        resultado = reserva.verificar_expiracao()
 
         self.assertTrue(resultado)
         self.assertFalse(reserva.is_active)
@@ -42,7 +42,7 @@ class TestReserva(unittest.TestCase):
             datetime.now() - timedelta(days=5)
         )
 
-        resultado = reserva.verificar_expiração()
+        resultado = reserva.verificar_expiracao()
 
         self.assertFalse(resultado)
         self.assertTrue(reserva.is_active)
@@ -52,7 +52,7 @@ class TestReserva(unittest.TestCase):
 
         reserva.is_active = False
 
-        resultado = reserva.verificar_expiração()
+        resultado = reserva.verificar_expiracao()
 
         self.assertFalse(resultado)
 

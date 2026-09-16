@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from emprestimo.depends.depends_emprestimo import obter_emprestimo_service
-from emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro, SchemaEmprestimoDevolucao
+from emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro, SchemaEmprestimoResposta
 from emprestimo.service.emprestimo_service import EmprestimoService
 
 
@@ -15,7 +15,8 @@ class EmprestimoRouter:
     #Método para adicionar rotas
     def adicionar_rotas(self):
         self.router.add_api_route("", self.cadastrar, methods=["POST"])
-        self.router.add_api_route("", self.visualizar, methods=["GET"])
+        self.router.add_api_route("", self.visualizar, methods=["GET"], response_model=list[SchemaEmprestimoResposta])
+        self.router.add_api_route("/atrasados", self.visualizar_atrasados, methods=["GET"], response_model=list[SchemaEmprestimoResposta])
         self.router.add_api_route("/{emprestimo_id}", self.registrar_devolucao, methods=["PATCH"])
 
     #Método para cadastros de empréstimos
@@ -35,10 +36,18 @@ class EmprestimoRouter:
 
         return emprestimo_service.visualizar()
 
+    #Método para visualização de empréstimos atrasados
+    @staticmethod
+    def visualizar_atrasados(emprestimo_service:EmprestimoService = Depends(obter_emprestimo_service)):
+
+        """Rota usada para visualizar os empréstimos atrasados cadastrados no sistema"""
+
+        return emprestimo_service.visualizar_atrasados()
+
     #Método para registro de devolução
     @staticmethod
-    def registrar_devolucao(emprestimo_id:int, data:SchemaEmprestimoDevolucao ,emprestimo_service:EmprestimoService = Depends(obter_emprestimo_service)):
+    def registrar_devolucao(emprestimo_id:int, emprestimo_service:EmprestimoService = Depends(obter_emprestimo_service)):
 
-        """Rota usada para registrar a devolução os empréstimos no sistema"""
+        """Rota usada para registrar a devolução de empréstimos no sistema"""
 
-        return emprestimo_service.registrar_devolucao(emprestimo_id, data)
+        return emprestimo_service.registrar_devolucao(emprestimo_id)

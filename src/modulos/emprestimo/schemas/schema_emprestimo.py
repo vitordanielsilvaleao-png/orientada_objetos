@@ -6,6 +6,15 @@ class SchemaEmprestimoCadastro(BaseModel):
     material_id: int
     cliente_id: int
 
-#Schema que armazena a data de devolução do empréstimo
-class SchemaEmprestimoDevolucao(BaseModel):
-    data_devolucao: datetime
+class SchemaEmprestimoResposta(BaseModel):
+    id: int
+    material_id: int
+    cliente_id: int
+    data_emprestimo: datetime
+    data_devolucao: datetime | None
+    status: str
+    is_active: bool
+
+    model_config = {
+        "from_attributes": True
+    }

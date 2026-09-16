@@ -41,7 +41,7 @@ class Reserva(Base):
 
     #[RN-RES-006] Cancelamento Automático da Reserva
     #[RN-RES-005] Prazo da Reserva
-    def verificar_expiração(self):
+    def verificar_expiracao(self):
         if self.is_active:
             prazo = self.data + timedelta(days=10)
             
@@ -62,3 +62,6 @@ class Reserva(Base):
 
     def validar_reserva_ativa(self):
         return self.is_active
+
+    def atender_reserva(self, material_id):
+        self.material_id = material_id
