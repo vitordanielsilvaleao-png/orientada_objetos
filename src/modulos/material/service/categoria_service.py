@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 from src.compartilhado.normalizador import normalizar_texto
 
@@ -6,8 +7,11 @@ from src.modulos.material.schemas.schemas_categoria import SchemaCategoriaCadast
 from src.modulos.material.entidades.categoria import Categoria
 from compartilhado.base_service import BaseService
 
-
 class CategoriaService(BaseService):
+
+    # Declaração do construtor da classe CategoriaService
+    def __init__(self, session: Session):
+        super().__init__(session)
 
     # Método para cadastrar categorias
     def cadastrar(self, data:SchemaCategoriaCadastro):
