@@ -1,12 +1,14 @@
 #Import das bibliotecas e classes necessárias para o funcionamento do sistema
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+
 from compartilhado.base_service import BaseService
 from emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro
 from src.modulos.reserva.reserva import Reserva
 from src.modulos.material.entidades.material import Material
 from src.modulos.cliente.cliente import Cliente
 from src.modulos.emprestimo.emprestimo import Emprestimo
+from src.modulos.reserva.service.reserva_service import ReservaService
 
 #Declaração da classe EmprestimoService
 class EmprestimoService(BaseService):
@@ -132,8 +134,6 @@ class EmprestimoService(BaseService):
                 detail="O empréstimo informado não foi localizado!"
             )
 
-        emprestimo_devolucao.devolver()
-
         material_devolucao = self.session.query(Material).filter_by(
             id = emprestimo_devolucao.material_id
         ).first()
@@ -143,6 +143,12 @@ class EmprestimoService(BaseService):
                 status_code=404,
                 detail="O material associado ao empréstimo não foi localizado!"
             )
+
+        emprestimo_devolucao.devolver()
+
+        reserva = ReservaService(self.session)
+
+        reserva.atualizar_expiradas()
 
         reserva_pendente = (
             self.session.query(Reserva)
