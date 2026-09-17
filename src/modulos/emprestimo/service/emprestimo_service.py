@@ -17,6 +17,8 @@ class EmprestimoService(BaseService):
 
     def cadastrar(self, data:SchemaEmprestimoCadastro):
 
+        self.atualizar_status_atrasados()
+
         limite_emprestimo = 4
         cont_emprestimos = 0
 
@@ -75,7 +77,7 @@ class EmprestimoService(BaseService):
 
                 cont_emprestimos += 1
 
-                if emprestimo.verificar_atraso():
+                if emprestimo.status == "ATRASADO":
                     raise HTTPException(
                         status_code=409,
                         detail="O empréstimo não pode ser registrado, pois o usuário possuí um empréstimo ativo em atraso!"
@@ -100,34 +102,31 @@ class EmprestimoService(BaseService):
 
     def visualizar(self):
 
+        self.atualizar_status_atrasados()
+
         return self.session.query(Emprestimo).all()
 
     def visualizar_abertos(self):
 
+        self.atualizar_status_atrasados()
+
         return self.session.query(Emprestimo).filter(
             Emprestimo.data_devolucao == None,
             Emprestimo.is_active == True
-        )
+        ).all()
 
     def visualizar_atrasados(self):
 
-        lista_emprestimos = self.session.query(Emprestimo).filter_by(
-            is_active = True
-        )
+        self.atualizar_status_atrasados()
 
-        lista_atrasados = []
-
-        for emprestimo in lista_emprestimos:
-
-            if emprestimo.verificar_atraso():
-
-                lista_atrasados.append(emprestimo)
-
-        self.session.commit()
-
-        return lista_atrasados
+        return self.session.query(Emprestimo).filter_by(
+            is_active = True,
+            status = "ATRASADO"
+        ).all()
 
     def registrar_devolucao(self, emprestimo_id:int):
+
+        self.atualizar_status_atrasados()
 
         emprestimo_devolucao = self.session.query(Emprestimo).filter_by(
             id = emprestimo_id
@@ -174,3 +173,15 @@ class EmprestimoService(BaseService):
         self.session.commit()
         self.session.refresh(emprestimo_devolucao)
         return emprestimo_devolucao
+
+    def atualizar_status_atrasados(self):
+
+        emprestimos = self.session.query(Emprestimo).filter_by(
+            is_active=True,
+            status="ABERTO"
+        ).all()
+
+        for emprestimo in emprestimos:
+            emprestimo.marcar_atrasado()
+
+        self.session.commit()
