@@ -1,6 +1,9 @@
 #Import das bibliotecas e classes necessárias para o funcionamento do sistema
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+
+from src.compartilhado.normalizador_titulos import normalizar_titulo
+
 from src.compartilhado.base_service import BaseService
 from src.modulos.reserva.schemas.schema_reserva import SchemaReservaCadastro
 from src.modulos.reserva.reserva import Reserva
@@ -32,9 +35,11 @@ class ReservaService (BaseService):
                 detail="A reserva não pode ser efetuada, pois o usuário se encontra inativo"
             )
 
+        titulo_formatado = normalizar_titulo(data.titulo)
+
         reserva_existente = self.session.query(Reserva).filter_by(
             cliente_id=data.cliente_id,
-            titulo=data.titulo,
+            titulo=titulo_formatado,
             is_active=True
         ).first()
 
@@ -45,7 +50,7 @@ class ReservaService (BaseService):
             )
 
         material_existente = self.session.query(Material).filter_by(
-            titulo = data.titulo,
+            titulo = titulo_formatado,
             status="DISPONIVEL",
             is_active=True
         ).first()
@@ -57,7 +62,7 @@ class ReservaService (BaseService):
             material_id = None
 
         reserva_cadastrar = Reserva(
-            titulo = data.titulo,
+            titulo = titulo_formatado,
             cliente_id = data.cliente_id,
             material_id = material_id
         )
@@ -72,6 +77,14 @@ class ReservaService (BaseService):
 
         return self.session.query(Reserva).all()
 
+    def visualizar_abertos(self):
+
+        self.atualizar_expiradas()
+
+        return self.session.query(Reserva).filter_by(
+            is_active = True
+        ).all()
+
     def visualizar_expiradas(self):
 
         self.atualizar_expiradas()
@@ -85,15 +98,15 @@ class ReservaService (BaseService):
         self.atualizar_expiradas()
 
         reserva_inativar = self.session.query(Reserva).filter_by(
-             id=reserva_id
+            id=reserva_id
         ).first()
 
         if not reserva_inativar:
             raise HTTPException(
-                 status_code=404,
-                 detail="Reserva não encontrada"
+                status_code=404,
+                detail="Reserva não encontrada"
             )
-         
+
         try:
             reserva_inativar.cancelar()
         except ValueError as erro:
@@ -101,6 +114,15 @@ class ReservaService (BaseService):
                 status_code=400,
                 detail=str(erro)
             )
+
+        if reserva_inativar.material_id is not None:
+
+            material_reservado = self.session.query(Material).filter_by(
+                id=reserva_inativar.material_id
+            ).first()
+
+            if material_reservado:
+                material_reservado.status = "DISPONIVEL"
 
         self.session.commit()
         self.session.refresh(reserva_inativar)
@@ -112,13 +134,14 @@ class ReservaService (BaseService):
         self.atualizar_expiradas()
 
         reserva = self.session.query(Reserva).filter_by(
-            id = reserva_id
+            id = reserva_id,
+            is_active = True
         ).first()
 
         if not reserva:
             raise HTTPException(
                  status_code=404,
-                 detail="Reserva não encontrada"
+                 detail="A reserva não foi encontrada ou está inativa"
             )
         
         if reserva.material_id is None:
@@ -136,7 +159,10 @@ class ReservaService (BaseService):
 
         novo_emprestimo = emprestimo.cadastrar(data)
 
-        self.inativar(reserva.id)
+        reserva.cancelar()
+
+        self.session.commit()
+        self.session.refresh(reserva)
 
         return reserva, novo_emprestimo
 
