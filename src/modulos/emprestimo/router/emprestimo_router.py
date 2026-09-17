@@ -16,6 +16,7 @@ class EmprestimoRouter:
     def adicionar_rotas(self):
         self.router.add_api_route("", self.cadastrar, methods=["POST"])
         self.router.add_api_route("", self.visualizar, methods=["GET"], response_model=list[SchemaEmprestimoResposta])
+        self.router.add_api_route("/abertos", self.visualizar_abertos, methods=["GET"], response_model=list[SchemaEmprestimoResposta])
         self.router.add_api_route("/atrasados", self.visualizar_atrasados, methods=["GET"], response_model=list[SchemaEmprestimoResposta])
         self.router.add_api_route("/{emprestimo_id}", self.registrar_devolucao, methods=["PATCH"])
 
@@ -35,6 +36,14 @@ class EmprestimoRouter:
         """Rota usada para visualizar os empréstimos cadastrados no sistema"""
 
         return emprestimo_service.visualizar()
+
+    #Método para visualização de empréstimos abertos
+    @staticmethod
+    def visualizar_abertos(emprestimo_service:EmprestimoService = Depends(obter_emprestimo_service)):
+
+        """Rota usada para visualizar os empréstimos abertos cadastrados no sistema"""
+
+        return emprestimo_service.visualizar_abertos()
 
     #Método para visualização de empréstimos atrasados
     @staticmethod

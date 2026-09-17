@@ -102,6 +102,13 @@ class EmprestimoService(BaseService):
 
         return self.session.query(Emprestimo).all()
 
+    def visualizar_abertos(self):
+
+        return self.session.query(Emprestimo).filter(
+            Emprestimo.data_devolucao == None,
+            Emprestimo.is_active == True
+        )
+
     def visualizar_atrasados(self):
 
         lista_emprestimos = self.session.query(Emprestimo).filter_by(
