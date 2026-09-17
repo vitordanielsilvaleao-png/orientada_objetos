@@ -337,6 +337,124 @@ class TestReservaService(unittest.TestCase):
         finally:
             sessao.close()
 
+    def test_criar_emprestimo_de_reserva_corretamente(self): 
+        sessao = db.session()
+
+        try: 
+            cliente = self.criar_cliente(sessao, "Cliente Emprestimo") 
+            material, categoria, editora = self.criar_material(sessao) 
+
+            data = SchemaReservaCadastro( 
+                titulo=material.titulo, 
+                cliente_id=cliente.id 
+            ) 
+
+            reserva_service = ReservaService(sessao) 
+
+            reserva = reserva_service.cadastrar(data) 
+
+            reserva_apos_emprestimo, emprestimo = reserva_service.atender_reserva(reserva.id) 
+
+            self.assertFalse(reserva_apos_emprestimo.is_active) 
+            self.assertIsNotNone(emprestimo)
+            self.assertEqual(emprestimo.cliente_id, cliente.id)
+            self.assertEqual(emprestimo.material_id, material.id)
+            self.assertTrue(emprestimo.is_active)
+            self.assertEqual(material.status, "EMPRESTADO")
+
+            sessao.delete(reserva) 
+            sessao.delete(emprestimo) 
+            sessao.commit() 
+
+            sessao.delete(material) 
+            sessao.commit() 
+
+            sessao.delete(categoria) 
+            sessao.delete(editora) 
+
+            sessao.delete(cliente) 
+            sessao.commit() 
+        finally: 
+            sessao.close()
+
+    def test_criar_emprestimo_de_reserva_sem_material_disponivel(self):
+
+        sessao = db.session()
+
+        try:
+            cliente = self.criar_cliente(sessao, "Cliente Emprestimo Sem Material Disponivel")
+            material, categoria, editora = self.criar_material(sessao)
+
+            data = SchemaReservaCadastro(
+                titulo=material.titulo,
+                cliente_id=cliente.id
+            )
+
+            reserva_service = ReservaService(sessao)
+
+            reserva = reserva_service.cadastrar(data)
+
+            material.status = "EMPRESTADO"
+
+            with self.assertRaises(HTTPException) as erro:
+                reserva_service.atender_reserva(reserva.id)
+
+            self.assertEqual(erro.exception.status_code, 409)
+            self.assertTrue(reserva.is_active)
+
+            sessao.delete(reserva)
+            sessao.commit()
+
+            sessao.delete(material)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(cliente)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
+    def test_criar_emprestimo_de_reserva_sem_material(self):
+
+        sessao = db.session()
+
+        try:
+            cliente = self.criar_cliente(sessao, "Cliente Emprestimo Sem Material")
+            material, categoria, editora = self.criar_material(sessao)
+            
+            material.status = "EMPRESTADO"
+
+            data = SchemaReservaCadastro(
+                titulo=material.titulo,
+                cliente_id=cliente.id
+            )
+
+            reserva_service = ReservaService(sessao)
+
+            reserva = reserva_service.cadastrar(data)
+
+            with self.assertRaises(HTTPException) as erro:
+                reserva_service.atender_reserva(reserva.id)
+
+            self.assertEqual(erro.exception.status_code, 404)
+            self.assertTrue(reserva.is_active)
+
+            sessao.delete(reserva)
+            sessao.commit()
+
+            sessao.delete(material)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(cliente)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
     def criar_reserva(self, sessao, cliente_id, material_id, titulo):
 
         reserva_nova = Reserva(

@@ -6,6 +6,9 @@ from src.modulos.reserva.schemas.schema_reserva import SchemaReservaCadastro
 from src.modulos.reserva.reserva import Reserva
 from src.modulos.cliente.cliente import Cliente
 from src.modulos.material.entidades.material import Material
+from src.modulos.emprestimo.service.emprestimo_service import EmprestimoService
+from src.modulos.emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro
+
 
 #Declaração da classe ReservaService
 class ReservaService (BaseService):
@@ -105,3 +108,34 @@ class ReservaService (BaseService):
         self.session.refresh(reserva_inativar)
 
         return reserva_inativar
+
+    def atender_reserva(self, reserva_id:int):
+
+        reserva = self.session.query(Reserva).filter_by(
+            id = reserva_id
+        ).first()
+
+        if not reserva:
+            raise HTTPException(
+                 status_code=404,
+                 detail="Reserva não encontrada"
+            )
+        
+        if reserva.material_id is None:
+            raise HTTPException(
+                 status_code=404,
+                 detail="Reserva não possui material associado"
+            )
+
+        emprestimo = EmprestimoService(self.session)
+
+        data = SchemaEmprestimoCadastro(
+            cliente_id=reserva.cliente_id,
+            material_id=reserva.material_id
+        )
+
+        novo_emprestimo = emprestimo.cadastrar(data)
+
+        self.inativar(reserva.id)
+
+        return reserva, novo_emprestimo
