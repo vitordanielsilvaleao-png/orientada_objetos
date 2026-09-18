@@ -26,14 +26,14 @@ async def lifespan(app: FastAPI):
     scheduler.add_job(
         atualizar_status_atrasados,
         "interval",
-        minutes=5,
+        minutes=60,
         max_instances=1
     )
 
     scheduler.add_job(
         atualizar_expiradas,
         "interval",
-        minutes=5,
+        minutes=60,
         max_instances=1
     )
 
