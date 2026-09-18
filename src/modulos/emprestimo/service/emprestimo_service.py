@@ -17,8 +17,6 @@ class EmprestimoService(BaseService):
 
     def cadastrar(self, data:SchemaEmprestimoCadastro):
 
-        self.atualizar_status_atrasados()
-
         limite_emprestimo = 4
         cont_emprestimos = 0
 
@@ -102,13 +100,9 @@ class EmprestimoService(BaseService):
 
     def visualizar(self):
 
-        self.atualizar_status_atrasados()
-
         return self.session.query(Emprestimo).all()
 
     def visualizar_abertos(self):
-
-        self.atualizar_status_atrasados()
 
         return self.session.query(Emprestimo).filter(
             Emprestimo.data_devolucao == None,
@@ -117,16 +111,12 @@ class EmprestimoService(BaseService):
 
     def visualizar_atrasados(self):
 
-        self.atualizar_status_atrasados()
-
         return self.session.query(Emprestimo).filter_by(
             is_active = True,
             status = "ATRASADO"
         ).all()
 
     def registrar_devolucao(self, emprestimo_id:int):
-
-        self.atualizar_status_atrasados()
 
         emprestimo_devolucao = self.session.query(Emprestimo).filter_by(
             id = emprestimo_id
@@ -173,15 +163,3 @@ class EmprestimoService(BaseService):
         self.session.commit()
         self.session.refresh(emprestimo_devolucao)
         return emprestimo_devolucao
-
-    def atualizar_status_atrasados(self):
-
-        emprestimos = self.session.query(Emprestimo).filter_by(
-            is_active=True,
-            status="ABERTO"
-        ).all()
-
-        for emprestimo in emprestimos:
-            emprestimo.marcar_atrasado()
-
-        self.session.commit()
