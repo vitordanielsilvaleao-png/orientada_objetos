@@ -1,7 +1,10 @@
 from src.database.database import db
+import logging
 
 from src.modulos.emprestimo.emprestimo import Emprestimo
 from src.modulos.reserva.reserva import Reserva
+
+logger = logging.getLogger(__name__)
 
 def atualizar_status_atrasados():
     sessao = db.session()
@@ -17,9 +20,14 @@ def atualizar_status_atrasados():
 
         sessao.commit()
 
+        logger.info("Status dos empréstimos atrasados atualizado com sucesso.")
+
     except Exception:
         sessao.rollback()
-        raise
+
+        logger.exception(
+            "Erro ao atualizar status dos empréstimos atrasados."
+        )
 
     finally:
         sessao.close()
@@ -37,9 +45,14 @@ def atualizar_expiradas():
 
         sessao.commit()
 
+        logger.info("Reservas expiradas atualizadas com sucesso.")
+
     except Exception:
         sessao.rollback()
-        raise
+
+        logger.exception(
+            "Erro ao atualizar reservas expiradas."
+        )
 
     finally:
         sessao.close()
