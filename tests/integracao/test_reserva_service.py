@@ -50,6 +50,43 @@ class TestReservaService(unittest.TestCase):
         finally:
             sessao.close()
 
+    def test_cadastrar_reserva_corretamente_sem_material_disponivel(self):
+        sessao = db.session()
+        try:
+            cliente = self.criar_cliente(sessao, "Cliente Cadastro")
+            material, categoria, editora = self.criar_material(sessao)
+
+            material.status = "EMPRESTADO"
+
+            data = SchemaReservaCadastro(
+                titulo=material.titulo,
+                cliente_id=cliente.id
+            )
+
+            reserva_service = ReservaService(sessao)
+
+            reserva = reserva_service.cadastrar(data)
+
+            self.assertEqual(reserva.titulo, material.titulo)
+            self.assertEqual(reserva.cliente_id, cliente.id)
+            self.assertIsNone(reserva.material_id)
+            self.assertTrue(reserva.is_active)
+            self.assertEqual(material.status, "EMPRESTADO")
+
+            sessao.delete(reserva)
+            sessao.commit()
+
+            sessao.delete(material)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(cliente)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
     def test_cadastrar_reserva_usuario_inativo(self):
         sessao = db.session()
         try:
@@ -112,7 +149,7 @@ class TestReservaService(unittest.TestCase):
 
             sessao.delete(material)
             sessao.commit()
-            
+
             sessao.delete(categoria)
             sessao.delete(editora)
             sessao.delete(cliente)
@@ -171,12 +208,36 @@ class TestReservaService(unittest.TestCase):
     def test_visualiza_reserva(self):
         sessao = db.session()
         try:
+
+            cliente = self.criar_cliente(sessao, "Cliente Cadastro")
+            material, categoria, editora = self.criar_material(sessao)
+
+            data = SchemaReservaCadastro(
+                titulo=material.titulo,
+                cliente_id=cliente.id
+            )
+
             reserva_service = ReservaService(sessao)
+
+            reserva = reserva_service.cadastrar(data)
 
             lista_reserva = reserva_service.visualizar()
 
             for reserva in lista_reserva:
                 self.assertIsInstance(reserva, Reserva)
+
+            self.assertIn(reserva, lista_reserva)
+
+            sessao.delete(reserva)
+            sessao.commit()
+
+            sessao.delete(material)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(cliente)
+            sessao.commit()
 
         finally:
             sessao.close()
@@ -196,8 +257,7 @@ class TestReservaService(unittest.TestCase):
                 material.titulo
             )
 
-            # Simula uma reserva com mais de 10 dias
-            reserva.data = datetime.now() - timedelta(days=11)
+            reserva.is_active = False
             sessao.commit()
 
             reservas_expiradas = reserva_service.visualizar_expiradas()
@@ -273,6 +333,7 @@ class TestReservaService(unittest.TestCase):
             sessao.refresh(reserva)
 
             self.assertFalse(reserva.is_active)
+            self.assertEqual(material.status, "DISPONIVEL")
 
             sessao.delete(reserva)
             sessao.commit()
@@ -309,6 +370,8 @@ class TestReservaService(unittest.TestCase):
                 reserva_service.inativar(reserva.id)
 
             self.assertEqual(erro.exception.status_code, 400)
+
+            self.assertEqual(material.status, "DISPONIVEL")
 
             sessao.delete(reserva)
             sessao.commit()
@@ -516,7 +579,7 @@ class TestReservaService(unittest.TestCase):
         editora = self.criar_editora(sessao)
     
         material_novo = Material(
-            titulo="Material Teste",
+            titulo="material teste",
             ano_publi=2015,
             categoria_id=categoria.id,
             editora_id=editora.id,
