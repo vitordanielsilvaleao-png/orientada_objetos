@@ -5,4 +5,3 @@ from pydantic import BaseModel
 class SchemaReservaCadastro(BaseModel):
     titulo: str
     cliente_id: int
-    material_id: int | None = None
