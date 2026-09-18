@@ -8,7 +8,6 @@ from src.modulos.reserva.reserva import Reserva
 from src.modulos.material.entidades.material import Material
 from src.modulos.cliente.cliente import Cliente
 from src.modulos.emprestimo.emprestimo import Emprestimo
-from src.modulos.reserva.service.reserva_service import ReservaService
 
 #Declaração da classe EmprestimoService
 class EmprestimoService(BaseService):
@@ -145,10 +144,6 @@ class EmprestimoService(BaseService):
             )
 
         emprestimo_devolucao.devolver()
-
-        reserva = ReservaService(self.session)
-
-        reserva.atualizar_expiradas()
 
         reserva_pendente = (
             self.session.query(Reserva)
