@@ -2,6 +2,10 @@ from fastapi import FastAPI, HTTPException, Request
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from contextlib import asynccontextmanager
+from apscheduler.schedulers.background import BackgroundScheduler
+from src.scheduler.funcoes_scheduler import (atualizar_status_atrasados, atualizar_expiradas)
+
 from src.modulos.emprestimo.router.emprestimo_router import EmprestimoRouter
 from src.modulos.reserva.router.reserva_router import ReservaRouter
 from src.modulos.cliente.router.cliente_router import ClienteRouter
@@ -11,8 +15,40 @@ from src.modulos.material.routers.categoria_router import CategoriaRouter
 from src.modulos.livro.routers.livro_router import LivroRouter
 from src.modulos.livro.routers.autor_router import AutorRouter
 
+scheduler = BackgroundScheduler()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+
+    atualizar_status_atrasados()
+    atualizar_expiradas()
+
+    scheduler.add_job(
+        atualizar_status_atrasados,
+        "interval",
+        minutes=5,
+        max_instances=1
+    )
+
+    scheduler.add_job(
+        atualizar_expiradas,
+        "interval",
+        minutes=5,
+        max_instances=1
+    )
+
+    scheduler.start()
+
+    print("Scheduler iniciado!")
+
+    yield
+
+    scheduler.shutdown()
+
+    print("Scheduler encerrado!")
+
 #Instanciação da classe FastAPI
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 #Liberações necessárias para receber requisições do Frontend
 app.add_middleware(
