@@ -51,7 +51,7 @@ class TestEmprestimoService(unittest.TestCase):
         finally:
             sessao.close()
 
-    def test_cadastrar_emprestimo_com_reserva(self):
+    def test_cadastrar_emprestimo_com_reserva_para_cliente(self):
         sessao = db.session()
         try:
 
@@ -260,7 +260,8 @@ class TestEmprestimoService(unittest.TestCase):
             emprestimo = Emprestimo(
                 cliente_id=cliente.id,
                 material_id=livro2.id,
-                data_emprestimo= data_atrasada
+                data_emprestimo= data_atrasada,
+                status = "ATRASADO"
             )
 
             livro2.status = "EMPRESTADO"
@@ -291,7 +292,6 @@ class TestEmprestimoService(unittest.TestCase):
         finally:
             sessao.close()
 
-
     def test_cadastrar_emprestimo_com_limite_emprestimo(self):
         sessao = db.session()
         try:
@@ -309,6 +309,8 @@ class TestEmprestimoService(unittest.TestCase):
                     cliente_id=cliente.id,
                     material_id=livro.id
                 )
+
+                livro.status = "EMPRESTADO"
 
                 emprestimos.append(emprestimo)
 
@@ -350,6 +352,18 @@ class TestEmprestimoService(unittest.TestCase):
     def test_visualiza_emprestimos(self):
         sessao = db.session()
         try:
+
+            livro = self.criar_livro(sessao)
+            cliente = self.criar_cliente(sessao)
+
+            emprestimo = Emprestimo(
+                cliente_id=cliente.id,
+                material_id=livro.id
+            )
+
+            sessao.add(emprestimo)
+            sessao.commit()
+
             emprestimo_service = EmprestimoService(sessao)
 
             lista_emprestimo = emprestimo_service.visualizar()
@@ -362,6 +376,24 @@ class TestEmprestimoService(unittest.TestCase):
     def test_visualiza_emprestimos_atrasados(self):
         sessao = db.session()
         try:
+
+            data_atual = datetime.now()
+            data_atrasada = data_atual - timedelta(days=31)
+
+            livro = self.criar_livro(sessao)
+            cliente = self.criar_cliente(sessao)
+
+            emprestimo = Emprestimo(
+                cliente_id=cliente.id,
+                material_id=livro.id,
+                status="ATRASADO",
+                data_emprestimo=data_atrasada
+
+            )
+
+            sessao.add(emprestimo)
+            sessao.commit()
+
             emprestimo_service = EmprestimoService(sessao)
 
             lista_atrasados = emprestimo_service.visualizar_atrasados()
@@ -395,6 +427,7 @@ class TestEmprestimoService(unittest.TestCase):
             self.assertEqual(emprestimo.status, "DEVOLVIDO")
             self.assertIsNotNone(emprestimo.data_devolucao)
             self.assertFalse(emprestimo.is_active)
+            self.assertEqual(livro.status, "DISPONIVEL")
 
             sessao.delete(emprestimo)
             sessao.commit()

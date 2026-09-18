@@ -60,12 +60,16 @@ class Emprestimo(Base):
             prazo = self.data_emprestimo + timedelta(days=30)
 
             if datetime.now() > prazo:
-                self.status = "ATRASADO"
                 return True
             else:
                 return False
         else:    
             return False
+
+    def marcar_atrasado(self):
+
+        if self.verificar_atraso():
+            self.status = "ATRASADO"
 
     def validar_emprestimo_ativo(self):
         return self.data_devolucao is None

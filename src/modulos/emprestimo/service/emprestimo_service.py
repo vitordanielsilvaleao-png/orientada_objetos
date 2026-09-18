@@ -76,7 +76,7 @@ class EmprestimoService(BaseService):
 
                 cont_emprestimos += 1
 
-                if emprestimo.verificar_atraso():
+                if emprestimo.status == "ATRASADO":
                     raise HTTPException(
                         status_code=409,
                         detail="O empréstimo não pode ser registrado, pois o usuário possuí um empréstimo ativo em atraso!"
@@ -103,23 +103,19 @@ class EmprestimoService(BaseService):
 
         return self.session.query(Emprestimo).all()
 
+    def visualizar_abertos(self):
+
+        return self.session.query(Emprestimo).filter(
+            Emprestimo.data_devolucao == None,
+            Emprestimo.is_active == True
+        ).all()
+
     def visualizar_atrasados(self):
 
-        lista_emprestimos = self.session.query(Emprestimo).filter_by(
-            is_active = True
-        )
-
-        lista_atrasados = []
-
-        for emprestimo in lista_emprestimos:
-
-            if emprestimo.verificar_atraso():
-
-                lista_atrasados.append(emprestimo)
-
-        self.session.commit()
-
-        return lista_atrasados
+        return self.session.query(Emprestimo).filter_by(
+            is_active = True,
+            status = "ATRASADO"
+        ).all()
 
     def registrar_devolucao(self, emprestimo_id:int):
 
@@ -143,7 +139,13 @@ class EmprestimoService(BaseService):
                 detail="O material associado ao empréstimo não foi localizado!"
             )
 
-        emprestimo_devolucao.devolver()
+        try:
+            emprestimo_devolucao.devolver()
+        except ValueError as erro:
+            raise HTTPException(
+                status_code=409,
+                detail=str(erro)
+            )
 
         reserva_pendente = (
             self.session.query(Reserva)
@@ -163,7 +165,7 @@ class EmprestimoService(BaseService):
         else:
 
             material_devolucao.status = "RESERVADO"
-            reserva_pendente.atender_reserva(material_devolucao.id)
+            reserva_pendente.material_id = material_devolucao.id
 
         self.session.commit()
         self.session.refresh(emprestimo_devolucao)
