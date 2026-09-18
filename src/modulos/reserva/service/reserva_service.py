@@ -22,8 +22,6 @@ class ReservaService (BaseService):
 
     def cadastrar(self, data:SchemaReservaCadastro):
 
-        self.atualizar_expiradas()
-
         usuario_ativo = self.session.query(Cliente).filter_by(
             id=data.cliente_id,
             is_active=True
@@ -73,13 +71,9 @@ class ReservaService (BaseService):
 
     def visualizar(self):
 
-        self.atualizar_expiradas()
-
         return self.session.query(Reserva).all()
 
     def visualizar_abertos(self):
-
-        self.atualizar_expiradas()
 
         return self.session.query(Reserva).filter_by(
             is_active = True
@@ -87,15 +81,11 @@ class ReservaService (BaseService):
 
     def visualizar_expiradas(self):
 
-        self.atualizar_expiradas()
-
         return self.session.query(Reserva).filter_by(
             is_active=False
         ).all()
     
     def inativar(self, reserva_id:int):
-
-        self.atualizar_expiradas()
 
         reserva_inativar = self.session.query(Reserva).filter_by(
             id=reserva_id
@@ -131,8 +121,6 @@ class ReservaService (BaseService):
 
     def atender_reserva(self, reserva_id:int):
 
-        self.atualizar_expiradas()
-
         reserva = self.session.query(Reserva).filter_by(
             id = reserva_id,
             is_active = True
@@ -165,14 +153,3 @@ class ReservaService (BaseService):
         self.session.refresh(reserva)
 
         return reserva, novo_emprestimo
-
-    def atualizar_expiradas(self):
-
-        reservas = self.session.query(Reserva).filter_by(
-            is_active=True
-        ).all()
-
-        for reserva in reservas:
-            reserva.verificar_expiracao()
-
-        self.session.commit()
