@@ -2,7 +2,7 @@
 from sqlalchemy import Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 from src.database.database import Base
-
+from sqlalchemy.orm import validates
 
 # Criação da entidade Material
 class Material(Base):
@@ -54,7 +54,45 @@ class Material(Base):
         "polymorphic_identity": "material",
     }
 
-#Método para atualização de materiais
+    #Declaração do Construtor da Classe
+    def __init__(
+        self,
+        titulo,
+        ano_publi,
+        categoria_id,
+        editora_id
+    ):
+        super().__init__()
+
+        self.titulo = titulo
+        self.ano_publi = ano_publi
+        self.categoria_id = categoria_id
+        self.editora_id = editora_id
+        self.is_active = True
+
+    #Validação de dados recebidos
+    @validates("titulo")
+    def validar_titulo(self, chave, titulo):
+        return self._normalizar_titulo(titulo)
+
+    @validates("ano_publi")
+    def validar_ano_publi(self, chave, ano_publi):
+        self._validar_ano_publi(ano_publi)
+        return ano_publi
+
+    #Métodos para validação e normalização de dados do construtor
+    @staticmethod
+    def _normalizar_titulo(titulo):
+        return titulo.strip().lower()
+
+    @staticmethod
+    def _validar_ano_publi(ano_publi):
+        if ano_publi <= 0:
+            raise ValueError(
+                "O ano de publicação é inválido"
+            )
+
+    #Método para atualização de materiais
     def atualizar(
             self,
             titulo=None,
@@ -62,6 +100,12 @@ class Material(Base):
             categoria_id=None,
             editora_id=None
     ):
+
+        if not self.is_active:
+            raise ValueError(
+                "Material inativo não pode ser atualizado"
+            )
+
         if titulo is not None:
             self.titulo = titulo
 
