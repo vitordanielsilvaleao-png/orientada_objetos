@@ -11,8 +11,6 @@ from src.modulos.material.entidades.categoria import Categoria
 from src.modulos.material.entidades.editora import Editora
 from src.database.database import db
 
-from datetime import datetime, timedelta
-
 class TestReservaService(unittest.TestCase):
 
     def test_cadastrar_reserva_corretamente(self):
@@ -583,7 +581,6 @@ class TestReservaService(unittest.TestCase):
             ano_publi=2015,
             categoria_id=categoria.id,
             editora_id=editora.id,
-            tipo="material"
         )
 
         sessao.add(material_novo)
