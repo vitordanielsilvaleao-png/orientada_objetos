@@ -48,7 +48,7 @@ async def lifespan(app: FastAPI):
     print("Scheduler encerrado!")
 
 #Instanciação da classe FastAPI
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, title="APOLO")
 
 #Liberações necessárias para receber requisições do Frontend
 app.add_middleware(
