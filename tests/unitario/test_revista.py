@@ -11,27 +11,83 @@ class TestRevista(unittest.TestCase):
             ano_publi=2020,
             categoria_id=1,
             editora_id=1,
-            tipo="revista",
             issn="12345678",
             edicao=1,
-            is_active=True
         )
 
-        revista.atualizar_material(
+        revista.atualizar(
             "Revista Nova",
             2026,
             2,
             3,
-            "87654321",
             10
         )
 
-        self.assertEqual(revista.titulo, "Revista Nova")
+        self.assertEqual(revista.titulo, "revista nova")
         self.assertEqual(revista.ano_publi, 2026)
         self.assertEqual(revista.categoria_id, 2)
         self.assertEqual(revista.editora_id, 3)
-        self.assertEqual(revista.issn, "87654321")
+        self.assertEqual(revista.issn, "12345678")
         self.assertEqual(revista.edicao, 10)
+
+    def test_criar_revista_normaliza_issn(self):
+        revista = Revista(
+            titulo="Revista Teste",
+            ano_publi=2020,
+            categoria_id=1,
+            editora_id=1,
+            issn="1234-5678",
+            edicao=1
+        )
+
+        self.assertEqual(
+            revista.issn,
+            "12345678"
+        )
+
+    def test_criar_revista_issn_invalido(self):
+        with self.assertRaises(ValueError):
+            Revista(
+                titulo="Revista Teste",
+                ano_publi=2020,
+                categoria_id=1,
+                editora_id=1,
+                issn="1234567",
+                edicao=1
+            )
+
+    def test_criar_revista_issn_com_letras(self):
+        with self.assertRaises(ValueError):
+            Revista(
+                titulo="Revista Teste",
+                ano_publi=2020,
+                categoria_id=1,
+                editora_id=1,
+                issn="1234ABCD",
+                edicao=1
+            )
+
+    def test_criar_revista_edicao_zero(self):
+        with self.assertRaises(ValueError):
+            Revista(
+                titulo="Revista Teste",
+                ano_publi=2025,
+                categoria_id=1,
+                editora_id=1,
+                issn="12345678",
+                edicao=0
+            )
+
+    def test_criar_revista_edicao_negativa(self):
+        with self.assertRaises(ValueError):
+            Revista(
+                titulo="Revista Teste",
+                ano_publi=2025,
+                categoria_id=1,
+                editora_id=1,
+                issn="12345678",
+                edicao=-1
+            )
 
 if __name__ == "__main__":
     unittest.main()

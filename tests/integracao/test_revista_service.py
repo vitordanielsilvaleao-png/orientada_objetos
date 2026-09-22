@@ -3,10 +3,9 @@ import random
 
 from fastapi import HTTPException
 
-from src.modulos.revista.schemas.schamas_revista import (
-    SchemaRevistaCadastro,
-    SchemaRevistaAtualizacao
-)
+from src.modulos.material.entidades.categoria import Categoria
+from src.modulos.material.entidades.editora import Editora
+from src.modulos.revista.schemas.schamas_revista import (SchemaRevistaCadastro, SchemaRevistaAtualizacao)
 from src.modulos.revista.service.revista_service import RevistaService
 from src.modulos.revista.revista import Revista
 from src.database.database import db
@@ -20,11 +19,14 @@ class TestRevistaService(unittest.TestCase):
         try:
             issn = str(random.randint(10000000, 99999999))
 
+            editora = self.criar_editora(sessao)
+            categoria = self.criar_categoria(sessao)
+
             data = SchemaRevistaCadastro(
                 titulo="Teste Cadastro Revista",
                 ano_publi=2026,
-                editora_id=1,
-                categoria_id=1,
+                editora_id=editora.id,
+                categoria_id=categoria.id,
                 issn=issn,
                 edicao=1
             )
@@ -33,14 +35,18 @@ class TestRevistaService(unittest.TestCase):
 
             revista = revista_service.cadastrar(data)
 
-            self.assertEqual(revista.titulo, "Teste Cadastro Revista")
+            self.assertEqual(revista.titulo, "teste cadastro revista")
             self.assertEqual(revista.ano_publi, 2026)
-            self.assertEqual(revista.editora_id, 1)
-            self.assertEqual(revista.categoria_id, 1)
+            self.assertEqual(revista.editora_id, editora.id)
+            self.assertEqual(revista.categoria_id, categoria.id)
             self.assertEqual(revista.issn, issn)
             self.assertEqual(revista.edicao, 1)
 
             sessao.delete(revista)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
             sessao.commit()
 
         finally:
@@ -92,12 +98,22 @@ class TestRevistaService(unittest.TestCase):
         sessao = db.session()
 
         try:
+
+            revista, categoria, editora = self.criar_revista(sessao)
+
             revista_service = RevistaService(sessao)
 
             lista_revistas = revista_service.visualizar()
 
             for revista in lista_revistas:
                 self.assertIsInstance(revista, Revista)
+
+            sessao.delete(revista)
+            sessao.commit()
+
+            sessao.delete(editora)
+            sessao.delete(categoria)
+            sessao.commit()
 
         finally:
             sessao.close()
@@ -108,13 +124,13 @@ class TestRevistaService(unittest.TestCase):
         try:
             revista_service = RevistaService(sessao)
 
-            revista_nova = self.criar_revista(sessao)
+            revista_nova, categoria, editora = self.criar_revista(sessao)
 
             data = SchemaRevistaAtualizacao(
                 titulo="Teste Atualizar Revista",
                 ano_publi=2026,
-                editora_id=1,
-                categoria_id=1,
+                editora_id=editora.id,
+                categoria_id=categoria.id,
                 edicao=10
             )
 
@@ -124,14 +140,18 @@ class TestRevistaService(unittest.TestCase):
 
             self.assertEqual(
                 revista_nova.titulo,
-                "Teste Atualizar Revista"
+                "teste atualizar revista"
             )
             self.assertEqual(revista_nova.ano_publi, 2026)
-            self.assertEqual(revista_nova.editora_id, 1)
-            self.assertEqual(revista_nova.categoria_id, 1)
+            self.assertEqual(revista_nova.editora_id, editora.id)
+            self.assertEqual(revista_nova.categoria_id, categoria.id)
             self.assertEqual(revista_nova.edicao, 10)
 
             sessao.delete(revista_nova)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
             sessao.commit()
 
         finally:
@@ -143,7 +163,7 @@ class TestRevistaService(unittest.TestCase):
         try:
             revista_service = RevistaService(sessao)
 
-            revista_nova = self.criar_revista(sessao)
+            revista_nova, categoria, editora = self.criar_revista(sessao)
 
             revista_service.inativar(revista_nova.id)
 
@@ -152,6 +172,10 @@ class TestRevistaService(unittest.TestCase):
             self.assertFalse(revista_nova.is_active)
 
             sessao.delete(revista_nova)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
             sessao.commit()
 
         finally:
@@ -175,7 +199,7 @@ class TestRevistaService(unittest.TestCase):
         try:
             revista_service = RevistaService(sessao)
 
-            revista_nova = self.criar_revista(sessao)
+            revista_nova, categoria, editora = self.criar_revista(sessao)
 
             revista_nova.inativar()
             sessao.commit()
@@ -187,6 +211,10 @@ class TestRevistaService(unittest.TestCase):
             self.assertTrue(revista_nova.is_active)
 
             sessao.delete(revista_nova)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
             sessao.commit()
 
         finally:
@@ -204,15 +232,46 @@ class TestRevistaService(unittest.TestCase):
         finally:
             sessao.close()
 
+    def criar_categoria(self,sessao):
+
+        num = random.randint(1, 999999)
+
+        categoria_nova = Categoria(
+            nome=f"Teste Categoria{num}"
+        )
+
+        sessao.add(categoria_nova)
+        sessao.commit()
+        sessao.refresh(categoria_nova)
+
+        return categoria_nova
+
+    def criar_editora(self,sessao):
+
+        num = random.randint(1, 999999)
+
+        editora_nova = Editora(
+            nome=f"Teste Editora{num}"
+        )
+
+        sessao.add(editora_nova)
+        sessao.commit()
+        sessao.refresh(editora_nova)
+
+        return editora_nova
+
     def criar_revista(self, sessao):
+
+        categoria = self.criar_categoria(sessao)
+        editora = self.criar_editora(sessao)
 
         issn = str(random.randint(10000000, 99999999))
 
         revista_nova = Revista(
-            titulo="Teste Revista",
-            ano_publi=2025,
-            editora_id=1,
-            categoria_id=1,
+            titulo="teste revista",
+            ano_publi=1988,
+            editora_id=editora.id,
+            categoria_id=categoria.id,
             issn=issn,
             edicao=1
         )
@@ -221,8 +280,7 @@ class TestRevistaService(unittest.TestCase):
         sessao.commit()
         sessao.refresh(revista_nova)
 
-        return revista_nova
-
+        return revista_nova, categoria, editora
 
 if __name__ == "__main__":
     unittest.main()
