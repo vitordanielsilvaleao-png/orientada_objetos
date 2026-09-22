@@ -23,7 +23,7 @@ class TestEmprestimoService(unittest.TestCase):
         sessao = db.session()
         try:
 
-            livro = self.criar_livro(sessao)
+            livro, categoria, editora, autor = self.criar_livro(sessao)
             cliente = self.criar_cliente(sessao)
 
             data = SchemaEmprestimoCadastro(
@@ -48,6 +48,11 @@ class TestEmprestimoService(unittest.TestCase):
             sessao.delete(cliente)
             sessao.commit()
 
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
+            sessao.commit()
+
         finally:
             sessao.close()
 
@@ -55,7 +60,7 @@ class TestEmprestimoService(unittest.TestCase):
         sessao = db.session()
         try:
 
-            livro = self.criar_livro(sessao)
+            livro, categoria, editora, autor = self.criar_livro(sessao)
             cliente = self.criar_cliente(sessao)
 
             reserva_nova = Reserva(
@@ -93,6 +98,11 @@ class TestEmprestimoService(unittest.TestCase):
             sessao.delete(cliente)
             sessao.commit()
 
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
+            sessao.commit()
+
         finally:
             sessao.close()
 
@@ -100,7 +110,7 @@ class TestEmprestimoService(unittest.TestCase):
         sessao = db.session()
         try:
 
-            livro = self.criar_livro(sessao)
+            livro, categoria, editora, autor = self.criar_livro(sessao)
             cliente = self.criar_cliente(sessao)
             cliente2 = self.criar_cliente(sessao)
 
@@ -135,6 +145,11 @@ class TestEmprestimoService(unittest.TestCase):
             sessao.delete(cliente2)
             sessao.commit()
 
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
+            sessao.commit()
+
         finally:
             sessao.close()
 
@@ -142,7 +157,7 @@ class TestEmprestimoService(unittest.TestCase):
         sessao = db.session()
         try:
 
-            livro = self.criar_livro(sessao)
+            livro, categoria, editora, autor = self.criar_livro(sessao)
             cliente = self.criar_cliente(sessao)
 
             data = SchemaEmprestimoCadastro(
@@ -161,6 +176,11 @@ class TestEmprestimoService(unittest.TestCase):
 
             sessao.delete(livro)
             sessao.delete(cliente)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
             sessao.commit()
 
         finally:
@@ -194,7 +214,7 @@ class TestEmprestimoService(unittest.TestCase):
         sessao = db.session()
         try:
 
-            livro = self.criar_livro(sessao)
+            livro, categoria, editora, autor = self.criar_livro(sessao)
             cliente = self.criar_cliente(sessao)
 
             data = SchemaEmprestimoCadastro(
@@ -215,6 +235,11 @@ class TestEmprestimoService(unittest.TestCase):
             sessao.delete(cliente)
             sessao.commit()
 
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
+            sessao.commit()
+
         finally:
             sessao.close()
 
@@ -222,7 +247,7 @@ class TestEmprestimoService(unittest.TestCase):
         sessao = db.session()
         try:
 
-            livro = self.criar_livro(sessao)
+            livro, categoria, editora, autor = self.criar_livro(sessao)
             cliente = self.criar_cliente(sessao)
 
             data = SchemaEmprestimoCadastro(
@@ -243,6 +268,11 @@ class TestEmprestimoService(unittest.TestCase):
             sessao.delete(cliente)
             sessao.commit()
 
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
+            sessao.commit()
+
         finally:
             sessao.close()
 
@@ -250,8 +280,8 @@ class TestEmprestimoService(unittest.TestCase):
         sessao = db.session()
         try:
 
-            livro = self.criar_livro(sessao)
-            livro2 = self.criar_livro(sessao)
+            livro, categoria, editora, autor = self.criar_livro(sessao)
+            livro2, categoria_livro2, editora_livro2, autor_livro2 = self.criar_livro(sessao)
             cliente = self.criar_cliente(sessao)
 
             data_atual = datetime.now()
@@ -289,6 +319,16 @@ class TestEmprestimoService(unittest.TestCase):
             sessao.delete(cliente)
             sessao.commit()
 
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
+            sessao.commit()
+
+            sessao.delete(categoria_livro2)
+            sessao.delete(editora_livro2)
+            sessao.delete(autor_livro2)
+            sessao.commit()
+
         finally:
             sessao.close()
 
@@ -298,12 +338,18 @@ class TestEmprestimoService(unittest.TestCase):
 
             livros = []
             emprestimos = []
+            categorias = []
+            editoras = []
+            autores = []
 
             cliente = self.criar_cliente(sessao)
 
             for _ in range(4):
-                livro = self.criar_livro(sessao)
+                livro, categoria, editora, autor = self.criar_livro(sessao)
                 livros.append(livro)
+                categorias.append(categoria)
+                editoras.append(editora)
+                autores.append(autor)
 
                 emprestimo = Emprestimo(
                     cliente_id=cliente.id,
@@ -318,7 +364,7 @@ class TestEmprestimoService(unittest.TestCase):
                 sessao.add(emprestimo)
                 sessao.commit()
 
-            livro_excedente = self.criar_livro(sessao)
+            livro_excedente, categoria_excedente, editora_excedente, autor_excedente = self.criar_livro(sessao)
 
             data = SchemaEmprestimoCadastro(
                 cliente_id=cliente.id,
@@ -346,6 +392,20 @@ class TestEmprestimoService(unittest.TestCase):
             sessao.delete(cliente)
             sessao.commit()
 
+            for categoria in categorias:
+                sessao.delete(categoria)
+
+            for editora in editoras:
+                sessao.delete(editora)
+
+            for autor in autores:
+                sessao.delete(autor)
+
+            sessao.delete(categoria_excedente)
+            sessao.delete(editora_excedente)
+            sessao.delete(autor_excedente)
+            sessao.commit()
+
         finally:
             sessao.close()
 
@@ -353,7 +413,7 @@ class TestEmprestimoService(unittest.TestCase):
         sessao = db.session()
         try:
 
-            livro = self.criar_livro(sessao)
+            livro, categoria, editora, autor = self.criar_livro(sessao)
             cliente = self.criar_cliente(sessao)
 
             emprestimo = Emprestimo(
@@ -370,6 +430,19 @@ class TestEmprestimoService(unittest.TestCase):
 
             for emprestimo in lista_emprestimo:
                 self.assertIsInstance(emprestimo, Emprestimo)
+
+            sessao.delete(emprestimo)
+            sessao.commit()
+
+            sessao.delete(livro)
+            sessao.delete(cliente)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
+            sessao.commit()
+
         finally:
             sessao.close()
 
@@ -380,7 +453,7 @@ class TestEmprestimoService(unittest.TestCase):
             data_atual = datetime.now()
             data_atrasada = data_atual - timedelta(days=31)
 
-            livro = self.criar_livro(sessao)
+            livro, categoria, editora, autor = self.criar_livro(sessao)
             cliente = self.criar_cliente(sessao)
 
             emprestimo = Emprestimo(
@@ -401,6 +474,18 @@ class TestEmprestimoService(unittest.TestCase):
             for emprestimo in lista_atrasados:
                 self.assertIsInstance(emprestimo, Emprestimo)
 
+            sessao.delete(emprestimo)
+            sessao.commit()
+
+            sessao.delete(livro)
+            sessao.delete(cliente)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
+            sessao.commit()
+
         finally:
             sessao.close()
 
@@ -408,7 +493,7 @@ class TestEmprestimoService(unittest.TestCase):
         sessao = db.session()
         try:
 
-            livro = self.criar_livro(sessao)
+            livro, categoria, editora, autor = self.criar_livro(sessao)
             cliente = self.criar_cliente(sessao)
 
             data = SchemaEmprestimoCadastro(
@@ -436,6 +521,11 @@ class TestEmprestimoService(unittest.TestCase):
             sessao.delete(cliente)
             sessao.commit()
 
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
+            sessao.commit()
+
         finally:
             sessao.close()
 
@@ -457,7 +547,7 @@ class TestEmprestimoService(unittest.TestCase):
         sessao = db.session()
         try:
 
-            livro = self.criar_livro(sessao)
+            livro, categoria, editora, autor = self.criar_livro(sessao)
             cliente = self.criar_cliente(sessao)
             cliente_reserva = self.criar_cliente(sessao)
 
@@ -499,25 +589,76 @@ class TestEmprestimoService(unittest.TestCase):
             sessao.delete(cliente_reserva)
             sessao.commit()
 
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
+            sessao.commit()
+
         finally:
             sessao.close()
 
+    def criar_categoria(self, sessao):
+
+        num = random.randint(1, 999999)
+
+        categoria_nova = Categoria(
+            nome=f"Teste Categoria{num}"
+        )
+
+        sessao.add(categoria_nova)
+        sessao.commit()
+        sessao.refresh(categoria_nova)
+
+        return categoria_nova
+
+    def criar_editora(self, sessao):
+
+        num = random.randint(1, 999999)
+
+        editora_nova = Editora(
+            nome=f"Teste Editora{num}"
+        )
+
+        sessao.add(editora_nova)
+        sessao.commit()
+        sessao.refresh(editora_nova)
+
+        return editora_nova
+
+    def criar_autor(self, sessao):
+
+        num = random.randint(1, 999999)
+
+        autor_novo = Autor(
+            nome=f'Teste Autor{num}'
+        )
+
+        sessao.add(autor_novo)
+        sessao.commit()
+        sessao.refresh(autor_novo)
+
+        return autor_novo
+
     def criar_livro(self, sessao):
 
-        isbn = random.randint(1, 999999)
+        isbn = random.randint(1111111111111, 9999999999999)
+
+        categoria = self.criar_categoria(sessao)
+        editora = self.criar_editora(sessao)
+        autor = self.criar_autor(sessao)
 
         livro_novo = Livro(
-            titulo="Teste Emprestimo",
+            titulo="teste atualizar livro",
             ano_publi=2025,
-            editora_id=1,
-            categoria_id=1,
-            autor_id=1,
+            editora_id=editora.id,
+            categoria_id=categoria.id,
+            autor_id=autor.id,
             isbn=str(isbn))
 
         sessao.add(livro_novo)
         sessao.commit()
         sessao.refresh(livro_novo)
-        return livro_novo
+        return livro_novo, categoria, editora, autor
 
 
     def criar_cliente(self, sessao):

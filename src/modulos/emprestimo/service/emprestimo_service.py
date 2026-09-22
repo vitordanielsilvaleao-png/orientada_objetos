@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from compartilhado.base_service import BaseService
+from compartilhado.normalizador_titulos import normalizar_titulo
 from emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro
 from src.modulos.reserva.reserva import Reserva
 from src.modulos.material.entidades.material import Material
@@ -147,10 +148,12 @@ class EmprestimoService(BaseService):
                 detail=str(erro)
             )
 
+        titulo_normalizado = normalizar_titulo(material_devolucao.titulo)
+
         reserva_pendente = (
             self.session.query(Reserva)
             .filter(
-                Reserva.titulo == material_devolucao.titulo,
+                Reserva.titulo == titulo_normalizado,
                 Reserva.is_active == True,
                 Reserva.material_id.is_(None)
             )
