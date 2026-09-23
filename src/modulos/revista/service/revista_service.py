@@ -20,6 +20,16 @@ class RevistaService(BaseService):
     # Método para cadastrar revistas
     def cadastrar(self, data: SchemaRevistaCadastro):
 
+        issn_existente = self.session.query(Revista).filter_by(
+            issn = data.issn
+        ).first()
+
+        if issn_existente:
+            raise HTTPException(
+                status_code=400,
+                detail="O ISSN informado já se cadastrado no sistema"
+            )
+
         editora_cadastrar = self.session.query(Editora).filter_by(
             id=data.editora_id
         ).first()
@@ -55,7 +65,7 @@ class RevistaService(BaseService):
         reserva_pendente = (
             self.session.query(Reserva)
             .filter(
-                Reserva.titulo == data.titulo,
+                Reserva.titulo == revista_cadastrar.titulo,
                 Reserva.is_active == True,
                 Reserva.material_id.is_(None)
             )
@@ -70,6 +80,7 @@ class RevistaService(BaseService):
             reserva_pendente.material_id = revista_cadastrar.id
 
         self.session.commit()
+        self.session.refresh(revista_cadastrar)
 
         return revista_cadastrar
 

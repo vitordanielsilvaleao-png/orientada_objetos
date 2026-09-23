@@ -20,6 +20,16 @@ class LivroService(BaseService):
     #Método para cadastrar livros
      def cadastrar(self, data:SchemaLivroCadastro):
 
+         isbn_existente = self.session.query(Livro).filter_by(
+             isbn = data.isbn
+         ).first()
+
+         if isbn_existente:
+             raise HTTPException(
+                 status_code=400,
+                 detail="O ISBN informado já se encontra cadastrado no sistema"
+             )
+
          autor_cadastrar = self.session.query(Autor).filter_by(
              id = data.autor_id
          ).first()
@@ -65,7 +75,7 @@ class LivroService(BaseService):
          reserva_pendente = (
              self.session.query(Reserva)
              .filter(
-                 Reserva.titulo == data.titulo,
+                 Reserva.titulo == livro_cadastrar.titulo,
                  Reserva.is_active == True,
                  Reserva.material_id.is_(None)
              )
@@ -80,6 +90,7 @@ class LivroService(BaseService):
              reserva_pendente.material_id = livro_cadastrar.id
 
          self.session.commit()
+         self.session.refresh(livro_cadastrar)
 
          return livro_cadastrar
 
