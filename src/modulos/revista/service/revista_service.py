@@ -2,11 +2,9 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from src.modulos.reserva.reserva import Reserva
 from src.compartilhado.base_service import BaseService
-from src.modulos.revista.schemas.schamas_revista import (
-    SchemaRevistaCadastro,
-    SchemaRevistaAtualizacao
-)
+from src.modulos.revista.schemas.schamas_revista import (SchemaRevistaCadastro, SchemaRevistaAtualizacao)
 from src.modulos.material.entidades.editora import Editora
 from src.modulos.material.entidades.categoria import Categoria
 from src.modulos.revista.revista import Revista
@@ -53,6 +51,25 @@ class RevistaService(BaseService):
 
         self.salvar(revista_cadastrar)
         self.session.refresh(revista_cadastrar)
+
+        reserva_pendente = (
+            self.session.query(Reserva)
+            .filter(
+                Reserva.titulo == data.titulo,
+                Reserva.is_active == True,
+                Reserva.material_id.is_(None)
+            )
+            .order_by(Reserva.data.asc())
+            .first()
+        )
+
+        if not reserva_pendente:
+            revista_cadastrar.status = "DISPONIVEL"
+        else:
+            revista_cadastrar.status = "RESERVADO"
+            reserva_pendente.material_id = revista_cadastrar.id
+
+        self.session.commit()
 
         return revista_cadastrar
 

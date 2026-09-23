@@ -1,6 +1,8 @@
 #Import das bibliotecas e classes necessárias para o funcionamento do sistema
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+
+from src.modulos.reserva.reserva import Reserva
 from compartilhado.base_service import BaseService
 from src.modulos.livro.schemas.schemas_livro import SchemaLivroCadastro, SchemaLivroAtualizacao
 from src.modulos.livro.entidades.autor import Autor
@@ -59,6 +61,26 @@ class LivroService(BaseService):
 
          self.salvar(livro_cadastrar)
          self.session.refresh(livro_cadastrar)
+
+         reserva_pendente = (
+             self.session.query(Reserva)
+             .filter(
+                 Reserva.titulo == data.titulo,
+                 Reserva.is_active == True,
+                 Reserva.material_id.is_(None)
+             )
+             .order_by(Reserva.data.asc())
+             .first()
+         )
+
+         if not reserva_pendente:
+             livro_cadastrar.status = "DISPONIVEL"
+         else:
+             livro_cadastrar.status = "RESERVADO"
+             reserva_pendente.material_id = livro_cadastrar.id
+
+         self.session.commit()
+
          return livro_cadastrar
 
     #Método para visualizar livros
@@ -67,10 +89,10 @@ class LivroService(BaseService):
          return self.session.query(Livro).all()
 
     #Método para atualizar livros
-     def atualizar(self, id:int, data:SchemaLivroAtualizacao):
+     def atualizar(self, livro_id:int, data:SchemaLivroAtualizacao):
 
          livro_atualizar = self.session.query(Livro).filter_by(
-             id = id
+             id = livro_id
          ).first()
 
          if not livro_atualizar:
@@ -93,10 +115,10 @@ class LivroService(BaseService):
          return livro_atualizar
 
     #Método para inativar livros
-     def inativar(self, id:int):
+     def inativar(self, livro_id:int):
 
          livro_inativar = self.session.query(Livro).filter_by(
-             id=id
+             id=livro_id
          ).first()
 
          if not livro_inativar:
@@ -109,10 +131,10 @@ class LivroService(BaseService):
          self.session.commit()
 
     #Método para ativar livros
-     def ativar(self, id: int):
+     def ativar(self, livro_id: int):
 
          livro_ativar = self.session.query(Livro).filter_by(
-             id=id
+             id=livro_id
          ).first()
 
          if not livro_ativar:
