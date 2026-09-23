@@ -72,7 +72,8 @@ class Material(Base):
 
     #Validação de dados recebidos
     @validates("titulo")
-    def validar_titulo(self, chave, titulo):
+    def validar_titulo(self, chave:str, titulo:str):
+        self._validar_titulo_existente(titulo)
         return self._normalizar_titulo(titulo)
 
     @validates("ano_publi")
@@ -82,12 +83,19 @@ class Material(Base):
 
     #Métodos para validação e normalização de dados do construtor
     @staticmethod
-    def _normalizar_titulo(titulo):
+    def _validar_titulo_existente(titulo:str):
+        if not titulo or not titulo.strip():
+            raise ValueError(
+                "O título do material é obrigatório"
+            )
+
+    @staticmethod
+    def _normalizar_titulo(titulo:str):
         return titulo.strip().lower()
 
     @staticmethod
     def _validar_ano_publi(ano_publi):
-        if ano_publi <= 0:
+        if ano_publi <= 0 or not ano_publi:
             raise ValueError(
                 "O ano de publicação é inválido"
             )

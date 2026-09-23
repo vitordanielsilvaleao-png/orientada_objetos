@@ -76,7 +76,7 @@ class Revista(Material):
 
     @staticmethod
     def _validar_edicao(edicao):
-        if edicao <= 0:
+        if edicao <= 0 or not edicao:
             raise ValueError(
                 "A edição informada é inválida"
             )
