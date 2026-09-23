@@ -2,6 +2,8 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from src.compartilhado.enum import StatusMaterial
+
 from src.modulos.reserva.reserva import Reserva
 from compartilhado.base_service import BaseService
 from src.modulos.livro.schemas.schemas_livro import SchemaLivroCadastro, SchemaLivroAtualizacao
@@ -84,9 +86,9 @@ class LivroService(BaseService):
          )
 
          if not reserva_pendente:
-             livro_cadastrar.status = "DISPONIVEL"
+             livro_cadastrar.status = StatusMaterial.DISPONIVEL
          else:
-             livro_cadastrar.status = "RESERVADO"
+             livro_cadastrar.status = StatusMaterial.RESERVADO
              reserva_pendente.material_id = livro_cadastrar.id
 
          self.session.commit()

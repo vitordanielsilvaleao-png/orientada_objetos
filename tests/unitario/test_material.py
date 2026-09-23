@@ -1,4 +1,6 @@
 import unittest
+
+from src.compartilhado.enum import StatusMaterial
 from src.modulos.material.entidades.material import Material
 
 class TestMaterial(unittest.TestCase):
@@ -197,7 +199,7 @@ class TestMaterial(unittest.TestCase):
         )
 
         material.is_active = True
-        material.status = "DISPONIVEL"
+        material.status = StatusMaterial.DISPONIVEL
 
         resultado = material.esta_disponivel()
 
@@ -212,7 +214,7 @@ class TestMaterial(unittest.TestCase):
         )
 
         material.is_active = True
-        material.status = "EMPRESTADO"
+        material.status = StatusMaterial.EMPRESTADO
 
         resultado = material.esta_disponivel()
 
@@ -227,7 +229,7 @@ class TestMaterial(unittest.TestCase):
         )
 
         material.is_active = False
-        material.status = "DISPONIVEL"
+        material.status = StatusMaterial.DISPONIVEL
 
         resultado = material.esta_disponivel()
 

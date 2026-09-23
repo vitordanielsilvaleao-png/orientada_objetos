@@ -1,7 +1,7 @@
 import unittest
 from fastapi import HTTPException
 
-from schemas.schemas_editora import SchemaEditoraCadastro
+from src.modulos.material.schemas.schemas_editora import SchemaEditoraCadastro
 from src.modulos.material.service.editora_service import EditoraService
 from src.modulos.material.entidades.editora import Editora
 from src.database.database import db

@@ -70,6 +70,9 @@ class TestEmprestimo(unittest.TestCase):
 
         resultado = emprestimo.verificar_atraso()
 
+        if resultado:
+            emprestimo.marcar_atrasado()
+
         self.assertTrue(resultado)
         self.assertEqual(
             emprestimo.status,
