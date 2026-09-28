@@ -1,6 +1,7 @@
 import unittest
 from datetime import datetime, timedelta
 
+from src.compartilhado.enum import StatusEmprestimo
 from src.modulos.emprestimo.emprestimo import Emprestimo
 
 class TestEmprestimo(unittest.TestCase):
@@ -8,14 +9,14 @@ class TestEmprestimo(unittest.TestCase):
         emprestimo = Emprestimo()
 
         emprestimo.is_active = True
-        emprestimo.status = "ABERTO"
+        emprestimo.status = StatusEmprestimo.ABERTO
         emprestimo.data_devolucao = None
 
         emprestimo.devolver()
 
         self.assertEqual(
             emprestimo.status,
-            "DEVOLVIDO"
+            StatusEmprestimo.DEVOLVIDO
         )
 
         self.assertFalse(
@@ -35,7 +36,7 @@ class TestEmprestimo(unittest.TestCase):
         emprestimo = Emprestimo()
 
         emprestimo.is_active = False
-        emprestimo.status = "DEVOLVIDO"
+        emprestimo.status = StatusEmprestimo.DEVOLVIDO
 
         with self.assertRaises(ValueError):
             emprestimo.devolver()
@@ -62,7 +63,7 @@ class TestEmprestimo(unittest.TestCase):
         emprestimo = Emprestimo()
 
         emprestimo.is_active = True
-        emprestimo.status = "ABERTO"
+        emprestimo.status = StatusEmprestimo.ABERTO
 
         emprestimo.data_emprestimo = (
             datetime.now() - timedelta(days=31)
@@ -70,17 +71,20 @@ class TestEmprestimo(unittest.TestCase):
 
         resultado = emprestimo.verificar_atraso()
 
+        if resultado:
+            emprestimo.marcar_atrasado()
+
         self.assertTrue(resultado)
         self.assertEqual(
             emprestimo.status,
-            "ATRASADO"
+            StatusEmprestimo.ATRASADO
         )
 
     def test_emprestimo_nao_atrasado(self):
         emprestimo = Emprestimo()
 
         emprestimo.is_active = True
-        emprestimo.status = "ABERTO"
+        emprestimo.status = StatusEmprestimo.ABERTO
 
         emprestimo.data_emprestimo = (
             datetime.now() - timedelta(days=10)
@@ -91,7 +95,7 @@ class TestEmprestimo(unittest.TestCase):
         self.assertFalse(resultado)
         self.assertEqual(
             emprestimo.status,
-            "ABERTO"
+            StatusEmprestimo.ABERTO
         )
 
 

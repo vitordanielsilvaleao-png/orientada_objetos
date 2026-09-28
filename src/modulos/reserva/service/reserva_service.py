@@ -2,9 +2,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
-from src.compartilhado.normalizador_titulos import normalizar_titulo
-
 from src.compartilhado.base_service import BaseService
+from src.compartilhado.enum import StatusMaterial
+
 from src.modulos.reserva.schemas.schema_reserva import SchemaReservaCadastro
 from src.modulos.reserva.reserva import Reserva
 from src.modulos.cliente.cliente import Cliente
@@ -33,7 +33,7 @@ class ReservaService (BaseService):
                 detail="A reserva não pode ser efetuada, pois o usuário se encontra inativo"
             )
 
-        titulo_formatado = normalizar_titulo(data.titulo)
+        titulo_formatado = data.titulo.strip().lower()
 
         reserva_existente = self.session.query(Reserva).filter_by(
             cliente_id=data.cliente_id,
@@ -49,13 +49,13 @@ class ReservaService (BaseService):
 
         material_existente = self.session.query(Material).filter_by(
             titulo = titulo_formatado,
-            status="DISPONIVEL",
+            status=StatusMaterial.DISPONIVEL,
             is_active=True
         ).first()
 
         if material_existente:
             material_id = material_existente.id
-            material_existente.status = "RESERVADO"
+            material_existente.status = StatusMaterial.RESERVADO
         else:
             material_id = None
 
@@ -88,13 +88,14 @@ class ReservaService (BaseService):
     def inativar(self, reserva_id:int):
 
         reserva_inativar = self.session.query(Reserva).filter_by(
-            id=reserva_id
+            id = reserva_id,
+            is_active = True
         ).first()
 
         if not reserva_inativar:
             raise HTTPException(
                 status_code=404,
-                detail="Reserva não encontrada"
+                detail="Reserva não encontrada ou inativa"
             )
 
         try:
@@ -112,7 +113,7 @@ class ReservaService (BaseService):
             ).first()
 
             if material_reservado:
-                material_reservado.status = "DISPONIVEL"
+                material_reservado.status = StatusMaterial.DISPONIVEL
 
         self.session.commit()
         self.session.refresh(reserva_inativar)

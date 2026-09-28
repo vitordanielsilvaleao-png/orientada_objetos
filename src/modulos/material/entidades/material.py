@@ -1,8 +1,8 @@
 # importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Material
-from sqlalchemy import Integer, String, ForeignKey, Boolean
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Integer, String, ForeignKey, Boolean, Enum
+from sqlalchemy.orm import Mapped, mapped_column, validates
 from src.database.database import Base
-from sqlalchemy.orm import validates
+from src.compartilhado.enum import StatusMaterial
 
 # Criação da entidade Material
 class Material(Base):
@@ -37,10 +37,10 @@ class Material(Base):
         nullable=False
     )
 
-    status: Mapped[str] = mapped_column(
-        String(50),
+    status: Mapped[StatusMaterial] = mapped_column(
+        Enum(StatusMaterial),
         nullable=False,
-        default="DISPONIVEL"
+        default=StatusMaterial.DISPONIVEL
     )
 
     is_active: Mapped[bool] = mapped_column(
@@ -69,6 +69,7 @@ class Material(Base):
         self.categoria_id = categoria_id
         self.editora_id = editora_id
         self.is_active = True
+        self.status = StatusMaterial.DISPONIVEL
 
     #Validação de dados recebidos
     @validates("titulo")
@@ -146,4 +147,4 @@ class Material(Base):
 
     # Verifica se o Material está ativo e disponível
     def esta_disponivel(self):
-        return self.is_active and self.status == "DISPONIVEL"
+        return self.is_active and self.status == StatusMaterial.DISPONIVEL

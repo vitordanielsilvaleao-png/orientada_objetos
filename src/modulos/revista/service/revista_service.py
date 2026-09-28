@@ -2,6 +2,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from src.compartilhado.enum import StatusMaterial
 from src.modulos.reserva.reserva import Reserva
 from src.compartilhado.base_service import BaseService
 from src.modulos.revista.schemas.schamas_revista import (SchemaRevistaCadastro, SchemaRevistaAtualizacao)
@@ -74,9 +75,9 @@ class RevistaService(BaseService):
         )
 
         if not reserva_pendente:
-            revista_cadastrar.status = "DISPONIVEL"
+            revista_cadastrar.status = StatusMaterial.DISPONIVEL
         else:
-            revista_cadastrar.status = "RESERVADO"
+            revista_cadastrar.status = StatusMaterial.RESERVADO
             reserva_pendente.material_id = revista_cadastrar.id
 
         self.session.commit()

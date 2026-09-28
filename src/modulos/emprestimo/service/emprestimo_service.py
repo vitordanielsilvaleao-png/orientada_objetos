@@ -2,9 +2,10 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from compartilhado.base_service import BaseService
-from compartilhado.normalizador_titulos import normalizar_titulo
-from emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro
+from src.compartilhado.enum import StatusMaterial, StatusEmprestimo
+
+from src.compartilhado.base_service import BaseService
+from src.modulos.emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro
 from src.modulos.reserva.reserva import Reserva
 from src.modulos.material.entidades.material import Material
 from src.modulos.cliente.cliente import Cliente
@@ -55,10 +56,10 @@ class EmprestimoService(BaseService):
             is_active=True
         ).first()
 
-        if material_existente.status == "DISPONIVEL":
+        if material_existente.status == StatusMaterial.DISPONIVEL:
             pass
 
-        elif material_existente.status == "RESERVADO" and reserva_existente:
+        elif material_existente.status == StatusMaterial.RESERVADO and reserva_existente:
             pass
 
         else:
@@ -77,7 +78,7 @@ class EmprestimoService(BaseService):
 
                 cont_emprestimos += 1
 
-                if emprestimo.status == "ATRASADO":
+                if emprestimo.status == StatusEmprestimo.ATRASADO:
                     raise HTTPException(
                         status_code=409,
                         detail="O empréstimo não pode ser registrado, pois o usuário possuí um empréstimo ativo em atraso!"
@@ -94,7 +95,7 @@ class EmprestimoService(BaseService):
             cliente_id = data.cliente_id
         )
 
-        material_existente.status = "EMPRESTADO"
+        material_existente.status = StatusMaterial.EMPRESTADO
 
         self.salvar(emprestimo_cadastrar)
         self.session.refresh(emprestimo_cadastrar)
@@ -115,7 +116,7 @@ class EmprestimoService(BaseService):
 
         return self.session.query(Emprestimo).filter_by(
             is_active = True,
-            status = "ATRASADO"
+            status = StatusEmprestimo.ATRASADO
         ).all()
 
     def registrar_devolucao(self, emprestimo_id:int):
@@ -148,7 +149,7 @@ class EmprestimoService(BaseService):
                 detail=str(erro)
             )
 
-        titulo_normalizado = normalizar_titulo(material_devolucao.titulo)
+        titulo_normalizado = material_devolucao.titulo.strip().lower()
 
         reserva_pendente = (
             self.session.query(Reserva)
@@ -163,11 +164,11 @@ class EmprestimoService(BaseService):
 
         if not reserva_pendente:
 
-            material_devolucao.status = "DISPONIVEL"
+            material_devolucao.status = StatusMaterial.DISPONIVEL
 
         else:
 
-            material_devolucao.status = "RESERVADO"
+            material_devolucao.status = StatusMaterial.RESERVADO
             reserva_pendente.material_id = material_devolucao.id
 
         self.session.commit()

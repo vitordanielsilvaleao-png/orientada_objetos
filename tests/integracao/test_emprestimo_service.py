@@ -4,6 +4,7 @@ import random
 
 from fastapi import HTTPException
 
+from src.compartilhado.enum import StatusMaterial, StatusEmprestimo
 from src.modulos.material.entidades.editora import Editora
 from src.modulos.material.entidades.categoria import Categoria
 from src.modulos.livro.entidades.autor import Autor
@@ -11,7 +12,7 @@ from src.modulos.reserva.reserva import Reserva
 from src.modulos.emprestimo.emprestimo import Emprestimo
 from src.modulos.cliente.cliente import Cliente
 from src.modulos.livro.entidades.livro import Livro
-from database.database import db
+from src.database.database import db
 
 from src.modulos.emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro
 from src.modulos.emprestimo.service.emprestimo_service import EmprestimoService
@@ -38,7 +39,7 @@ class TestEmprestimoService(unittest.TestCase):
             self.assertEqual(emprestimo.cliente_id, cliente.id)
             self.assertEqual(emprestimo.material_id, livro.id)
             self.assertTrue(emprestimo.is_active)
-            self.assertEqual(emprestimo.status, "ABERTO")
+            self.assertEqual(emprestimo.status, StatusEmprestimo.ABERTO)
             self.assertEqual(emprestimo.data_devolucao, None)
 
             sessao.delete(emprestimo)
@@ -69,7 +70,7 @@ class TestEmprestimoService(unittest.TestCase):
                 material_id=livro.id
             )
 
-            livro.status = "RESERVADO"
+            livro.status = StatusMaterial.RESERVADO
 
             sessao.add(reserva_nova)
             sessao.commit()
@@ -86,9 +87,9 @@ class TestEmprestimoService(unittest.TestCase):
             self.assertEqual(emprestimo.cliente_id, cliente.id)
             self.assertEqual(emprestimo.material_id, livro.id)
             self.assertTrue(emprestimo.is_active)
-            self.assertEqual(emprestimo.status, "ABERTO")
+            self.assertEqual(emprestimo.status, StatusEmprestimo.ABERTO)
             self.assertEqual(emprestimo.data_devolucao, None)
-            self.assertEqual(livro.status, "EMPRESTADO")
+            self.assertEqual(livro.status, StatusMaterial.EMPRESTADO)
 
             sessao.delete(emprestimo)
             sessao.delete(reserva_nova)
@@ -120,7 +121,7 @@ class TestEmprestimoService(unittest.TestCase):
                 material_id=livro.id
             )
 
-            livro.status = "RESERVADO"
+            livro.status = StatusMaterial.RESERVADO
 
             sessao.add(reserva_nova)
             sessao.commit()
@@ -255,7 +256,7 @@ class TestEmprestimoService(unittest.TestCase):
                 material_id=livro.id,
             )
 
-            livro.status = "EMPRESTADO"
+            livro.status = StatusMaterial.EMPRESTADO
 
             emprestimo_service = EmprestimoService(sessao)
 
@@ -291,10 +292,10 @@ class TestEmprestimoService(unittest.TestCase):
                 cliente_id=cliente.id,
                 material_id=livro2.id,
                 data_emprestimo= data_atrasada,
-                status = "ATRASADO"
+                status = StatusEmprestimo.ATRASADO
             )
 
-            livro2.status = "EMPRESTADO"
+            livro2.status = StatusMaterial.EMPRESTADO
 
             sessao.add(emprestimo)
             sessao.commit()
@@ -356,7 +357,7 @@ class TestEmprestimoService(unittest.TestCase):
                     material_id=livro.id
                 )
 
-                livro.status = "EMPRESTADO"
+                livro.status = StatusMaterial.EMPRESTADO
 
                 emprestimos.append(emprestimo)
 
@@ -459,7 +460,7 @@ class TestEmprestimoService(unittest.TestCase):
             emprestimo = Emprestimo(
                 cliente_id=cliente.id,
                 material_id=livro.id,
-                status="ATRASADO",
+                status=StatusEmprestimo.ATRASADO,
                 data_emprestimo=data_atrasada
 
             )
@@ -509,10 +510,10 @@ class TestEmprestimoService(unittest.TestCase):
 
             self.assertEqual(emprestimo.cliente_id, cliente.id)
             self.assertEqual(emprestimo.material_id, livro.id)
-            self.assertEqual(emprestimo.status, "DEVOLVIDO")
+            self.assertEqual(emprestimo.status, StatusEmprestimo.DEVOLVIDO)
             self.assertIsNotNone(emprestimo.data_devolucao)
             self.assertFalse(emprestimo.is_active)
-            self.assertEqual(livro.status, "DISPONIVEL")
+            self.assertEqual(livro.status, StatusMaterial.DISPONIVEL)
 
             sessao.delete(emprestimo)
             sessao.commit()
@@ -571,11 +572,11 @@ class TestEmprestimoService(unittest.TestCase):
 
             emprestimo_service.registrar_devolucao(emprestimo.id)
 
-            self.assertEqual(emprestimo.status, "DEVOLVIDO")
+            self.assertEqual(emprestimo.status, StatusEmprestimo.DEVOLVIDO)
             self.assertFalse(emprestimo.is_active)
             self.assertIsNotNone(emprestimo.data_devolucao)
 
-            self.assertEqual(livro.status, "RESERVADO")
+            self.assertEqual(livro.status, StatusMaterial.RESERVADO)
 
             self.assertEqual(reserva.material_id, livro.id)
             self.assertTrue(reserva.is_active)

@@ -1,5 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+
+from src.compartilhado.enum import StatusMaterial
+
 from src.modulos.material.entidades.material import Material
 from modulos.livro.entidades.livro import Livro
 from modulos.revista.revista import Revista
@@ -20,14 +23,14 @@ class MaterialService:
     def consultar_materiais_disponiveis(self):
 
         return self.session.query(Material).filter_by(
-            status="DISPONIVEL"
+            status=StatusMaterial.DISPONIVEL
         ).all()
 
     #Método para consultar o catálogo de materiais emprestados
     def consultar_materiais_emprestados(self):
 
         return self.session.query(Material).filter_by(
-            status="EMPRESTADO"
+            status=StatusMaterial.EMPRESTADO
         ).all()
 
     #Método para contar a quantidade total de materiais no catálogo
@@ -43,7 +46,7 @@ class MaterialService:
         return self.session.query(
             func.count(Material.id)
         ).filter_by(
-            status="DISPONIVEL"
+            status=StatusMaterial.DISPONIVEL
         ).scalar()
 
     #Método para contar os materiais do catálogo por categoria

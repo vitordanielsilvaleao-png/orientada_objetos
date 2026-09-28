@@ -2,6 +2,7 @@ import unittest
 
 from fastapi import HTTPException
 
+from src.compartilhado.enum import StatusMaterial
 from src.modulos.reserva.schemas.schema_reserva import SchemaReservaCadastro
 from src.modulos.reserva.service.reserva_service import ReservaService
 from src.modulos.reserva.reserva import Reserva
@@ -32,7 +33,7 @@ class TestReservaService(unittest.TestCase):
             self.assertEqual(reserva.cliente_id, cliente.id)
             self.assertEqual(reserva.material_id, material.id)
             self.assertTrue(reserva.is_active)
-            self.assertEqual(material.status, "RESERVADO")
+            self.assertEqual(material.status, StatusMaterial.RESERVADO)
 
             sessao.delete(reserva)
             sessao.commit()
@@ -54,7 +55,7 @@ class TestReservaService(unittest.TestCase):
             cliente = self.criar_cliente(sessao, "Cliente Cadastro")
             material, categoria, editora = self.criar_material(sessao)
 
-            material.status = "EMPRESTADO"
+            material.status = StatusMaterial.EMPRESTADO
 
             data = SchemaReservaCadastro(
                 titulo=material.titulo,
@@ -69,7 +70,7 @@ class TestReservaService(unittest.TestCase):
             self.assertEqual(reserva.cliente_id, cliente.id)
             self.assertIsNone(reserva.material_id)
             self.assertTrue(reserva.is_active)
-            self.assertEqual(material.status, "EMPRESTADO")
+            self.assertEqual(material.status, StatusMaterial.EMPRESTADO)
 
             sessao.delete(reserva)
             sessao.commit()
@@ -172,7 +173,7 @@ class TestReservaService(unittest.TestCase):
                 material.titulo
             )
 
-            material.status = "RESERVADO"
+            material.status = StatusMaterial.RESERVADO
             sessao.commit()
 
             data = SchemaReservaCadastro(
@@ -331,7 +332,7 @@ class TestReservaService(unittest.TestCase):
             sessao.refresh(reserva)
 
             self.assertFalse(reserva.is_active)
-            self.assertEqual(material.status, "DISPONIVEL")
+            self.assertEqual(material.status, StatusMaterial.DISPONIVEL)
 
             sessao.delete(reserva)
             sessao.commit()
@@ -367,9 +368,9 @@ class TestReservaService(unittest.TestCase):
             with self.assertRaises(HTTPException) as erro:
                 reserva_service.inativar(reserva.id)
 
-            self.assertEqual(erro.exception.status_code, 400)
+            self.assertEqual(erro.exception.status_code, 404)
 
-            self.assertEqual(material.status, "DISPONIVEL")
+            self.assertEqual(material.status, StatusMaterial.DISPONIVEL)
 
             sessao.delete(reserva)
             sessao.commit()
@@ -421,7 +422,7 @@ class TestReservaService(unittest.TestCase):
             self.assertEqual(emprestimo.cliente_id, cliente.id)
             self.assertEqual(emprestimo.material_id, material.id)
             self.assertTrue(emprestimo.is_active)
-            self.assertEqual(material.status, "EMPRESTADO")
+            self.assertEqual(material.status, StatusMaterial.EMPRESTADO)
 
             sessao.delete(reserva) 
             sessao.delete(emprestimo) 
@@ -455,7 +456,7 @@ class TestReservaService(unittest.TestCase):
 
             reserva = reserva_service.cadastrar(data)
 
-            material.status = "EMPRESTADO"
+            material.status = StatusMaterial.EMPRESTADO
 
             with self.assertRaises(HTTPException) as erro:
                 reserva_service.atender_reserva(reserva.id)
@@ -485,7 +486,7 @@ class TestReservaService(unittest.TestCase):
             cliente = self.criar_cliente(sessao, "Cliente Emprestimo Sem Material")
             material, categoria, editora = self.criar_material(sessao)
             
-            material.status = "EMPRESTADO"
+            material.status = StatusMaterial.EMPRESTADO
 
             data = SchemaReservaCadastro(
                 titulo=material.titulo,
