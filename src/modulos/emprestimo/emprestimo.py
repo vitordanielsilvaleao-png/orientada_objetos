@@ -1,6 +1,8 @@
 #importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Emprestimo
-from sqlalchemy import String, ForeignKey, Boolean, DateTime, func
+from sqlalchemy import ForeignKey, Boolean, DateTime, func, Enum
 from sqlalchemy.orm import  Mapped, mapped_column
+
+from src.compartilhado.enum import StatusEmprestimo
 from src.database.database import Base
 from datetime import datetime, timedelta
 
@@ -33,10 +35,10 @@ class Emprestimo(Base):
         nullable=True
     )
 
-    status: Mapped[str] = mapped_column(
-        String(50),
+    status: Mapped[StatusEmprestimo] = mapped_column(
+        Enum(StatusEmprestimo),
         nullable=False,
-        default="ABERTO"
+        default=StatusEmprestimo.ABERTO
     )
 
     is_active: Mapped[bool] = mapped_column(
@@ -49,7 +51,7 @@ class Emprestimo(Base):
     def devolver(self):
         if self.is_active:
             self.data_devolucao = datetime.now()
-            self.status = "DEVOLVIDO"
+            self.status = StatusEmprestimo.DEVOLVIDO
             self.is_active = False
         else:
             raise ValueError("Este empréstimo já foi encerrado.")
@@ -69,7 +71,7 @@ class Emprestimo(Base):
     def marcar_atrasado(self):
 
         if self.verificar_atraso():
-            self.status = "ATRASADO"
+            self.status = StatusEmprestimo.ATRASADO
 
     def validar_emprestimo_ativo(self):
         return self.data_devolucao is None

@@ -2,10 +2,10 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from src.compartilhado.enum import StatusMaterial
+from src.compartilhado.enum import StatusMaterial, StatusEmprestimo
 
-from compartilhado.base_service import BaseService
-from emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro
+from src.compartilhado.base_service import BaseService
+from src.modulos.emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro
 from src.modulos.reserva.reserva import Reserva
 from src.modulos.material.entidades.material import Material
 from src.modulos.cliente.cliente import Cliente
@@ -78,7 +78,7 @@ class EmprestimoService(BaseService):
 
                 cont_emprestimos += 1
 
-                if emprestimo.status == "ATRASADO":
+                if emprestimo.status == StatusEmprestimo.ATRASADO:
                     raise HTTPException(
                         status_code=409,
                         detail="O empréstimo não pode ser registrado, pois o usuário possuí um empréstimo ativo em atraso!"
@@ -116,7 +116,7 @@ class EmprestimoService(BaseService):
 
         return self.session.query(Emprestimo).filter_by(
             is_active = True,
-            status = "ATRASADO"
+            status = StatusEmprestimo.ATRASADO
         ).all()
 
     def registrar_devolucao(self, emprestimo_id:int):
