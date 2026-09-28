@@ -1,6 +1,6 @@
 #importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Reserva
 from sqlalchemy import String, ForeignKey, Boolean, DateTime, func
-from sqlalchemy.orm import  Mapped, mapped_column
+from sqlalchemy.orm import  Mapped, mapped_column, validates
 from src.database.database import Base
 from datetime import datetime, timedelta
 
@@ -38,6 +38,14 @@ class Reserva(Base):
         nullable=False,
         default=True
     )
+
+    @validates("titulo")
+    def validar_titulo(self, chave, titulo):
+        return self._normalizar_titulo(titulo)
+
+    @staticmethod
+    def _normalizar_titulo(titulo):
+        return titulo.strip().lower()
 
     #[RN-RES-006] Cancelamento Automático da Reserva
     #[RN-RES-005] Prazo da Reserva

@@ -4,6 +4,17 @@ from datetime import datetime, timedelta
 from src.modulos.reserva.reserva import Reserva
 
 class TestReserva(unittest.TestCase):
+    def test_criar_reserva_normaliza_titulo(self):
+        reserva = Reserva(
+            titulo="   MEU BRASIL BRASILEIRO   ",
+            cliente_id=1
+        )
+
+        self.assertEqual(
+            reserva.titulo,
+            "meu brasil brasileiro"
+        )
+
     def test_cancelar_reserva(self):
         reserva = Reserva()
 

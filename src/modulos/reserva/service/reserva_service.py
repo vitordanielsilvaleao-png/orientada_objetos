@@ -33,11 +33,11 @@ class ReservaService (BaseService):
                 detail="A reserva não pode ser efetuada, pois o usuário se encontra inativo"
             )
 
-        titulo_formatado = data.titulo.strip().lower()
+        titulo_normalizado = Reserva._normalizar_titulo(data.titulo)
 
         reserva_existente = self.session.query(Reserva).filter_by(
             cliente_id=data.cliente_id,
-            titulo=titulo_formatado,
+            titulo=titulo_normalizado,
             is_active=True
         ).first()
 
@@ -48,7 +48,7 @@ class ReservaService (BaseService):
             )
 
         material_existente = self.session.query(Material).filter_by(
-            titulo = titulo_formatado,
+            titulo = titulo_normalizado,
             status=StatusMaterial.DISPONIVEL,
             is_active=True
         ).first()
@@ -60,7 +60,7 @@ class ReservaService (BaseService):
             material_id = None
 
         reserva_cadastrar = Reserva(
-            titulo = titulo_formatado,
+            titulo = data.titulo,
             cliente_id = data.cliente_id,
             material_id = material_id
         )
