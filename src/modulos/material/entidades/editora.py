@@ -3,6 +3,8 @@ from sqlalchemy import String
 from sqlalchemy.orm import  Mapped, mapped_column, validates
 from src.database.database import Base
 
+from src.compartilhado.normalizador import normalizar_texto
+
 #Criação da entidade Editora
 class Editora(Base):
     __tablename__ = "editora"
@@ -24,4 +26,4 @@ class Editora(Base):
      
     @staticmethod
     def _normalizar_nome(nome):
-        return nome.strip().lower()
+        return normalizar_texto(nome)
