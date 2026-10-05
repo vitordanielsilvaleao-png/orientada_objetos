@@ -14,12 +14,12 @@ class TestEditoraService(unittest.TestCase):
 
         try:
 
-            data = SchemaEditoraCadastro(nome="Editora")
+            data = SchemaEditoraCadastro(nome=" Editora  ")
 
             editora_service = EditoraService(sessao)
             editora = editora_service.cadastrar(data)
 
-            self.assertEqual(editora.nome, "Editora")
+            self.assertEqual(editora.nome, "editora")
 
             sessao.delete(editora)
             sessao.commit()
@@ -71,7 +71,7 @@ class TestEditoraService(unittest.TestCase):
 
             editora_nova = self.criar_editora(sessao)
 
-            data = "Editora Atualizada"
+            data = " Editora Atualizada "
 
             editora_service.atualizar(editora_nova.id, data)
 
@@ -79,7 +79,7 @@ class TestEditoraService(unittest.TestCase):
 
             self.assertEqual(
                 editora_nova.nome,
-                "Editora Atualizada"
+                "editora atualizada"
             )
 
             sessao.delete(editora_nova)
