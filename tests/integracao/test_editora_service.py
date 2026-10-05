@@ -14,12 +14,12 @@ class TestEditoraService(unittest.TestCase):
 
         try:
 
-            data = SchemaEditoraCadastro(nome=" Editora  ")
+            data = SchemaEditoraCadastro(nome=" Editora Coração  ")
 
             editora_service = EditoraService(sessao)
             editora = editora_service.cadastrar(data)
 
-            self.assertEqual(editora.nome, "editora")
+            self.assertEqual(editora.nome, "editora coracao")
 
             sessao.delete(editora)
             sessao.commit()
