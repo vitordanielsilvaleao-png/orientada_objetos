@@ -1,6 +1,6 @@
 #importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Editora
 from sqlalchemy import String
-from sqlalchemy.orm import  Mapped, mapped_column
+from sqlalchemy.orm import  Mapped, mapped_column, validates
 from src.database.database import Base
 
 #Criação da entidade Editora
@@ -16,3 +16,12 @@ class Editora(Base):
         nullable=False,
         unique=True
     )
+
+    #Validação de dados recebidos
+    @validates("nome")
+    def validar_nome(self, key, nome):
+        return self._normalizar_nome(nome)
+     
+    @staticmethod
+    def _normalizar_nome(nome):
+        return nome.strip().lower()
