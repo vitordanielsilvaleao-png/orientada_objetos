@@ -3,7 +3,11 @@ import random
 
 from fastapi import HTTPException
 
-from src.modulos.material.schemas.schemas_categoria import SchemaCategoriaCadastro, SchemaCategoriaAtualizacao
+from src.compartilhado.normalizador import normalizar_texto
+from src.modulos.material.schemas.schemas_categoria import (
+    SchemaCategoriaCadastro,
+    SchemaCategoriaAtualizacao
+)
 from src.modulos.material.service.categoria_service import CategoriaService
 from src.modulos.material.entidades.categoria import Categoria
 from src.database.database import db
@@ -22,7 +26,10 @@ class TestCategoriaService(unittest.TestCase):
 
             categoria = categoria_service.cadastrar(data)
 
-            self.assertEqual(categoria.nome, nome_cadastro)
+            self.assertEqual(
+                categoria.nome,
+                normalizar_texto(nome_cadastro)
+            )
 
             sessao.delete(categoria)
             sessao.commit()
@@ -32,7 +39,6 @@ class TestCategoriaService(unittest.TestCase):
     def test_cadastrar_categoria_com_nome_vazio(self):
         sessao = db.session()
         try:
-
             data = SchemaCategoriaCadastro(nome=" ")
 
             categoria_service = CategoriaService(sessao)
@@ -48,7 +54,6 @@ class TestCategoriaService(unittest.TestCase):
     def test_cadastrar_categoria_com_nome_normalizado_duplicado(self):
         sessao = db.session()
         try:
-
             categoria_service = CategoriaService(sessao)
 
             categoria_existente = self.criar_categoria(sessao)
@@ -102,7 +107,10 @@ class TestCategoriaService(unittest.TestCase):
             categoria_service.atualizar(categoria_nova.id, data)
             sessao.refresh(categoria_nova)
 
-            self.assertEqual(categoria_nova.nome, novo_nome)
+            self.assertEqual(
+                categoria_nova.nome,
+                normalizar_texto(novo_nome)
+            )
 
             sessao.delete(categoria_nova)
             sessao.commit()
@@ -115,7 +123,9 @@ class TestCategoriaService(unittest.TestCase):
         try:
             categoria_service = CategoriaService(sessao)
 
-            data = SchemaCategoriaAtualizacao(nome="Categoria Inexistente")
+            data = SchemaCategoriaAtualizacao(
+                nome="Categoria Inexistente"
+            )
 
             with self.assertRaises(HTTPException) as contexto:
                 categoria_service.atualizar(0, data)
@@ -128,7 +138,6 @@ class TestCategoriaService(unittest.TestCase):
     def test_atualiza_categoria_com_nome_vazio(self):
         sessao = db.session()
         try:
-
             categoria = self.criar_categoria(sessao)
 
             data = SchemaCategoriaAtualizacao(nome=" ")
@@ -181,6 +190,7 @@ class TestCategoriaService(unittest.TestCase):
         sessao.add(categoria_nova)
         sessao.commit()
         sessao.refresh(categoria_nova)
+
         return categoria_nova
 
 
