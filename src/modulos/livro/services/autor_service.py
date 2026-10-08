@@ -12,7 +12,9 @@ class AutorService(BaseService):
         super().__init__(session)
 
     def cadastrar(self, data:SchemaAutorCadastro):
-        autor_existente = self.session.query(Autor).filter_by(nome=data.nome).first()
+        nome_normalizado = Autor._normalizar_nome(data.nome)
+
+        autor_existente = self.session.query(Autor).filter_by(nome=nome_normalizado).first()
         if autor_existente:
             raise HTTPException(
                 status_code=400,
@@ -20,7 +22,7 @@ class AutorService(BaseService):
             )
 
         novo_autor = Autor(
-            nome=data.nome
+            nome=nome_normalizado
         )
 
         self.salvar(novo_autor)
@@ -41,15 +43,17 @@ class AutorService(BaseService):
                 status_code=404,
                 detail="Autor não encontrado."
             )
+
+        nome_normalizado = Autor._normalizar_nome(nome_autor)
             
-        nome_existente = self.session.query(Autor).filter_by(nome=nome_autor).first()
+        nome_existente = self.session.query(Autor).filter_by(nome=nome_normalizado).first()
         if nome_existente and nome_existente.id != autor_id:
             raise HTTPException(
                 status_code=400,            
                 detail="Já existe outro autor cadastrado com este nome."            
             )
         
-        autor_atualizar.nome = nome_autor
+        autor_atualizar.nome = nome_normalizado
                     
         self.session.commit()
         self.session.refresh(autor_atualizar)

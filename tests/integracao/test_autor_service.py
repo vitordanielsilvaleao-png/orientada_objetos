@@ -8,19 +8,53 @@ from src.database.database import db
 
 class TestAutorService(unittest.TestCase):
 
-    def test_cadastrar_autor(self):
+    def test_cadastrar_autor_nome_valido(self):
         sessao = db.session()
 
         try:
 
-            data = SchemaAutorCadastro(nome="Autor1")
+            data = SchemaAutorCadastro(nome="Autor")
 
             autor_service = AutorService(sessao)
             autor = autor_service.cadastrar(data)
 
-            self.assertEqual(autor.nome, "Autor1")
+            self.assertEqual(autor.nome, "autor")
 
             sessao.delete(autor)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
+    def test_cadastrar_autor_nome_vazio(self):
+        sessao = db.session()
+
+        try:
+
+            data = SchemaAutorCadastro(nome="")
+
+            autor_service = AutorService(sessao)
+
+            with self.assertRaises(HTTPException):
+                autor_service.cadastrar(data)
+
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
+    def test_cadastrar_autor_nome_apenas_espacos(self):
+        sessao = db.session()
+
+        try:
+
+            data = SchemaAutorCadastro(nome="     ")
+
+            autor_service = AutorService(sessao)
+
+            with self.assertRaises(HTTPException):
+                autor_service.cadastrar(data)
+
             sessao.commit()
 
         finally:
@@ -61,7 +95,7 @@ class TestAutorService(unittest.TestCase):
         finally:
             sessao.close()
 
-    def test_atualiza_autor(self):
+    def test_atualiza_autor_nome_valido(self):
         sessao = db.session()
 
         try:
@@ -75,7 +109,47 @@ class TestAutorService(unittest.TestCase):
             autor_service.atualizar(autor_novo.id, data)
             sessao.refresh(autor_novo)
         
-            self.assertEqual(autor_novo.nome, "Autor Atualizado")
+            self.assertEqual(autor_novo.nome, "autor atualizado")
+        
+            sessao.delete(autor_novo)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
+    def test_atualiza_autor_nome_vazio(self):
+        sessao = db.session()
+
+        try:
+        
+            autor_service = AutorService(sessao)
+        
+            autor_novo = self.criar_autor(sessao)
+        
+            data = ""
+
+            with self.assertRaises(HTTPException):
+                autor_service.atualizar(autor_novo.id, data)
+        
+            sessao.delete(autor_novo)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
+    def test_atualiza_autor_nome_apenas_espacos(self):
+        sessao = db.session()
+
+        try:
+        
+            autor_service = AutorService(sessao)
+        
+            autor_novo = self.criar_autor(sessao)
+        
+            data = "     "
+
+            with self.assertRaises(HTTPException):
+                autor_service.atualizar(autor_novo.id, data)
         
             sessao.delete(autor_novo)
             sessao.commit()
@@ -128,7 +202,7 @@ class TestAutorService(unittest.TestCase):
     def criar_autor(self, sessao):
 
        autor_novo = Autor(
-           nome="Autor1"
+           nome="Autor"
        )
 
        sessao.add(autor_novo)
