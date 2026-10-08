@@ -1,6 +1,7 @@
 #importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Autor
 from sqlalchemy import String
 from sqlalchemy.orm import  Mapped, mapped_column, validates
+from src.compartilhado.normalizador import normalizar_texto
 from src.database.database import Base
 
 #Criação da entidade Autor
@@ -33,4 +34,4 @@ class Autor(Base):
 
     @staticmethod
     def _normalizar_nome(nome:str):
-        return nome.strip().lower()
+        return normalizar_texto(nome)
