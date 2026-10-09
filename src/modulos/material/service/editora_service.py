@@ -12,9 +12,12 @@ class EditoraService(BaseService):
 
     # método para cadastrar editora
     def cadastrar(self, data:SchemaEditoraCadastro):
+        # normaliza nome para busca e cadastro
+        nome_normalizado = Editora._normalizar_nome(data.nome)
+
         # verifica se já existe uma editora com este nome no banco
         editora_existente = self.session.query(Editora).filter_by(
-            nome=data.nome
+            nome=nome_normalizado
         ).first()
         
         if editora_existente:
@@ -22,8 +25,6 @@ class EditoraService(BaseService):
                 status_code=400,
                 detail="Já existe uma editora cadastrada com este nome."
             )
-
-        nome_normalizado = Editora._normalizar_nome(data.nome)
 
         # cria a nova editora
         nova_editora = Editora(
