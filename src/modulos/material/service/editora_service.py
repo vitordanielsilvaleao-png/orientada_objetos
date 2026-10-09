@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from compartilhado.base_service import BaseService
+from src.compartilhado.base_service import BaseService
 from src.modulos.material.schemas.schemas_editora import SchemaEditoraCadastro
 from src.modulos.material.entidades.editora import Editora
 
@@ -12,8 +12,14 @@ class EditoraService(BaseService):
 
     # método para cadastrar editora
     def cadastrar(self, data:SchemaEditoraCadastro):
+        # normaliza nome para busca e cadastro
+        nome_normalizado = Editora._normalizar_nome(data.nome)
+
         # verifica se já existe uma editora com este nome no banco
-        editora_existente = self.session.query(Editora).filter_by(nome=data.nome).first()
+        editora_existente = self.session.query(Editora).filter_by(
+            nome=nome_normalizado
+        ).first()
+        
         if editora_existente:
             raise HTTPException(
                 status_code=400,
@@ -22,7 +28,7 @@ class EditoraService(BaseService):
 
         # cria a nova editora
         nova_editora = Editora(
-            nome=data.nome
+            nome=nome_normalizado
         )
 
         # salva no banco de dados
@@ -38,7 +44,9 @@ class EditoraService(BaseService):
     # método para atualizar a editora
     def atualizar(self, editora_id: int, nome_editora: str):
         # busca a editora pelo ID
-        editora_atualizar = self.session.query(Editora).filter_by(id=editora_id).first()
+        editora_atualizar = self.session.query(Editora).filter_by(
+            id=editora_id
+        ).first()
 
         # se não encontrar, retorna erro 404
         if not editora_atualizar:
@@ -48,7 +56,12 @@ class EditoraService(BaseService):
             )
 
         # verifica se o novo nome já pertence a OUTRA editora
-        nome_existente = self.session.query(Editora).filter_by(nome=nome_editora).first()
+        nome_normalizado = Editora._normalizar_nome(nome_editora)
+
+        nome_existente = self.session.query(Editora).filter_by(
+            nome=nome_normalizado
+        ).first()
+        
         if nome_existente and nome_existente.id != editora_id:
             raise HTTPException(
                 status_code=400,
@@ -56,7 +69,7 @@ class EditoraService(BaseService):
             )
 
         # atualiza os dados e salva
-        editora_atualizar.nome = nome_editora
+        editora_atualizar.nome = nome_normalizado
         
         self.session.commit()
         self.session.refresh(editora_atualizar)
