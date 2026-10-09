@@ -34,7 +34,8 @@ class TestEditoraService(unittest.TestCase):
 
             editora_nova = self.criar_editora(sessao)
 
-            data = SchemaEditoraCadastro(nome=editora_nova.nome)
+            # testa normalização na busca
+            data = SchemaEditoraCadastro(nome="Editora ")
 
             editora_service = EditoraService(sessao)
 
