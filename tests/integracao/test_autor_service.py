@@ -13,12 +13,12 @@ class TestAutorService(unittest.TestCase):
 
         try:
 
-            data = SchemaAutorCadastro(nome="Autor")
+            data = SchemaAutorCadastro(nome="João")
 
             autor_service = AutorService(sessao)
             autor = autor_service.cadastrar(data)
 
-            self.assertEqual(autor.nome, "autor")
+            self.assertEqual(autor.nome, "joão")
 
             sessao.delete(autor)
             sessao.commit()
@@ -104,12 +104,12 @@ class TestAutorService(unittest.TestCase):
         
             autor_novo = self.criar_autor(sessao)
         
-            data = "Autor Atualizado"
+            data = "César"
         
             autor_service.atualizar(autor_novo.id, data)
             sessao.refresh(autor_novo)
         
-            self.assertEqual(autor_novo.nome, "autor atualizado")
+            self.assertEqual(autor_novo.nome, "césar")
         
             sessao.delete(autor_novo)
             sessao.commit()
@@ -166,7 +166,7 @@ class TestAutorService(unittest.TestCase):
                     
             autor_novo = self.criar_autor(sessao)
                     
-            data = "Atualiza Autor"
+            data = "César"
 
             with self.assertRaises(HTTPException):
                 autor_service.atualizar(250, data)
@@ -202,7 +202,7 @@ class TestAutorService(unittest.TestCase):
     def criar_autor(self, sessao):
 
        autor_novo = Autor(
-           nome="Autor"
+           nome="João"
        )
 
        sessao.add(autor_novo)
@@ -212,7 +212,7 @@ class TestAutorService(unittest.TestCase):
 
     def criar_autor_para_atualizacao(self, sessao):
         autor_novo = Autor(
-            nome="Atualizar Autor"
+            nome="César"
         )
 
         sessao.add(autor_novo)
