@@ -15,18 +15,19 @@ class ClienteService(BaseService):
     #Método para cadastrar clientes
     def cadastrar(self, data:SchemaClienteCadastro):
 
+        # ALTERADO: A validação para impedir duplicidade agora é pelo CPF
         cliente_existente = self.session.query(Cliente).filter_by(
-            nome=data.nome
+            cpf=data.cpf
         ).first()
 
         if cliente_existente:
             raise HTTPException(
                 status_code=409,
-                detail="Já existe um cliente com esse nome"
+                detail="Já existe um cliente com esse CPF"
             )
-
         
         cliente_cadastrar = Cliente(
+            cpf = data.cpf, # ADICIONADO: Passando o CPF para a entidade
             nome = data.nome,
             bairro = data.bairro,
             rua = data.rua,
@@ -41,12 +42,10 @@ class ClienteService(BaseService):
 
     #Método para visualizar clientes
     def visualizar(self):
-
          return self.session.query(Cliente).all()
 
     #Método para atualizar clientes
     def atualizar(self, cliente_id:int, data:SchemaClienteAtualizacao):
-
          cliente_atualizar = self.session.query(Cliente).filter_by(
              id = cliente_id
          ).first()
@@ -73,7 +72,6 @@ class ClienteService(BaseService):
 
     #Método para inativar clientes
     def inativar(self, cliente_id:int):
-
          cliente_inativar = self.session.query(Cliente).filter_by(
              id=cliente_id
          ).first()
@@ -89,7 +87,6 @@ class ClienteService(BaseService):
 
     #Método para ativar clientes
     def ativar(self, cliente_id:int):
-
          cliente_ativar = self.session.query(Cliente).filter_by(
              id=cliente_id
          ).first()
