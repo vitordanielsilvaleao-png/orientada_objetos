@@ -33,7 +33,7 @@ class CategoriaService(BaseService):
 
         try:
             categoria_cadastrar = Categoria(
-                nome=data.nome
+                nome=nome_normalizado
             )
         except ValueError as erro:
             raise HTTPException(
@@ -82,7 +82,7 @@ class CategoriaService(BaseService):
             )
 
         try:
-            categoria_atualizar.atualizar(data.nome)
+            categoria_atualizar.atualizar(nome_normalizado)
         except ValueError as erro:
             raise HTTPException(
                 status_code=400,
