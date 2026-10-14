@@ -12,7 +12,7 @@ class TestCategoria(unittest.TestCase):
 
         self.assertEqual(
             categoria.nome,
-            "ficcao cientifica"
+            "ficção científica"
         )
 
     def test_criar_categoria_nome_vazio(self):
@@ -38,7 +38,7 @@ class TestCategoria(unittest.TestCase):
 
         self.assertEqual(
             categoria.nome,
-            "ficcao cientifica"
+            "ficção científica"
         )
 
     def test_atualizar_categoria_nome_vazio(self):
