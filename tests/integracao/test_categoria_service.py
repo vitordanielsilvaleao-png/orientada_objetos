@@ -60,7 +60,7 @@ class TestCategoriaService(unittest.TestCase):
             categoria_existente.nome = "Ficção"
             sessao.commit()
 
-            data = SchemaCategoriaCadastro(nome="ficçao")
+            data = SchemaCategoriaCadastro(nome="  FICÇÃO  ")
 
             with self.assertRaises(HTTPException) as contexto:
                 categoria_service.cadastrar(data)
@@ -168,7 +168,7 @@ class TestCategoriaService(unittest.TestCase):
 
             sessao.commit()
 
-            data = SchemaCategoriaAtualizacao(nome="ficçao")
+            data = SchemaCategoriaAtualizacao(nome="  FICÇÃO  ")
 
             with self.assertRaises(HTTPException) as contexto:
                 categoria_service.atualizar(categoria_dois.id, data)
