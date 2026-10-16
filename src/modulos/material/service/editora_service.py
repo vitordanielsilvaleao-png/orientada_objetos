@@ -43,6 +43,9 @@ class EditoraService(BaseService):
 
     # método para atualizar a editora
     def atualizar(self, editora_id: int, nome_editora: str):
+        # normaliza nome para busca
+        nome_normalizado = Editora._normalizar_nome(nome_editora)
+
         # busca a editora pelo ID
         editora_atualizar = self.session.query(Editora).filter_by(
             id=editora_id
@@ -56,8 +59,6 @@ class EditoraService(BaseService):
             )
 
         # verifica se o novo nome já pertence a OUTRA editora
-        nome_normalizado = Editora._normalizar_nome(nome_editora)
-
         nome_existente = self.session.query(Editora).filter_by(
             nome=nome_normalizado
         ).first()
