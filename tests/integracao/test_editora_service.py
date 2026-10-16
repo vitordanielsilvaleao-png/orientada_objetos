@@ -19,7 +19,7 @@ class TestEditoraService(unittest.TestCase):
             editora_service = EditoraService(sessao)
             editora = editora_service.cadastrar(data)
 
-            self.assertEqual(editora.nome, "editora coracao")
+            self.assertEqual(editora.nome, "editora coração")
 
             sessao.delete(editora)
             sessao.commit()
