@@ -35,7 +35,7 @@ class TestAutorService(unittest.TestCase):
 
             autor_service = AutorService(sessao)
 
-            with self.assertRaises(HTTPException):
+            with self.assertRaises(ValueError):
                 autor_service.cadastrar(data)
 
             sessao.commit()
@@ -52,7 +52,7 @@ class TestAutorService(unittest.TestCase):
 
             autor_service = AutorService(sessao)
 
-            with self.assertRaises(HTTPException):
+            with self.assertRaises(ValueError):
                 autor_service.cadastrar(data)
 
             sessao.commit()
@@ -128,7 +128,7 @@ class TestAutorService(unittest.TestCase):
         
             data = ""
 
-            with self.assertRaises(HTTPException):
+            with self.assertRaises(ValueError):
                 autor_service.atualizar(autor_novo.id, data)
         
             sessao.delete(autor_novo)
@@ -148,7 +148,7 @@ class TestAutorService(unittest.TestCase):
         
             data = "     "
 
-            with self.assertRaises(HTTPException):
+            with self.assertRaises(ValueError):
                 autor_service.atualizar(autor_novo.id, data)
         
             sessao.delete(autor_novo)
