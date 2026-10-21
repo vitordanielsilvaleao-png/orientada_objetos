@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from src.compartilhado.enum import StatusMaterial
 
 from src.modulos.reserva.reserva import Reserva
-from compartilhado.base_service import BaseService
+from src.compartilhado.base_service import BaseService
 from src.modulos.livro.schemas.schemas_livro import SchemaLivroCadastro, SchemaLivroAtualizacao
 from src.modulos.livro.entidades.autor import Autor
 from src.modulos.material.entidades.editora import Editora

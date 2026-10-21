@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 
-from reserva.depends.depends_reserva import obter_reserva_service
-from reserva.schemas.schema_reserva import SchemaReservaCadastro
-from reserva.service.reserva_service import ReservaService
+from src.modulos.reserva.depends.depends_reserva import obter_reserva_service
+from src.modulos.reserva.schemas.schema_reserva import SchemaReservaCadastro
+from src.modulos.reserva.service.reserva_service import ReservaService
 
 
 #Declaração da classe ReservaRouter

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from src.modulos.livro.schemas.schemas_autor import SchemaAutorCadastro
 from src.modulos.livro.entidades.autor import Autor
-from compartilhado.base_service import BaseService
+from src.compartilhado.base_service import BaseService
 
 class AutorService(BaseService):
 

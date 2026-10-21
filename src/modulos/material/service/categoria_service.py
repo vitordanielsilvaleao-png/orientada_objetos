@@ -5,7 +5,7 @@ from src.compartilhado.normalizador import normalizar_texto
 
 from src.modulos.material.schemas.schemas_categoria import SchemaCategoriaCadastro, SchemaCategoriaAtualizacao
 from src.modulos.material.entidades.categoria import Categoria
-from compartilhado.base_service import BaseService
+from src.compartilhado.base_service import BaseService
 
 class CategoriaService(BaseService):
 

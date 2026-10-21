@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
-from emprestimo.depends.depends_emprestimo import obter_emprestimo_service
-from emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro, SchemaEmprestimoResposta
-from emprestimo.service.emprestimo_service import EmprestimoService
+from src.modulos.emprestimo.depends.depends_emprestimo import obter_emprestimo_service
+from src.modulos.emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro, SchemaEmprestimoResposta
+from src.modulos.emprestimo.service.emprestimo_service import EmprestimoService
 
 
 #Declaração da classe EmprestimoRouter

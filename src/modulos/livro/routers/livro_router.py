@@ -1,8 +1,8 @@
 #Import das bibliotecas necessárias para o funcionamento do sistema
 from fastapi import APIRouter, Depends
-from modulos.livro.depends.depends_livro import obter_livro_service
-from modulos.livro.schemas.schemas_livro import SchemaLivroCadastro, SchemaLivroAtualizacao
-from modulos.livro.services.livro_service import LivroService
+from src.modulos.livro.depends.depends_livro import obter_livro_service
+from src.modulos.livro.schemas.schemas_livro import SchemaLivroCadastro, SchemaLivroAtualizacao
+from src.modulos.livro.services.livro_service import LivroService
 
 #Declaração da classe LivroRouter
 class LivroRouter:

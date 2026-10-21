@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from compartilhado.base_service import BaseService
+from src.compartilhado.base_service import BaseService
 from src.modulos.material.schemas.schemas_editora import SchemaEditoraCadastro
 from src.modulos.material.entidades.editora import Editora
 

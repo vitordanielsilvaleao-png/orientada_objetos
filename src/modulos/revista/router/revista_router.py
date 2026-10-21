@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
-from revista.depends.depends_revista import obter_revista_service
-from revista.schemas.schamas_revista import SchemaRevistaCadastro, SchemaRevistaAtualizacao
-from revista.service.revista_service import RevistaService
+from src.modulos.revista.depends.depends_revista import obter_revista_service
+from src.modulos.revista.schemas.schamas_revista import SchemaRevistaCadastro, SchemaRevistaAtualizacao
+from src.modulos.revista.service.revista_service import RevistaService
 
 
 #Declaração da classe RevistaRouter

@@ -1,8 +1,8 @@
 #Import das bibliotecas necessárias para o funcionamento do sistema
 from fastapi import APIRouter, Depends
-from cliente.depends.depends_cliente import obter_cliente_service
-from cliente.schemas.schema_cliente import SchemaClienteCadastro, SchemaClienteAtualizacao
-from cliente.service.cliente_service import ClienteService
+from src.modulos.cliente.depends.depends_cliente import obter_cliente_service
+from src.modulos.cliente.schemas.schema_cliente import SchemaClienteCadastro, SchemaClienteAtualizacao
+from src.modulos.cliente.service.cliente_service import ClienteService
 
 #Declaração da classe ClienteRouter
 class ClienteRouter:
