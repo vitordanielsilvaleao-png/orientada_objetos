@@ -27,6 +27,36 @@ class TestEditoraService(unittest.TestCase):
         finally:
             sessao.close()
 
+    def test_cadastrar_editora_com_nome_vazio(self):
+        sessao = db.session()
+
+        try:
+
+            data = SchemaEditoraCadastro(nome="")
+
+            editora_service = EditoraService(sessao)
+
+            with self.assertRaises(ValueError):
+                editora_service.cadastrar(data)
+
+        finally:
+            sessao.close()
+
+    def test_cadastrar_editora_com_nome_espacos(self):
+        sessao = db.session()
+
+        try:
+
+            data = SchemaEditoraCadastro(nome="   ")
+
+            editora_service = EditoraService(sessao)
+
+            with self.assertRaises(ValueError):
+                editora_service.cadastrar(data)
+
+        finally:
+            sessao.close()
+
     def test_cadastrar_editora_existente(self):
         sessao = db.session()
 
@@ -82,6 +112,46 @@ class TestEditoraService(unittest.TestCase):
                 editora_nova.nome,
                 "editora atualizada"
             )
+
+            sessao.delete(editora_nova)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
+    def test_atualiza_editora_com_nome_vazio(self):
+        sessao = db.session()
+
+        try:
+
+            editora_service = EditoraService(sessao)
+
+            editora_nova = self.criar_editora(sessao)
+
+            data = ""
+
+            with self.assertRaises(ValueError):
+                editora_service.atualizar(editora_nova.id, data)
+
+            sessao.delete(editora_nova)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
+    def test_atualiza_editora_com_nome_espacos(self):
+        sessao = db.session()
+
+        try:
+
+            editora_service = EditoraService(sessao)
+
+            editora_nova = self.criar_editora(sessao)
+
+            data = "   "
+
+            with self.assertRaises(ValueError):
+                editora_service.atualizar(editora_nova.id, data)
 
             sessao.delete(editora_nova)
             sessao.commit()
