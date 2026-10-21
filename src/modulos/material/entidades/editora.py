@@ -22,8 +22,16 @@ class Editora(Base):
     #Validação de dados recebidos
     @validates("nome")
     def validar_nome(self, key, nome):
+        self._validar_nome_existente(nome)
         return self._normalizar_nome(nome)
-     
+
+    @staticmethod
+    def _validar_nome_existente(nome: str):
+        if not nome or not nome.strip():
+            raise ValueError(
+                "O nome da editora é obrigatório"
+            )
+
     @staticmethod
     def _normalizar_nome(nome):
         return normalizar_texto(nome)
