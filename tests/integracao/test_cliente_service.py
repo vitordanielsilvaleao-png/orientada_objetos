@@ -14,6 +14,7 @@ class TestClienteService(unittest.TestCase):
         try:
 
             data = SchemaClienteCadastro(
+                cpf = "00000000000",
                 nome = "Teste Cadastro Cliente",
                 bairro = "bairro",
                 rua = "rua",
@@ -32,6 +33,7 @@ class TestClienteService(unittest.TestCase):
             self.assertEqual(cliente.numero, 1)
             self.assertEqual(cliente.complemento, "complemento")
             self.assertEqual(cliente.telefone, "123456789")
+            self.assertEqual(cliente.cpf, "00000000000")
 
             sessao.delete(cliente)
             sessao.commit()
@@ -39,13 +41,14 @@ class TestClienteService(unittest.TestCase):
         finally:
             sessao.close()
 
-    def test_cadastrar_cliente_existente(self):
+    def test_cadastrar_cliente_cpf_duplicado(self):
         sessao = db.session()
         try:
             cliente_service = ClienteService(sessao)
             cliente_novo = self.criar_cliente(sessao)
 
             data = SchemaClienteCadastro(
+                cpf = cliente_novo.cpf,
                 nome = "Teste Cadastro Cliente 2",
                 bairro = "bairro",
                 rua = "rua",
@@ -68,10 +71,15 @@ class TestClienteService(unittest.TestCase):
         try:
             cliente_service = ClienteService(sessao)
 
+            cliente_novo = self.criar_cliente(sessao)
+
             lista_cliente = cliente_service.visualizar()
 
             for cliente in lista_cliente:
                 self.assertIsInstance(cliente, Cliente)
+
+            sessao.delete(cliente_novo)
+            sessao.commit()
         finally:
             sessao.close()
 
@@ -168,6 +176,7 @@ class TestClienteService(unittest.TestCase):
     def criar_cliente(self, sessao):
 
         cliente_novo = Cliente(
+            cpf="00000000000",
             nome = "Teste Cadastro Cliente 2",
             bairro = "bairro",
             rua = "rua",
