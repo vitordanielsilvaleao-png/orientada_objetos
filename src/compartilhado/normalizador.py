@@ -1,2 +1,4 @@
 def normalizar_texto(texto: str):
-    return texto.strip().lower()
+    texto = texto.strip().lower()
+
+    return texto
