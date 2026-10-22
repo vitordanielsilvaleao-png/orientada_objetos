@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 #Schema para armazenamento dos dados de cadastro de clientes
 class SchemaClienteCadastro(BaseModel):
+    cpf: str # ADICIONADO: O CPF agora é obrigatório na entrada de dados
     nome: str
     bairro: str
     rua: str
@@ -12,6 +13,7 @@ class SchemaClienteCadastro(BaseModel):
 
 #Schema para armazenamento dos dados de atualização de clientes
 class SchemaClienteAtualizacao(BaseModel):
+    # O CPF não é incluído aqui para impedir que seja alterado indevidamente
     nome: str | None = None
     bairro: str | None = None
     rua: str | None = None
