@@ -72,6 +72,7 @@ class Cliente(Base):
         self.numero = numero
         self.telefone = telefone
         self.complemento = complemento
+        self.is_active = True
 
     # Validação de dados recebidos
     @validates("cpf")
