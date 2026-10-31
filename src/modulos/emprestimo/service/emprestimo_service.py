@@ -1,175 +1,159 @@
-#Import das bibliotecas e classes necessárias para o funcionamento do sistema
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
 from src.compartilhado.enum import StatusMaterial, StatusEmprestimo
 
 from src.compartilhado.base_service import BaseService
 from src.modulos.emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro
-from src.modulos.reserva.reserva import Reserva
+from src.modulos.reserva.entidade.reserva import Reserva
 from src.modulos.material.entidades.material import Material
-from src.modulos.cliente.cliente import Cliente
-from src.modulos.emprestimo.emprestimo import Emprestimo
+from src.modulos.cliente.entidade.cliente import Cliente
+from src.modulos.emprestimo.entidade.emprestimo import Emprestimo
 
 #Declaração da classe EmprestimoService
 class EmprestimoService(BaseService):
-
-    # Declaração do construtor da classe EmprestimoService
     def __init__(self, session: Session):
         super().__init__(session)
 
-    def cadastrar(self, data:SchemaEmprestimoCadastro):
-
+    #Método para cadastrar empréstimos
+    def cadastrar(self, data: SchemaEmprestimoCadastro):
         limite_emprestimo = 4
         cont_emprestimos = 0
 
-        usuario_ativo = self.session.query(Cliente).filter_by(
-            id = data.cliente_id,
-            is_active = True
+        cliente_existente = self.session.query(Cliente).filter_by(
+            id = data.cliente_id
         ).first()
 
-        if not usuario_ativo:
+        if not cliente_existente:
             raise HTTPException(
-                status_code=409,
-                detail="O empréstimo não pode ser registrado, pois o cadastro do cliente se encontra inativo"
+                status_code=404,
+                detail="O cliente informado não está cadastrado!"
             )
+
+        if not cliente_existente.is_active:
+             raise HTTPException(
+                 status_code=409,
+                 detail="O empréstimo não pode ser registrado, pois o cadastro do cliente se encontra inativo"
+             )
 
         material_existente = self.session.query(Material).filter_by(
             id = data.material_id
         ).first()
 
         if not material_existente:
-            raise HTTPException(
-                status_code=400,
-                detail="O material informado não está cadastrado no acervo!"
-            )
+             raise HTTPException(
+                status_code=404,
+                 detail="O material informado não está cadastrado no acervo!"
+             )
 
         if not material_existente.is_active:
-            raise HTTPException(
-                status_code=409,
-                detail="O empréstimo não pode ser registrado, pois o material está inativo"
-            )
+             raise HTTPException(
+                 status_code=409,
+                 detail="O empréstimo não pode ser registrado, pois o material selecionado está inativo"
+             )
+
+        if material_existente.status == StatusMaterial.EMPRESTADO:
+             raise HTTPException(
+                 status_code=409,
+                 detail="O empréstimo não pode ser realizado pois o material se encontra emprestado"
+             )
 
         reserva_existente = self.session.query(Reserva).filter_by(
-            cliente_id=data.cliente_id,
-            material_id=data.material_id,
-            is_active=True
+            material_id = data.material_id,
+            cliente_id = data.cliente_id,
+            is_active = True
         ).first()
 
-        if material_existente.status == StatusMaterial.DISPONIVEL:
-            pass
+        if material_existente.status == StatusMaterial.RESERVADO and not reserva_existente:
+             raise HTTPException(
+                 status_code=409,
+                 detail="O material selecionado está reservado para outro usuário"
+             )
 
-        elif material_existente.status == StatusMaterial.RESERVADO and reserva_existente:
-            pass
+        emprestimos_cliente = self.session.query(Emprestimo).filter_by(
+            cliente_id = data.cliente_id,
+            _is_active = True
+        ).all()
 
-        else:
-            raise HTTPException(
-                status_code=409,
-                detail="O empréstimo não pode ser registrado, pois o material informado não está disponível"
-            )
-
-        lista_emprestimo = self.session.query(Emprestimo).filter_by(
-            is_active = True
-        )
-
-        for emprestimo in lista_emprestimo:
-
-            if emprestimo.cliente_id == data.cliente_id:
-
-                cont_emprestimos += 1
-
-                if emprestimo.status == StatusEmprestimo.ATRASADO:
-                    raise HTTPException(
-                        status_code=409,
-                        detail="O empréstimo não pode ser registrado, pois o usuário possuí um empréstimo ativo em atraso!"
-                    )
+        for emp in emprestimos_cliente:
+             cont_emprestimos += 1
+             if emp.verificar_atraso():
+                 raise HTTPException(
+                     status_code=409,
+                     detail="O cliente possui empréstimo(s) em atraso"
+                 )
 
         if cont_emprestimos >= limite_emprestimo:
-            raise HTTPException(
-                status_code=409,
-                detail="O empréstimo não pode ser registrado, pois o usuário atingiu o limite de empréstimos ativos!"
-            )
+             raise HTTPException(
+                 status_code=409,
+                 detail="O cliente atingiu o limite máximo de empréstimos permitidos"
+             )
 
         emprestimo_cadastrar = Emprestimo(
-            material_id = data.material_id,
-            cliente_id = data.cliente_id
+             material_id = data.material_id,
+             cliente_id = data.cliente_id
         )
 
-        material_existente.status = StatusMaterial.EMPRESTADO
+        material_existente.emprestar()
+
+        #A reserva do cliente para este material é encerrada no mesmo commit do empréstimo
+        if reserva_existente:
+            reserva_existente.concluir()
 
         self.salvar(emprestimo_cadastrar)
         self.session.refresh(emprestimo_cadastrar)
         return emprestimo_cadastrar
 
+    #Método para visualizar empréstimos
     def visualizar(self):
+         return self.session.query(Emprestimo).all()
 
-        return self.session.query(Emprestimo).all()
-
+    #Método para visualizar empréstimos abertos
     def visualizar_abertos(self):
+        return self.session.query(Emprestimo).filter_by(_is_active=True).all()
 
-        return self.session.query(Emprestimo).filter(
-            Emprestimo.data_devolucao == None,
-            Emprestimo.is_active == True
-        ).all()
-
+    #Método para visualizar empréstimos atrasados
     def visualizar_atrasados(self):
+        emprestimos = self.session.query(Emprestimo).filter_by(_is_active=True).all()
+        atrasados = []
+        for emp in emprestimos:
+            if emp.verificar_atraso():
+                atrasados.append(emp)
+        return atrasados
 
-        return self.session.query(Emprestimo).filter_by(
-            is_active = True,
-            status = StatusEmprestimo.ATRASADO
-        ).all()
-
-    def registrar_devolucao(self, emprestimo_id:int):
-
+    #Método para registrar devolução
+    def registrar_devolucao(self, emprestimo_id: int):
         emprestimo_devolucao = self.session.query(Emprestimo).filter_by(
             id = emprestimo_id
         ).first()
 
         if not emprestimo_devolucao:
-            raise HTTPException(
-                status_code=404,
-                detail="O empréstimo informado não foi localizado!"
-            )
+             raise HTTPException(
+                 status_code=404,
+                 detail="Empréstimo não encontrado"
+             )
+
+        if not emprestimo_devolucao.is_active:
+             raise HTTPException(
+                 status_code=409,
+                 detail="Este empréstimo já foi devolvido"
+             )
 
         material_devolucao = self.session.query(Material).filter_by(
             id = emprestimo_devolucao.material_id
         ).first()
 
-        if not material_devolucao:
-            raise HTTPException(
-                status_code=404,
-                detail="O material associado ao empréstimo não foi localizado!"
-            )
+        emprestimo_devolucao.devolver()
 
-        try:
-            emprestimo_devolucao.devolver()
-        except ValueError as erro:
-            raise HTTPException(
-                status_code=409,
-                detail=str(erro)
-            )
-
-        titulo_normalizado = material_devolucao.titulo.strip().lower()
-
-        reserva_pendente = (
-            self.session.query(Reserva)
-            .filter(
-                Reserva.titulo == titulo_normalizado,
-                Reserva.is_active == True,
-                Reserva.material_id.is_(None)
-            )
-            .order_by(Reserva.data.asc())
-            .first()
-        )
+        reserva_pendente = self.session.query(Reserva).filter_by(
+            material_id = material_devolucao.id,
+            is_active = True
+        ).first()
 
         if not reserva_pendente:
-
-            material_devolucao.status = StatusMaterial.DISPONIVEL
-
+             material_devolucao.disponibilizar()
         else:
-
-            material_devolucao.status = StatusMaterial.RESERVADO
-            reserva_pendente.material_id = material_devolucao.id
+             material_devolucao.reservar()
+             reserva_pendente.vincular_material(material_devolucao.id)
 
         self.session.commit()
         self.session.refresh(emprestimo_devolucao)
