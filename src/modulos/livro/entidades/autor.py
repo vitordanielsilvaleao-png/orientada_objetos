@@ -22,7 +22,7 @@ class Autor(Base):
     @validates("nome")
     def validar_nome(self, chave:str, nome:str):
         self._validar_nome_existente(nome)
-        return self._normalizar_nome(nome)
+        return self.normalizar_nome(nome)
 
     #Métodos para validação e normalização de dados do construtor
     @staticmethod
@@ -33,5 +33,9 @@ class Autor(Base):
             )
 
     @staticmethod
-    def _normalizar_nome(nome:str):
+    def normalizar_nome(nome:str):
         return normalizar_texto(nome)
+
+    #Método para renomear o autor, validado e normalizado por validar_nome
+    def renomear(self, nome:str):
+        self.nome = nome
