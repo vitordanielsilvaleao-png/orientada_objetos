@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from contextlib import asynccontextmanager
 from apscheduler.schedulers.background import BackgroundScheduler
 from src.scheduler.funcoes_scheduler import (atualizar_status_atrasados, atualizar_expiradas)
+from src.compartilhado.tradutor_validacao import TradutorValidacao
 
 from src.modulos.emprestimo.router.emprestimo_router import EmprestimoRouter
 from src.modulos.reserva.router.reserva_router import ReservaRouter
@@ -12,6 +14,7 @@ from src.modulos.cliente.router.cliente_router import ClienteRouter
 from src.modulos.revista.router.revista_router import RevistaRouter
 from src.modulos.material.routers.editora_router import EditoraRouter
 from src.modulos.material.routers.categoria_router import CategoriaRouter
+from src.modulos.material.routers.material_router import MaterialRouter
 from src.modulos.livro.routers.livro_router import LivroRouter
 from src.modulos.livro.routers.autor_router import AutorRouter
 
@@ -61,46 +64,62 @@ app.add_middleware(
 
 #Instancia um objeto da Router da Classe LivroRouter
 livro_router = LivroRouter()
-app.include_router(livro_router.router, prefix="/livro")
+app.include_router(livro_router.router, prefix="/livro", tags=["Livro"])
 
 #Instancia um objeto da Router da Classe RevistaRouter
 revista_router = RevistaRouter()
-app.include_router(revista_router.router, prefix="/revista")
+app.include_router(revista_router.router, prefix="/revista", tags=["Revista"])
 
 #Instancia um objeto da Router da Classe AutorRouter
 autor_router = AutorRouter()
-app.include_router(autor_router.router, prefix="/autor")
+app.include_router(autor_router.router, prefix="/autor", tags=["Autor"])
 
 #Instancia um objeto da Router da Classe CategoriaRouter
 categoria_router = CategoriaRouter()
-app.include_router(categoria_router.router, prefix="/categoria")
+app.include_router(categoria_router.router, prefix="/categoria", tags=["Categoria"])
 
 #Instancia um objeto da Router da Classe EditoraRouter
 editora_router = EditoraRouter()
-app.include_router(editora_router.router, prefix="/editora")
+app.include_router(editora_router.router, prefix="/editora", tags=["Editora"])
+
+#Instancia um objeto da Router da Classe MaterialRouter
+material_router = MaterialRouter()
+app.include_router(material_router.router, prefix="/material", tags=["Material"])
 
 #Instancia um objeto da Router da Classe ClienteRouter
 cliente_router = ClienteRouter()
-app.include_router(cliente_router.router, prefix="/cliente")
+app.include_router(cliente_router.router, prefix="/cliente", tags=["Cliente"])
 
 #Instancia um objeto da Router da Classe ReservaRouter
 reserva_router = ReservaRouter()
-app.include_router(reserva_router.router, prefix="/reserva")
+app.include_router(reserva_router.router, prefix="/reserva", tags=["Reserva"])
 
 #Instancia um objeto da Router da Classe EmprestimoRouter
 emprestimo_router = EmprestimoRouter()
-app.include_router(emprestimo_router.router, prefix="/emprestimo")
+app.include_router(emprestimo_router.router, prefix="/emprestimo", tags=["Emprestimo"])
 
 
 #Tratamento de erro de ValueError
 @app.exception_handler(ValueError)
-async def generic_exception_handler(request: Request, exc: ValueError):
+async def value_error_exception_handler(request: Request, exc: ValueError):
     return JSONResponse(
         status_code=400,
         content={
             "success": False,
             "message": str(exc),
             "data": {"status_code": 400}
+        }
+    )
+
+#Tratamento de erro de RequestValidationError
+@app.exception_handler(RequestValidationError)
+async def validation_error_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=422,
+        content={
+            "success": False,
+            "message": TradutorValidacao.traduzir(exc.errors()),
+            "data": {"status_code": 422}
         }
     )
 
@@ -125,7 +144,7 @@ async def generic_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={
             "success": False,
-            "message": "Internal_Error!",
+            "message": "Erro interno no servidor.",
             "data": {"status_code": 500}
         }
     )

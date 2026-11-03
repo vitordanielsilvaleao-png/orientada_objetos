@@ -11,3 +11,10 @@ class StatusEmprestimo(Enum):
     ABERTO = "ABERTO"
     DEVOLVIDO = "DEVOLVIDO"
     ATRASADO =  "ATRASADO"
+
+#Criação do Enum para os estados das Reservas
+class StatusReserva(Enum):
+    ABERTA = "ABERTA"
+    ATENDIDA = "ATENDIDA"
+    CANCELADA = "CANCELADA"
+    EXPIRADA = "EXPIRADA"
