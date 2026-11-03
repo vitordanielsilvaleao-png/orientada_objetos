@@ -1,8 +1,12 @@
 #Import das bibliotecas necessárias para o funcionamento do sistema
-from fastapi import APIRouter, Depends
-from cliente.depends.depends_cliente import obter_cliente_service
-from cliente.schemas.schema_cliente import SchemaClienteCadastro, SchemaClienteAtualizacao
-from cliente.service.cliente_service import ClienteService
+from fastapi import APIRouter, Depends, status
+from src.modulos.cliente.depends.depends_cliente import obter_cliente_service
+from src.modulos.cliente.schemas.schema_cliente import (
+    SchemaClienteCadastro,
+    SchemaClienteAtualizacao,
+    SchemaClienteResposta
+)
+from src.modulos.cliente.service.cliente_service import ClienteService
 
 #Declaração da classe ClienteRouter
 class ClienteRouter:
@@ -14,15 +18,18 @@ class ClienteRouter:
 
     #Método para adicionar rotas
     def adicionar_rotas(self):
-        self.router.add_api_route("", self.cadastrar, methods=["POST"])
-        self.router.add_api_route("", self.visualizar, methods=["GET"])
-        self.router.add_api_route("/{cliente_id}", self.atualizar, methods=["PATCH"])
-        self.router.add_api_route("/{cliente_id}", self.inativar, methods=["DELETE"])
-        self.router.add_api_route("/ativar/{cliente_id}", self.ativar, methods=["PATCH"])
+        self.router.add_api_route("", self.cadastrar, methods=["POST"], response_model=SchemaClienteResposta, status_code=status.HTTP_201_CREATED)
+        self.router.add_api_route("", self.visualizar, methods=["GET"], response_model=list[SchemaClienteResposta])
+        self.router.add_api_route("/{cliente_id}", self.atualizar, methods=["PATCH"], response_model=SchemaClienteResposta)
+        self.router.add_api_route("/{cliente_id}/inativar", self.inativar, methods=["PATCH"], response_model=SchemaClienteResposta)
+        self.router.add_api_route("/{cliente_id}/ativar", self.ativar, methods=["PATCH"], response_model=SchemaClienteResposta)
 
     #Método para cadastro de clientes
     @staticmethod
-    def cadastrar(data:SchemaClienteCadastro, cliente_service:ClienteService = Depends(obter_cliente_service)):
+    def cadastrar(
+            data: SchemaClienteCadastro,
+            cliente_service: ClienteService = Depends(obter_cliente_service)
+    ):
 
         """Rota usada para cadastrar um novo cliente no sistema"""
 
@@ -31,7 +38,7 @@ class ClienteRouter:
 
     #Método para visualizar clientes
     @staticmethod
-    def visualizar(cliente_service:ClienteService = Depends(obter_cliente_service)):
+    def visualizar(cliente_service: ClienteService = Depends(obter_cliente_service)):
 
         """Rota usada para visualizar os clientes cadastrados no sistema"""
 
@@ -39,7 +46,11 @@ class ClienteRouter:
 
     #Método para atualizar clientes
     @staticmethod
-    def atualizar(cliente_id:int, data:SchemaClienteAtualizacao, cliente_service:ClienteService = Depends(obter_cliente_service)):
+    def atualizar(
+            cliente_id: int,
+            data: SchemaClienteAtualizacao,
+            cliente_service: ClienteService = Depends(obter_cliente_service)
+    ):
 
         """Rota usada para atualizar clientes no sistema"""
 
@@ -48,16 +59,15 @@ class ClienteRouter:
 
     #Método para inativação de clientes
     @staticmethod
-    def inativar(cliente_id:int, cliente_service:ClienteService = Depends(obter_cliente_service)):
+    def inativar(cliente_id: int, cliente_service: ClienteService = Depends(obter_cliente_service)):
 
         """Rota usada para inativar clientes no sistema"""
 
         return cliente_service.inativar(cliente_id)
 
-    #Método para ativação clientes
-
+    #Método para ativação de clientes
     @staticmethod
-    def ativar(cliente_id:int, cliente_service:ClienteService = Depends(obter_cliente_service)):
+    def ativar(cliente_id: int, cliente_service: ClienteService = Depends(obter_cliente_service)):
 
         """Rota usada para ativar clientes no sistema"""
 
