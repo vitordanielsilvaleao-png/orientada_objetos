@@ -1,8 +1,8 @@
 from src.database.database import db
 import logging
 
-from src.modulos.emprestimo.emprestimo import Emprestimo
-from src.modulos.reserva.reserva import Reserva
+from src.modulos.emprestimo.entidade.emprestimo import Emprestimo
+from src.modulos.reserva.entidade.reserva import Reserva
 
 logger = logging.getLogger(__name__)
 
