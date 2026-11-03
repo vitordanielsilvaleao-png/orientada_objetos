@@ -20,19 +20,24 @@ class Categoria(Base):
         unique=True
     )
 
-    # Validação e normalização do nome da categoria
+    #Validação de dados recebidos
     @validates("nome")
-    def validar_nome(self, chave, nome):
-        if not isinstance(nome, str):
-            raise ValueError("O nome da categoria deve ser um texto")
+    def validar_nome(self, chave:str, nome:str):
+        self._validar_nome_existente(nome)
+        return self.normalizar_nome(nome)
 
-        nome_normalizado = normalizar_texto(nome)
+    #Métodos para validação e normalização de dados do construtor
+    @staticmethod
+    def _validar_nome_existente(nome:str):
+        if not nome or not nome.strip():
+            raise ValueError(
+                "O nome da categoria é obrigatório"
+            )
 
-        if not nome_normalizado:
-            raise ValueError("O nome da categoria não pode ser vazio")
+    @staticmethod
+    def normalizar_nome(nome:str):
+        return normalizar_texto(nome)
 
-        return nome_normalizado
-
-    # Método para atualização do nome da categoria
-    def atualizar(self, nome: str):
+    #Método para renomear a categoria, validado e normalizado por validar_nome
+    def renomear(self, nome:str):
         self.nome = nome
