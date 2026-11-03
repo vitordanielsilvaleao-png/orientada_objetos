@@ -1,6 +1,6 @@
 import unittest
 
-from src.modulos.cliente.cliente import Cliente
+from src.modulos.cliente.entidade.cliente import Cliente
 
 
 class TestCliente(unittest.TestCase):
@@ -21,7 +21,7 @@ class TestCliente(unittest.TestCase):
         self.assertEqual(cliente.complemento, "Casa")
         self.assertEqual(cliente.telefone, "34888888888")
 
-    def test_criar_cliente_com_cpf_sem_formatacao(self):
+    def test_criar_cliente_com_cpf_formatado(self):
         cliente = Cliente("000.000.000-00",
             "Ana Gabriela",
             "Aves",
@@ -41,7 +41,7 @@ class TestCliente(unittest.TestCase):
     def test_criar_cliente_sem_cpf(self):
 
         with self.assertRaises(ValueError):
-            cliente = Cliente("",
+            Cliente("",
                 "Ana Gabriela",
                 "Aves",
                 "Rua B",
@@ -52,7 +52,7 @@ class TestCliente(unittest.TestCase):
     def test_criar_cliente_com_cpf_espacos(self):
 
         with self.assertRaises(ValueError):
-            cliente = Cliente("     ",
+            Cliente("     ",
                 "Ana Gabriela",
                 "Aves",
                 "Rua B",
@@ -63,7 +63,7 @@ class TestCliente(unittest.TestCase):
     def test_criar_cliente_cpf_com_letras(self):
 
         with self.assertRaises(ValueError):
-            cliente = Cliente("000AA000000",
+            Cliente("000AA000000",
                 "Ana Gabriela",
                 "Aves",
                 "Rua B",
@@ -78,10 +78,8 @@ class TestCliente(unittest.TestCase):
             "Aves",
             "Rua B",
             200,
-            "Casa",
-            "34888888888")
-
-        cliente.is_active = True
+            "34888888888",
+            "Casa")
 
         cliente.atualizar_cliente(
             "Maria Silva",
@@ -106,10 +104,10 @@ class TestCliente(unittest.TestCase):
             "Aves",
             "Rua B",
             200,
-            "Casa",
-            "34888888888")
+            "34888888888",
+            "Casa")
 
-        cliente.is_active = False
+        cliente.inativar_cliente()
 
         with self.assertRaises(ValueError):
             cliente.atualizar_cliente(
@@ -127,10 +125,8 @@ class TestCliente(unittest.TestCase):
             "Aves",
             "Rua B",
             200,
-            "Casa",
-            "34888888888")
-
-        cliente.is_active = True
+            "34888888888",
+            "Casa")
 
         cliente.inativar_cliente()
 
@@ -142,10 +138,10 @@ class TestCliente(unittest.TestCase):
             "Aves",
             "Rua B",
             200,
-            "Casa",
-            "34888888888")
+            "34888888888",
+            "Casa")
 
-        cliente.is_active = False
+        cliente.inativar_cliente()
 
         with self.assertRaises(ValueError):
             cliente.inativar_cliente()
@@ -156,10 +152,10 @@ class TestCliente(unittest.TestCase):
             "Aves",
             "Rua B",
             200,
-            "Casa",
-            "34888888888")
+            "34888888888",
+            "Casa")
 
-        cliente.is_active = False
+        cliente.inativar_cliente()
 
         cliente.ativar_cliente()
 
@@ -171,10 +167,8 @@ class TestCliente(unittest.TestCase):
             "Aves",
             "Rua B",
             200,
-            "Casa",
-            "34888888888")
-
-        cliente.is_active = True
+            "34888888888",
+            "Casa")
 
         with self.assertRaises(ValueError):
             cliente.ativar_cliente()
@@ -185,12 +179,10 @@ class TestCliente(unittest.TestCase):
             "Aves",
             "Rua B",
             200,
-            "Casa",
-            "34888888888")
+            "34888888888",
+            "Casa")
 
-        cliente.is_active = True
-
-        resultado = cliente.validar_cliente_ativo()
+        resultado = cliente.is_active
 
         self.assertTrue(resultado)
 
@@ -200,14 +192,57 @@ class TestCliente(unittest.TestCase):
             "Aves",
             "Rua B",
             200,
-            "Casa",
-            "34888888888")
+            "34888888888",
+            "Casa")
 
-        cliente.is_active = False
+        cliente.inativar_cliente()
 
-        resultado = cliente.validar_cliente_ativo()
+        resultado = cliente.is_active
 
         self.assertFalse(resultado)
+
+
+    def test_cpf_somente_leitura(self):
+        cliente = Cliente(cpf="00000000000",
+            nome="Ana Gabriela",
+            bairro="Aves",
+            rua="Rua B",
+            numero=200,
+            telefone="34888888888",
+            complemento="Casa")
+
+        with self.assertRaises(AttributeError):
+            cliente.cpf = "11111111111"
+
+        self.assertEqual(cliente.cpf, "00000000000")
+
+    def test_alterar_cpf_pelo_atributo_privado(self):
+        cliente = Cliente(cpf="00000000000",
+            nome="Ana Gabriela",
+            bairro="Aves",
+            rua="Rua B",
+            numero=200,
+            telefone="34888888888",
+            complemento="Casa")
+
+        with self.assertRaises(ValueError):
+            cliente._cpf = "11111111111"
+
+        self.assertEqual(cliente.cpf, "00000000000")
+
+    def test_is_active_somente_leitura(self):
+        cliente = Cliente(cpf="00000000000",
+            nome="Ana Gabriela",
+            bairro="Aves",
+            rua="Rua B",
+            numero=200,
+            telefone="34888888888",
+            complemento="Casa")
+
+        with self.assertRaises(AttributeError):
+            cliente.is_active = False
+
+        self.assertTrue(cliente.is_active)
 
 
 if __name__ == "__main__":
