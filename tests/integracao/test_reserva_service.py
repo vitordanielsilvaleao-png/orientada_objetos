@@ -1,12 +1,14 @@
+import random
 import unittest
+from datetime import datetime, timedelta
 
 from fastapi import HTTPException
 
 from src.compartilhado.enum import StatusMaterial
 from src.modulos.reserva.schemas.schema_reserva import SchemaReservaCadastro
 from src.modulos.reserva.service.reserva_service import ReservaService
-from src.modulos.reserva.reserva import Reserva
-from src.modulos.cliente.cliente import Cliente
+from src.modulos.reserva.entidade.reserva import Reserva
+from src.modulos.cliente.entidade.cliente import Cliente
 from src.modulos.material.entidades.material import Material
 from src.modulos.material.entidades.categoria import Categoria
 from src.modulos.material.entidades.editora import Editora
@@ -55,7 +57,7 @@ class TestReservaService(unittest.TestCase):
             cliente = self.criar_cliente(sessao, "Cliente Cadastro")
             material, categoria, editora = self.criar_material(sessao)
 
-            material.status = StatusMaterial.EMPRESTADO
+            material.emprestar()
 
             data = SchemaReservaCadastro(
                 titulo=material.titulo,
@@ -118,6 +120,25 @@ class TestReservaService(unittest.TestCase):
         finally:
             sessao.close()
 
+    def test_cadastrar_reserva_cliente_inexistente(self):
+        sessao = db.session()
+        try:
+
+            data = SchemaReservaCadastro(
+                titulo="material teste",
+                cliente_id=2147483647
+            )
+
+            reserva_service = ReservaService(sessao)
+
+            with self.assertRaises(HTTPException) as contexto:
+                reserva_service.cadastrar(data)
+
+            self.assertEqual(contexto.exception.status_code, 404)
+
+        finally:
+            sessao.close()
+
     def test_cadastrar_reserva_existente(self):
         sessao = db.session()
         try:
@@ -173,7 +194,7 @@ class TestReservaService(unittest.TestCase):
                 material.titulo
             )
 
-            material.status = StatusMaterial.RESERVADO
+            material.reservar()
             sessao.commit()
 
             data = SchemaReservaCadastro(
@@ -256,7 +277,8 @@ class TestReservaService(unittest.TestCase):
                 material.titulo
             )
 
-            reserva.is_active = False
+            reserva.data = datetime.now() - timedelta(days=11)
+            reserva.verificar_expiracao()
             sessao.commit()
 
             reservas_expiradas = reserva_service.visualizar_expiradas()
@@ -456,7 +478,7 @@ class TestReservaService(unittest.TestCase):
 
             reserva = reserva_service.cadastrar(data)
 
-            material.status = StatusMaterial.EMPRESTADO
+            material.emprestar()
 
             with self.assertRaises(HTTPException) as erro:
                 reserva_service.atender_reserva(reserva.id)
@@ -486,7 +508,7 @@ class TestReservaService(unittest.TestCase):
             cliente = self.criar_cliente(sessao, "Cliente Emprestimo Sem Material")
             material, categoria, editora = self.criar_material(sessao)
             
-            material.status = StatusMaterial.EMPRESTADO
+            material.emprestar()
 
             data = SchemaReservaCadastro(
                 titulo=material.titulo,
@@ -534,12 +556,13 @@ class TestReservaService(unittest.TestCase):
     def criar_cliente(self, sessao, nome):
 
         cliente_novo = Cliente(
+            cpf=f"{random.randint(0, 99999999999):011d}",
             nome=nome,
             bairro="bairro",
             rua="rua",
             numero=1,
             complemento="complemento",
-            telefone="123456789"
+            telefone="34999999999"
         )
 
         sessao.add(cliente_novo)
