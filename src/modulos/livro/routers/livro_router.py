@@ -1,8 +1,12 @@
 #Import das bibliotecas necessárias para o funcionamento do sistema
-from fastapi import APIRouter, Depends
-from modulos.livro.depends.depends_livro import obter_livro_service
-from modulos.livro.schemas.schemas_livro import SchemaLivroCadastro, SchemaLivroAtualizacao
-from modulos.livro.services.livro_service import LivroService
+from fastapi import APIRouter, Depends, status
+from src.modulos.livro.depends.depends_livro import obter_livro_service
+from src.modulos.livro.schemas.schemas_livro import (
+    SchemaLivroCadastro,
+    SchemaLivroAtualizacao,
+    SchemaLivroResposta
+)
+from src.modulos.livro.services.livro_service import LivroService
 
 #Declaração da classe LivroRouter
 class LivroRouter:
@@ -14,15 +18,18 @@ class LivroRouter:
 
     #Método para adicionar rotas
     def adicionar_rotas(self):
-        self.router.add_api_route("", self.cadastrar, methods=["POST"])
-        self.router.add_api_route("", self.visualizar, methods=["GET"])
-        self.router.add_api_route("/{livro_id}", self.atualizar, methods=["PATCH"])
-        self.router.add_api_route("/{livro_id}", self.inativar, methods=["DELETE"])
-        self.router.add_api_route("/ativar/{livro_id}", self.ativar, methods=["PATCH"])
+        self.router.add_api_route("", self.cadastrar, methods=["POST"], response_model=SchemaLivroResposta, status_code=status.HTTP_201_CREATED)
+        self.router.add_api_route("", self.visualizar, methods=["GET"], response_model=list[SchemaLivroResposta])
+        self.router.add_api_route("/{livro_id}", self.atualizar, methods=["PATCH"], response_model=SchemaLivroResposta)
+        self.router.add_api_route("/{livro_id}/inativar", self.inativar, methods=["PATCH"], response_model=SchemaLivroResposta)
+        self.router.add_api_route("/{livro_id}/ativar", self.ativar, methods=["PATCH"], response_model=SchemaLivroResposta)
 
     #Método para cadastro de livros
     @staticmethod
-    def cadastrar(data:SchemaLivroCadastro, livro_service:LivroService = Depends(obter_livro_service)):
+    def cadastrar(
+            data: SchemaLivroCadastro,
+            livro_service: LivroService = Depends(obter_livro_service)
+    ):
 
         """Rota usada para cadastrar um novo livro no sistema"""
 
@@ -31,7 +38,7 @@ class LivroRouter:
 
     #Método para visualização de livros
     @staticmethod
-    def visualizar(livro_service:LivroService = Depends(obter_livro_service)):
+    def visualizar(livro_service: LivroService = Depends(obter_livro_service)):
 
         """Rota usada para visualizar os livros cadastrados no sistema"""
 
@@ -39,7 +46,11 @@ class LivroRouter:
 
     #Método para atualização de livros
     @staticmethod
-    def atualizar(livro_id:int, data:SchemaLivroAtualizacao, livro_service:LivroService = Depends(obter_livro_service)):
+    def atualizar(
+            livro_id: int,
+            data: SchemaLivroAtualizacao,
+            livro_service: LivroService = Depends(obter_livro_service)
+    ):
 
         """Rota usada para atualizar um livro no sistema"""
 
@@ -48,7 +59,10 @@ class LivroRouter:
 
     #Método para inativação de livros
     @staticmethod
-    def inativar(livro_id:int, livro_service:LivroService = Depends(obter_livro_service)):
+    def inativar(
+            livro_id: int,
+            livro_service: LivroService = Depends(obter_livro_service)
+    ):
 
         """Rota usada para inativar um livro no sistema"""
 
@@ -56,7 +70,10 @@ class LivroRouter:
 
     #Método para ativação de livros
     @staticmethod
-    def ativar(livro_id: int, livro_service: LivroService = Depends(obter_livro_service)):
+    def ativar(
+            livro_id: int,
+            livro_service: LivroService = Depends(obter_livro_service)
+    ):
 
         """Rota usada para ativar um livro no sistema"""
 
