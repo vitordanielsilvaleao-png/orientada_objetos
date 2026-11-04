@@ -1,78 +1,93 @@
+#Import das bibliotecas e classes necessárias para o funcionamento do sistema
+from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
+
 from src.compartilhado.base_service import BaseService
-from src.modulos.material.schemas.schemas_editora import SchemaEditoraCadastro
+from src.modulos.material.schemas.schemas_editora import SchemaEditoraCadastro, SchemaEditoraAtualizacao
 from src.modulos.material.entidades.editora import Editora
 
+#Declaração da classe EditoraService
 class EditoraService(BaseService):
 
-    # declaração do construtor da classe EditoraService
-    def __init__(self, session: Session):
-        super().__init__(session)
-
-    # método para cadastrar editora
+    #Método para cadastrar editoras
     def cadastrar(self, data:SchemaEditoraCadastro):
-        # normaliza nome para busca e cadastro
-        nome_normalizado = Editora._normalizar_nome(data.nome)
+        nome_normalizado = Editora.normalizar_nome(data.nome)
 
-        # verifica se já existe uma editora com este nome no banco
-        editora_existente = self.session.query(Editora).filter_by(
-            nome=nome_normalizado
-        ).first()
-        
+        editora_existente = self.session.query(Editora).filter_by(nome=nome_normalizado).first()
         if editora_existente:
             raise HTTPException(
-                status_code=400,
+                status_code=409,
                 detail="Já existe uma editora cadastrada com este nome."
             )
 
-        # cria a nova editora
-        nova_editora = Editora(
-            nome=nome_normalizado
-        )
+        try:
+            nova_editora = Editora(
+                nome=nome_normalizado
+            )
+        except ValueError as erro:
+            raise HTTPException(
+                status_code=422,
+                detail=str(erro)
+            )
 
-        # salva no banco de dados
-        self.salvar(nova_editora)
+        try:
+            self.salvar(nova_editora)
+        except IntegrityError:
+            self.session.rollback()
+            raise HTTPException(
+                status_code=409,
+                detail="Já existe uma editora cadastrada com este nome."
+            )
+
         self.session.refresh(nova_editora)
-        
         return nova_editora
 
-    # método para visualizar todas as editoras
-    def visualizar(self):
-        return self.session.query(Editora).all()
+    #Método auxiliar para buscar uma editora pelo id, lançando 404 caso não exista
+    def _buscar_por_id(self, editora_id: int) -> Editora:
+        editora = self.session.query(Editora).filter_by(id=editora_id).first()
 
-    # método para atualizar a editora
-    def atualizar(self, editora_id: int, nome_editora: str):
-        # normaliza nome para busca
-        nome_normalizado = Editora._normalizar_nome(nome_editora)
-
-        # busca a editora pelo ID
-        editora_atualizar = self.session.query(Editora).filter_by(
-            id=editora_id
-        ).first()
-
-        # se não encontrar, retorna erro 404
-        if not editora_atualizar:
+        if not editora:
             raise HTTPException(
                 status_code=404,
                 detail="Editora não encontrada."
             )
 
-        # verifica se o novo nome já pertence a OUTRA editora
-        nome_existente = self.session.query(Editora).filter_by(
-            nome=nome_normalizado
-        ).first()
-        
+        return editora
+
+    #Método para visualizar editoras
+    def visualizar(self):
+        return self.session.query(Editora).all()
+
+    #Método para atualizar editoras
+    def atualizar(self, editora_id: int, data: SchemaEditoraAtualizacao):
+        editora_atualizar = self._buscar_por_id(editora_id)
+
+        nome_normalizado = Editora.normalizar_nome(data.nome)
+
+        nome_existente = self.session.query(Editora).filter_by(nome=nome_normalizado).first()
         if nome_existente and nome_existente.id != editora_id:
             raise HTTPException(
-                status_code=400,
+                status_code=409,
                 detail="Já existe outra editora cadastrada com este nome."
             )
 
-        # atualiza os dados e salva
-        editora_atualizar.nome = nome_normalizado
-        
-        self.session.commit()
-        self.session.refresh(editora_atualizar)
+        try:
+            editora_atualizar.renomear(nome_normalizado)
+            self.session.commit()
 
+        except ValueError as erro:
+            self.session.rollback()
+            raise HTTPException(
+                status_code=409,
+                detail=str(erro)
+            )
+
+        except IntegrityError:
+            self.session.rollback()
+            raise HTTPException(
+                status_code=409,
+                detail="Já existe outra editora cadastrada com este nome."
+            )
+
+        self.session.refresh(editora_atualizar)
         return editora_atualizar

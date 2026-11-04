@@ -43,7 +43,6 @@ class TestMaterial(unittest.TestCase):
             editora_id=1
         )
 
-        material.is_active = True
 
         material.atualizar("Orientação a Objetos", 2026, 1, 1)
 
@@ -60,7 +59,7 @@ class TestMaterial(unittest.TestCase):
             editora_id=1
         )
 
-        material.is_active = False
+        material.inativar()
 
         with self.assertRaises(ValueError):
             material.atualizar("Orientação a Objetos", 2026, 1, 1)
@@ -116,7 +115,6 @@ class TestMaterial(unittest.TestCase):
             editora_id=1
         )
 
-        material.is_active = True
 
         material.inativar()
 
@@ -130,7 +128,7 @@ class TestMaterial(unittest.TestCase):
             editora_id=1
         )
 
-        material.is_active = False
+        material.inativar()
 
         with self.assertRaises(ValueError):
             material.inativar()
@@ -143,7 +141,7 @@ class TestMaterial(unittest.TestCase):
             editora_id=1
         )
 
-        material.is_active = False
+        material.inativar()
 
         material.ativar()
 
@@ -157,12 +155,11 @@ class TestMaterial(unittest.TestCase):
             editora_id=1
         )
 
-        material.is_active = True
 
         with self.assertRaises(ValueError):
             material.ativar()
 
-    def test_validar_material_ativo(self):
+    def test_transicoes_de_status(self):
         material = Material(
             titulo="Livro Teste",
             ano_publi=1954,
@@ -170,25 +167,16 @@ class TestMaterial(unittest.TestCase):
             editora_id=1
         )
 
-        material.is_active = True
+        self.assertEqual(material.status, StatusMaterial.DISPONIVEL)
 
-        resultado = material.esta_ativo()
+        material.reservar()
+        self.assertEqual(material.status, StatusMaterial.RESERVADO)
 
-        self.assertTrue(resultado)
+        material.emprestar()
+        self.assertEqual(material.status, StatusMaterial.EMPRESTADO)
 
-    def test_validar_material_inativo(self):
-        material = Material(
-            titulo="Livro Teste",
-            ano_publi=1954,
-            categoria_id=1,
-            editora_id=1
-        )
-
-        material.is_active = False
-
-        resultado = material.esta_ativo()
-
-        self.assertFalse(resultado)
+        material.disponibilizar()
+        self.assertEqual(material.status, StatusMaterial.DISPONIVEL)
 
     def test_validar_material_ativo_disponivel(self):
         material = Material(
@@ -198,8 +186,7 @@ class TestMaterial(unittest.TestCase):
             editora_id=1
         )
 
-        material.is_active = True
-        material.status = StatusMaterial.DISPONIVEL
+        material.disponibilizar()
 
         resultado = material.esta_disponivel()
 
@@ -213,8 +200,7 @@ class TestMaterial(unittest.TestCase):
             editora_id=1
         )
 
-        material.is_active = True
-        material.status = StatusMaterial.EMPRESTADO
+        material.emprestar()
 
         resultado = material.esta_disponivel()
 
@@ -228,8 +214,8 @@ class TestMaterial(unittest.TestCase):
             editora_id=1
         )
 
-        material.is_active = False
-        material.status = StatusMaterial.DISPONIVEL
+        material.inativar()
+        material.disponibilizar()
 
         resultado = material.esta_disponivel()
 
