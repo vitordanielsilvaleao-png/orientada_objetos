@@ -7,7 +7,7 @@ from src.modulos.material.entidades.categoria import Categoria
 from src.modulos.material.entidades.editora import Editora
 from src.modulos.revista.schemas.schamas_revista import (SchemaRevistaCadastro, SchemaRevistaAtualizacao)
 from src.modulos.revista.service.revista_service import RevistaService
-from src.modulos.revista.revista import Revista
+from src.modulos.revista.entidade.revista import Revista
 from src.database.database import db
 
 
@@ -59,7 +59,7 @@ class TestRevistaService(unittest.TestCase):
             data = SchemaRevistaCadastro(
                 titulo="Teste Revista",
                 ano_publi=2026,
-                editora_id=0,
+                editora_id=2147483647,
                 categoria_id=1,
                 issn=str(random.randint(10000000, 99999999)),
                 edicao=1
@@ -81,7 +81,7 @@ class TestRevistaService(unittest.TestCase):
                 titulo="Teste Revista",
                 ano_publi=2026,
                 editora_id=1,
-                categoria_id=0,
+                categoria_id=2147483647,
                 issn=str(random.randint(10000000, 99999999)),
                 edicao=1
             )
