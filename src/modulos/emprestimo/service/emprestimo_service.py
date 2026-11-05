@@ -6,10 +6,10 @@ from src.compartilhado.enum import StatusMaterial, StatusEmprestimo
 
 from src.compartilhado.base_service import BaseService
 from src.modulos.emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro
-from src.modulos.reserva.reserva import Reserva
+from src.modulos.reserva.entidade.reserva import Reserva
 from src.modulos.material.entidades.material import Material
-from src.modulos.cliente.cliente import Cliente
-from src.modulos.emprestimo.emprestimo import Emprestimo
+from src.modulos.cliente.entidade.cliente import Cliente
+from src.modulos.emprestimo.entidade.emprestimo import Emprestimo
 
 #Declaração da classe EmprestimoService
 class EmprestimoService(BaseService):
@@ -23,12 +23,17 @@ class EmprestimoService(BaseService):
         limite_emprestimo = 4
         cont_emprestimos = 0
 
-        usuario_ativo = self.session.query(Cliente).filter_by(
-            id = data.cliente_id,
-            is_active = True
+        cliente_existente = self.session.query(Cliente).filter_by(
+            id = data.cliente_id
         ).first()
 
-        if not usuario_ativo:
+        if not cliente_existente:
+            raise HTTPException(
+                status_code=404,
+                detail="O cliente informado não está cadastrado!"
+            )
+
+        if not cliente_existente.is_active:
             raise HTTPException(
                 status_code=409,
                 detail="O empréstimo não pode ser registrado, pois o cadastro do cliente se encontra inativo"
@@ -40,7 +45,7 @@ class EmprestimoService(BaseService):
 
         if not material_existente:
             raise HTTPException(
-                status_code=400,
+                status_code=404,
                 detail="O material informado não está cadastrado no acervo!"
             )
 
@@ -95,7 +100,11 @@ class EmprestimoService(BaseService):
             cliente_id = data.cliente_id
         )
 
-        material_existente.status = StatusMaterial.EMPRESTADO
+        material_existente.emprestar()
+
+        #A reserva do cliente para este material é encerrada no mesmo commit do empréstimo
+        if reserva_existente:
+            reserva_existente.concluir()
 
         self.salvar(emprestimo_cadastrar)
         self.session.refresh(emprestimo_cadastrar)
@@ -164,12 +173,12 @@ class EmprestimoService(BaseService):
 
         if not reserva_pendente:
 
-            material_devolucao.status = StatusMaterial.DISPONIVEL
+            material_devolucao.disponibilizar()
 
         else:
 
-            material_devolucao.status = StatusMaterial.RESERVADO
-            reserva_pendente.material_id = material_devolucao.id
+            material_devolucao.reservar()
+            reserva_pendente.vincular_material(material_devolucao.id)
 
         self.session.commit()
         self.session.refresh(emprestimo_devolucao)
