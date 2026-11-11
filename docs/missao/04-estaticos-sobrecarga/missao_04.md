@@ -58,4 +58,6 @@ Esses conhecimentos são importantes para desenvolver sistemas mais organizados,
 
 ## Commit(s) associado(s)
 
-A preencher após o registro da documentação no GitHub.
+- `181abf0` — Criação da documentação da Missão 04.
+- `1c0e70e` — Remoção do arquivo .gitkeep.
+- `978351a` — Atualização da documentação com exemplos práticos de Livro e Revista.
