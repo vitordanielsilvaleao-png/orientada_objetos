@@ -18,6 +18,18 @@ Outro conceito abordado é a sobrecarga de métodos. Em linguagens como Java, é
 
 Em Python, a redefinição de um método com o mesmo nome não produz esse tipo de sobrecarga tradicional. Por isso, o projeto utiliza parâmetros opcionais no método `atualizar()`, permitindo diferentes chamadas sem a necessidade de criar vários métodos com o mesmo nome.
 
+### Exemplos práticos encontrados no projeto
+
+Na classe Livro, o método estático normalizar_isbn() remove espaços e hífens do ISBN. O método _validar_isbn() verifica se o código possui 13 dígitos numéricos e gera um ValueError caso seja inválido.
+
+Na classe Revista, o método normalizar_issn() remove espaços e hífens do ISSN. O método _validar_issn() verifica se ele possui 8 dígitos numéricos, enquanto _validar_edicao() verifica se a edição informada é maior que zero.
+
+Nas duas classes, o método atualizar() utiliza parâmetros opcionais definidos como None, permitindo atualizar somente os campos informados.
+
+As classes também utilizam super().atualizar() para reaproveitar a implementação da classe Material. Livro permite atualizar o autor, enquanto Revista permite atualizar a edição.
+
+Dessa forma, o projeto demonstra o uso de métodos estáticos e parâmetros opcionais para organizar e reutilizar código em Python.
+
 ## Decisões técnicas e trade-offs
 
 A utilização de métodos estáticos permite organizar funcionalidades auxiliares dentro das classes relacionadas, sem exigir a criação de objetos para executá-las.
