@@ -62,4 +62,4 @@ Esses conceitos são importantes para desenvolver sistemas mais organizados, reu
 
 ## Commit(s) associado(s)
 
-A preencher após o registro da documentação no GitHub.
+- ecc8bf7 — Criação da documentação da Missão 08 — Herança e Sobreposição.
