@@ -46,7 +46,7 @@ class TestCategoriaService(unittest.TestCase):
             with self.assertRaises(HTTPException) as contexto:
                 categoria_service.cadastrar(data)
 
-            self.assertEqual(contexto.exception.status_code, 400)
+            self.assertEqual(contexto.exception.status_code, 422)
 
         finally:
             sessao.close()
@@ -147,7 +147,7 @@ class TestCategoriaService(unittest.TestCase):
             with self.assertRaises(HTTPException) as contexto:
                 categoria_service.atualizar(categoria.id, data)
 
-            self.assertEqual(contexto.exception.status_code, 400)
+            self.assertEqual(contexto.exception.status_code, 409)
 
             sessao.delete(categoria)
             sessao.commit()

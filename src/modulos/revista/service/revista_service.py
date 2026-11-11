@@ -1,66 +1,59 @@
 # Import das bibliotecas e classes necessárias para o funcionamento do sistema
+from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
 
-from src.compartilhado.enum import StatusMaterial
-from src.modulos.reserva.reserva import Reserva
+from src.modulos.reserva.entidade.reserva import Reserva
 from src.compartilhado.base_service import BaseService
 from src.modulos.revista.schemas.schamas_revista import (SchemaRevistaCadastro, SchemaRevistaAtualizacao)
 from src.modulos.material.entidades.editora import Editora
 from src.modulos.material.entidades.categoria import Categoria
-from src.modulos.revista.revista import Revista
+from src.modulos.revista.entidade.revista import Revista
 
 
 # Declaração da classe RevistaService
 class RevistaService(BaseService):
 
-    # Declaração do construtor da classe
-    def __init__(self, session: Session):
-        super().__init__(session)
-
     # Método para cadastrar revistas
     def cadastrar(self, data: SchemaRevistaCadastro):
 
+        issn_normalizado = Revista.normalizar_issn(data.issn)
+
         issn_existente = self.session.query(Revista).filter_by(
-            issn = data.issn
+            issn = issn_normalizado
         ).first()
 
         if issn_existente:
             raise HTTPException(
-                status_code=400,
-                detail="O ISSN informado já se cadastrado no sistema"
+                status_code=409,
+                detail="O ISSN informado já está cadastrado no sistema"
             )
 
-        editora_cadastrar = self.session.query(Editora).filter_by(
-            id=data.editora_id
-        ).first()
+        self._validar_editora_categoria(data.editora_id, data.categoria_id)
 
-        categoria_cadastrar = self.session.query(Categoria).filter_by(
-            id=data.categoria_id
-        ).first()
-
-        if not editora_cadastrar:
+        try:
+            revista_cadastrar = Revista(
+                titulo=data.titulo,
+                ano_publi=data.ano_publi,
+                editora_id=data.editora_id,
+                categoria_id=data.categoria_id,
+                issn=issn_normalizado,
+                edicao=data.edicao
+            )
+        except ValueError as erro:
             raise HTTPException(
-                status_code=404,
-                detail="A editora informada não existe"
+                status_code=422,
+                detail=str(erro)
             )
 
-        if not categoria_cadastrar:
+        try:
+            self.salvar(revista_cadastrar)
+        except IntegrityError:
+            self.session.rollback()
             raise HTTPException(
-                status_code=404,
-                detail="A categoria informada não existe"
+                status_code=409,
+                detail="O ISSN informado já está cadastrado no sistema"
             )
 
-        revista_cadastrar = Revista(
-            titulo=data.titulo,
-            ano_publi=data.ano_publi,
-            editora_id=data.editora_id,
-            categoria_id=data.categoria_id,
-            issn=data.issn,
-            edicao=data.edicao
-        )
-
-        self.salvar(revista_cadastrar)
         self.session.refresh(revista_cadastrar)
 
         reserva_pendente = (
@@ -75,15 +68,54 @@ class RevistaService(BaseService):
         )
 
         if not reserva_pendente:
-            revista_cadastrar.status = StatusMaterial.DISPONIVEL
+            revista_cadastrar.disponibilizar()
         else:
-            revista_cadastrar.status = StatusMaterial.RESERVADO
-            reserva_pendente.material_id = revista_cadastrar.id
+            revista_cadastrar.reservar()
+            reserva_pendente.vincular_material(revista_cadastrar.id)
 
         self.session.commit()
         self.session.refresh(revista_cadastrar)
 
         return revista_cadastrar
+
+    # Método auxiliar para buscar uma revista pelo id, lançando 404 caso não exista
+    def _buscar_por_id(self, revista_id: int) -> Revista:
+        revista = self.session.query(Revista).filter_by(
+            id=revista_id
+        ).first()
+
+        if not revista:
+            raise HTTPException(
+                status_code=404,
+                detail="Revista não encontrada"
+            )
+
+        return revista
+
+    # Método auxiliar para validar se a editora e a categoria informadas existem, lançando 404 caso não existam
+    def _validar_editora_categoria(self, editora_id: int | None, categoria_id: int | None):
+
+        if editora_id is not None:
+            editora_existente = self.session.query(Editora).filter_by(
+                id=editora_id
+            ).first()
+
+            if not editora_existente:
+                raise HTTPException(
+                    status_code=404,
+                    detail="A editora informada não existe"
+                )
+
+        if categoria_id is not None:
+            categoria_existente = self.session.query(Categoria).filter_by(
+                id=categoria_id
+            ).first()
+
+            if not categoria_existente:
+                raise HTTPException(
+                    status_code=404,
+                    detail="A categoria informada não existe"
+                )
 
     # Método para visualizar revistas
     def visualizar(self):
@@ -97,57 +129,65 @@ class RevistaService(BaseService):
         data: SchemaRevistaAtualizacao
     ):
 
-        revista_atualizar = self.session.query(Revista).filter_by(
-            id=revista_id
-        ).first()
+        revista_atualizar = self._buscar_por_id(revista_id)
 
-        if not revista_atualizar:
-            raise HTTPException(
-                status_code=404,
-                detail="Revista não encontrada"
+        self._validar_editora_categoria(data.editora_id, data.categoria_id)
+
+        try:
+            revista_atualizar.atualizar(
+                titulo=data.titulo,
+                ano_publi=data.ano_publi,
+                categoria_id=data.categoria_id,
+                editora_id=data.editora_id,
+                edicao=data.edicao
             )
 
-        revista_atualizar.atualizar(
-            titulo=data.titulo,
-            ano_publi=data.ano_publi,
-            categoria_id=data.categoria_id,
-            editora_id=data.editora_id,
-            edicao=data.edicao
-        )
+            self.session.commit()
 
-        self.session.commit()
+        except ValueError as erro:
+            self.session.rollback()
+            raise HTTPException(
+                status_code=409,
+                detail=str(erro)
+            )
+
         self.session.refresh(revista_atualizar)
-
         return revista_atualizar
 
     # Método para inativar revistas
     def inativar(self, revista_id: int):
 
-        revista_inativar = self.session.query(Revista).filter_by(
-            id=revista_id
-        ).first()
+        revista_inativar = self._buscar_por_id(revista_id)
 
-        if not revista_inativar:
+        try:
+            revista_inativar.inativar()
+            self.session.commit()
+
+        except ValueError as erro:
+            self.session.rollback()
             raise HTTPException(
-                status_code=404,
-                detail="Revista não encontrada"
+                status_code=409,
+                detail=str(erro)
             )
 
-        revista_inativar.inativar()
-        self.session.commit()
+        self.session.refresh(revista_inativar)
+        return revista_inativar
 
     # Método para ativar revistas
     def ativar(self, revista_id: int):
 
-        revista_ativar = self.session.query(Revista).filter_by(
-            id=revista_id
-        ).first()
+        revista_ativar = self._buscar_por_id(revista_id)
 
-        if not revista_ativar:
+        try:
+            revista_ativar.ativar()
+            self.session.commit()
+
+        except ValueError as erro:
+            self.session.rollback()
             raise HTTPException(
-                status_code=404,
-                detail="Revista não encontrada"
+                status_code=409,
+                detail=str(erro)
             )
 
-        revista_ativar.ativar()
-        self.session.commit()
+        self.session.refresh(revista_ativar)
+        return revista_ativar

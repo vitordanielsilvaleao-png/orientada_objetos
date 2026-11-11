@@ -2,7 +2,6 @@ import unittest
 
 from src.modulos.livro.entidades.livro import Livro
 
-
 class TestLivro(unittest.TestCase):
 
     def test_atualizar_livro(self):
@@ -40,7 +39,7 @@ class TestLivro(unittest.TestCase):
             autor_id=1,
         )
 
-        livro.is_active = False
+        livro.inativar()
 
         with self.assertRaises(ValueError):
             livro.atualizar(

@@ -15,7 +15,3 @@ class SchemaEmprestimoResposta(BaseModel):
     data_devolucao: datetime | None
     status: str
     is_active: bool
-
-    model_config = {
-        "from_attributes": True
-    }

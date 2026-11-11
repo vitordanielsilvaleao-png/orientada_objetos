@@ -1,7 +1,11 @@
 #Import das bibliotecas necessárias para o funcionamento do sistema
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 
-from src.modulos.material.schemas.schemas_categoria import SchemaCategoriaCadastro, SchemaCategoriaAtualizacao
+from src.modulos.material.schemas.schemas_categoria import (
+    SchemaCategoriaCadastro,
+    SchemaCategoriaAtualizacao,
+    SchemaCategoriaResposta
+)
 from src.modulos.material.depends.depends_categoria import obter_categoria_service
 from src.modulos.material.service.categoria_service import CategoriaService
 
@@ -15,13 +19,16 @@ class CategoriaRouter:
 
     #Método para adicionar rotas
     def adicionar_rotas(self):
-        self.router.add_api_route("", self.cadastrar, methods=["POST"])
-        self.router.add_api_route("", self.visualizar, methods=["GET"])
-        self.router.add_api_route("/{categoria_id}", self.atualizar, methods=["PATCH"])
+        self.router.add_api_route("", self.cadastrar, methods=["POST"], response_model=SchemaCategoriaResposta, status_code=status.HTTP_201_CREATED)
+        self.router.add_api_route("", self.visualizar, methods=["GET"], response_model=list[SchemaCategoriaResposta])
+        self.router.add_api_route("/{categoria_id}", self.atualizar, methods=["PATCH"], response_model=SchemaCategoriaResposta)
 
     #Método para cadastro de categorias
     @staticmethod
-    def cadastrar(data:SchemaCategoriaCadastro, categoria_service:CategoriaService = Depends(obter_categoria_service)):
+    def cadastrar(
+            data: SchemaCategoriaCadastro,
+            categoria_service: CategoriaService = Depends(obter_categoria_service)
+    ):
 
         """Rota usada para cadastrar uma nova categoria no sistema"""
 
@@ -30,7 +37,7 @@ class CategoriaRouter:
 
     #Método para visualização de categorias
     @staticmethod
-    def visualizar(categoria_service:CategoriaService = Depends(obter_categoria_service)):
+    def visualizar(categoria_service: CategoriaService = Depends(obter_categoria_service)):
 
         """Rota usada para visualizar as categorias cadastradas no sistema"""
 
@@ -38,7 +45,11 @@ class CategoriaRouter:
 
     #Método para atualização de categorias
     @staticmethod
-    def atualizar(categoria_id:int, data:SchemaCategoriaAtualizacao, categoria_service:CategoriaService = Depends(obter_categoria_service)):
+    def atualizar(
+            categoria_id: int,
+            data: SchemaCategoriaAtualizacao,
+            categoria_service: CategoriaService = Depends(obter_categoria_service)
+    ):
 
         """Rota usada para atualizar uma categoria no sistema"""
 

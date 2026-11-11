@@ -3,11 +3,11 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
 from src.compartilhado.base_service import BaseService
-from src.compartilhado.enum import StatusMaterial
+from src.compartilhado.enum import StatusMaterial, StatusReserva
 
 from src.modulos.reserva.schemas.schema_reserva import SchemaReservaCadastro
-from src.modulos.reserva.reserva import Reserva
-from src.modulos.cliente.cliente import Cliente
+from src.modulos.reserva.entidade.reserva import Reserva
+from src.modulos.cliente.entidade.cliente import Cliente
 from src.modulos.material.entidades.material import Material
 from src.modulos.emprestimo.service.emprestimo_service import EmprestimoService
 from src.modulos.emprestimo.schemas.schema_emprestimo import SchemaEmprestimoCadastro
@@ -22,12 +22,17 @@ class ReservaService (BaseService):
 
     def cadastrar(self, data:SchemaReservaCadastro):
 
-        usuario_ativo = self.session.query(Cliente).filter_by(
-            id=data.cliente_id,
-            is_active=True
+        cliente_existente = self.session.query(Cliente).filter_by(
+            id=data.cliente_id
         ).first()
 
-        if not usuario_ativo:
+        if not cliente_existente:
+            raise HTTPException(
+                status_code=404,
+                detail="A reserva não pode ser efetuada, pois o usuário não se encontra cadastrado no sistema"
+            )
+
+        if not cliente_existente.is_active:
             raise HTTPException(
                 status_code=409,
                 detail="A reserva não pode ser efetuada, pois o usuário se encontra inativo"
@@ -55,7 +60,7 @@ class ReservaService (BaseService):
 
         if material_existente:
             material_id = material_existente.id
-            material_existente.status = StatusMaterial.RESERVADO
+            material_existente.reservar()
         else:
             material_id = None
 
@@ -82,7 +87,7 @@ class ReservaService (BaseService):
     def visualizar_expiradas(self):
 
         return self.session.query(Reserva).filter_by(
-            is_active=False
+            status=StatusReserva.EXPIRADA
         ).all()
     
     def inativar(self, reserva_id:int):
@@ -113,7 +118,7 @@ class ReservaService (BaseService):
             ).first()
 
             if material_reservado:
-                material_reservado.status = StatusMaterial.DISPONIVEL
+                material_reservado.disponibilizar()
 
         self.session.commit()
         self.session.refresh(reserva_inativar)
@@ -146,11 +151,9 @@ class ReservaService (BaseService):
             material_id=reserva.material_id
         )
 
+        #O cadastro do empréstimo já encerra a reserva do cliente
         novo_emprestimo = emprestimo.cadastrar(data)
 
-        reserva.cancelar()
-
-        self.session.commit()
         self.session.refresh(reserva)
 
         return reserva, novo_emprestimo
