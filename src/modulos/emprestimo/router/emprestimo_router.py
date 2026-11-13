@@ -9,8 +9,10 @@ from src.modulos.emprestimo.service.emprestimo_service import EmprestimoService
 
 #Declaração da classe EmprestimoRouter
 class EmprestimoRouter:
+
+    #Declaração do construtor da classe
     def __init__(self):
-        self.router = APIRouter(prefix="/emprestimos", tags=["Emprestimos"])
+        self.router = APIRouter()
         self.adicionar_rotas()
 
     #Método para adicionar rotas
@@ -27,26 +29,34 @@ class EmprestimoRouter:
             data: SchemaEmprestimoCadastro,
             emprestimo_service: EmprestimoService = Depends(obter_emprestimo_service)
     ):
+
         """Rota usada para cadastrar um novo empréstimo no sistema"""
+
         emprestimo_cadastrar = emprestimo_service.cadastrar(data)
         return emprestimo_cadastrar
 
     #Método para visualizar empréstimos
     @staticmethod
     def visualizar(emprestimo_service: EmprestimoService = Depends(obter_emprestimo_service)):
+
         """Rota usada para visualizar os empréstimos cadastrados no sistema"""
+
         return emprestimo_service.visualizar()
 
     #Método para visualizar empréstimos abertos
     @staticmethod
     def visualizar_abertos(emprestimo_service: EmprestimoService = Depends(obter_emprestimo_service)):
+
         """Rota usada para visualizar os empréstimos abertos cadastrados no sistema"""
+
         return emprestimo_service.visualizar_abertos()
 
     #Método para visualizar empréstimos atrasados
     @staticmethod
     def visualizar_atrasados(emprestimo_service: EmprestimoService = Depends(obter_emprestimo_service)):
+
         """Rota usada para visualizar os empréstimos atrasados cadastrados no sistema"""
+
         return emprestimo_service.visualizar_atrasados()
 
     #Método para registro de devolução
@@ -55,5 +65,7 @@ class EmprestimoRouter:
             emprestimo_id: int,
             emprestimo_service: EmprestimoService = Depends(obter_emprestimo_service)
     ):
+
         """Rota usada para registrar a devolução de empréstimos no sistema"""
+
         return emprestimo_service.registrar_devolucao(emprestimo_id)

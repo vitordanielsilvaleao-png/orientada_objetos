@@ -1,6 +1,6 @@
 #importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Emprestimo
 from sqlalchemy import ForeignKey, Boolean, DateTime, func, Enum
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import  Mapped, mapped_column
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from src.compartilhado.enum import StatusEmprestimo
@@ -15,12 +15,12 @@ class Emprestimo(Base):
         primary_key=True
     )
 
-    material_id: Mapped[int] = mapped_column(
+    material_id: Mapped[int] =  mapped_column(
         ForeignKey("material.id"),
         nullable=False
     )
 
-    cliente_id: Mapped[int] = mapped_column(
+    cliente_id: Mapped[int] =  mapped_column(
         ForeignKey("cliente.id"),
         nullable=False
     )
@@ -100,6 +100,7 @@ class Emprestimo(Base):
             return False
 
     def marcar_atrasado(self):
+
         if self.verificar_atraso():
             self._status = StatusEmprestimo.ATRASADO
 
