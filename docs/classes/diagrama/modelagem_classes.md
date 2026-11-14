@@ -44,8 +44,21 @@ classDiagram
         +atualizar()
     }
 
+
+    class Autor {
+        +int id
+        +str nome
+        +validar_nome()
+        +validar_nome_existente()
+        +normalizar_nome()
+        +renomear()
+    }
+
     Material <|-- Livro
     Material <|-- Revista
+
+    Livro --> Autor : autor_id
+
 ```
 
 ## Descrição
@@ -55,6 +68,11 @@ A classe Material contém os atributos e métodos comuns aos materiais da biblio
 A classe Livro herda de Material e acrescenta os atributos ISBN e autor.
 
 A classe Revista também herda de Material e acrescenta ISSN e edição.
+
+
+A classe Autor representa os autores cadastrados no sistema, contendo os atributos id e nome, além de métodos de validação, normalização e alteração do nome.
+
+A classe Livro possui o atributo autor_id, que referencia a classe Autor.
 
 As classes Livro e Revista sobrescrevem o método atualizar(), utilizando super() para reaproveitar a implementação da classe Material.
   
