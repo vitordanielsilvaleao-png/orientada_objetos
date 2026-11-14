@@ -1,4 +1,4 @@
- 
+
 # Diagrama de Classes — Sistema APOLO
 
 Este diagrama apresenta as principais entidades do sistema de gerenciamento de biblioteca APOLO, seus relacionamentos e a estrutura de serviços.
@@ -58,23 +58,46 @@ classDiagram
     class Categoria {
         +int id
         +str nome
+        +validar_nome()
+        +normalizar_nome()
+        +renomear()
     }
 
     class Editora {
         +int id
         +str nome
+        +validar_nome()
+        +normalizar_nome()
+        +renomear()
     }
 
     class Cliente {
         +int id
-        +str cpf
+        -str _cpf
         +str nome
+        +str bairro
+        +str rua
+        +str numero
+        +str complemento
+        +str telefone
+        -bool _is_active
+        +atualizar_cliente()
+        +ativar_cliente()
+        +inativar_cliente()
     }
 
     class Emprestimo {
         +int id
         +int cliente_id
         +int material_id
+        +datetime data_emprestimo
+        -datetime _data_devolucao
+        -StatusEmprestimo _status
+        -bool _is_active
+        +devolver()
+        +verificar_atraso()
+        +marcar_atrasado()
+        +validar_emprestimo_ativo()
     }
 
     class Reserva {
@@ -97,7 +120,6 @@ classDiagram
     Livro --> Autor : autor_id
     Material --> Categoria : categoria_id
     Material --> Editora : editora_id
-
     Emprestimo --> Cliente : cliente_id
     Emprestimo --> Material : material_id
 
@@ -112,7 +134,7 @@ classDiagram
     direction TB
 
     class BaseService {
-        &lt;&lt;abstract&gt;&gt;
+        <<abstract>>
         +Session session
         +salvar(entidade)
         +cadastrar(data)
@@ -127,6 +149,7 @@ classDiagram
     class AutorService
     class CategoriaService
     class EditoraService
+    class MaterialService
 
     BaseService <|-- ClienteService
     BaseService <|-- LivroService
@@ -146,8 +169,9 @@ classDiagram
 - **Empréstimo:** relaciona um cliente ao material emprestado.
 - **Reserva:** relaciona um cliente ao material reservado, permitindo acompanhar o estado da reserva.
 - **BaseService:** classe abstrata que centraliza operações compartilhadas, como salvar entidades, e define os métodos abstratos `cadastrar()` e `visualizar()`.
-- **Services:** os serviços especializados herdam de BaseService e implementam as operações específicas de cada módulo.
+- **Services:** os serviços especializados herdam de BaseService e implementam as operações específicas de cada módulo, com exceção de `MaterialService`, que não herda de `BaseService`.
 
 ## 4. Conclusão
 
 A modelagem apresenta a estrutura principal do sistema APOLO, demonstrando herança, associações entre entidades e reutilização de código por meio da classe BaseService.
+```
