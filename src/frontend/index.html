@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apolo | Biblioteca</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='23' fill='%2313203B'/%3E%3Ccircle cx='24' cy='24' r='8' fill='%23D6A93A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600&family=Marcellus&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ===================== MENU LATERAL ===================== -->
+  <aside class="barra" id="barra" aria-label="Navegação">
+    <a class="marca" href="#painel">
+      <svg class="marca-sol" viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="24" r="9"/>
+        <g><line x1="38.00" y1="24.00" x2="45.00" y2="24.00"/><line x1="36.12" y1="31.00" x2="40.45" y2="33.50"/><line x1="31.00" y1="36.12" x2="34.50" y2="42.19"/><line x1="24.00" y1="38.00" x2="24.00" y2="43.00"/><line x1="17.00" y1="36.12" x2="13.50" y2="42.19"/><line x1="11.88" y1="31.00" x2="7.55" y2="33.50"/><line x1="10.00" y1="24.00" x2="3.00" y2="24.00"/><line x1="11.88" y1="17.00" x2="7.55" y2="14.50"/><line x1="17.00" y1="11.88" x2="13.50" y2="5.81"/><line x1="24.00" y1="10.00" x2="24.00" y2="5.00"/><line x1="31.00" y1="11.88" x2="34.50" y2="5.81"/><line x1="36.12" y1="17.00" x2="40.45" y2="14.50"/></g>
+      </svg>
+      <span class="marca-texto">
+        <span class="marca-nome">Apolo</span>
+        <span class="marca-sub">Gestão de biblioteca</span>
+      </span>
+    </a>
+
+    <nav class="menu" aria-label="Menu principal">
+      <div class="menu-secao">
+        <a href="#painel" class="menu-item" data-secao="painel"><i class="fa-regular fa-sun"></i><span>Painel</span></a>
+      </div>
+      <div class="menu-secao">
+        <p class="menu-grupo">Acervo</p>
+        <a href="#livros" class="menu-item" data-secao="livros"><i class="fa-solid fa-book"></i><span>Livros</span></a>
+        <a href="#revistas" class="menu-item" data-secao="revistas"><i class="fa-regular fa-newspaper"></i><span>Revistas</span></a>
+      </div>
+      <div class="menu-secao">
+        <p class="menu-grupo">Circulação</p>
+        <a href="#emprestimos" class="menu-item" data-secao="emprestimos"><i class="fa-solid fa-right-left"></i><span>Empréstimos</span></a>
+        <a href="#reservas" class="menu-item" data-secao="reservas"><i class="fa-regular fa-bookmark"></i><span>Reservas</span></a>
+      </div>
+      <div class="menu-secao">
+        <p class="menu-grupo">Oráculo</p>
+        <a href="#relatorios" class="menu-item" data-secao="relatorios"><i class="fa-solid fa-chart-simple"></i><span>Relatórios</span></a>
+      </div>
+      <div class="menu-secao">
+        <p class="menu-grupo">Leitores</p>
+        <a href="#clientes" class="menu-item" data-secao="clientes"><i class="fa-regular fa-user"></i><span>Clientes</span></a>
+      </div>
+      <div class="menu-secao">
+        <p class="menu-grupo">Catálogo</p>
+        <a href="#autores" class="menu-item" data-secao="autores"><i class="fa-solid fa-feather-pointed"></i><span>Autores</span></a>
+        <a href="#editoras" class="menu-item" data-secao="editoras"><i class="fa-solid fa-building-columns"></i><span>Editoras</span></a>
+        <a href="#categorias" class="menu-item" data-secao="categorias"><i class="fa-solid fa-tag"></i><span>Categorias</span></a>
+      </div>
+    </nav>
+
+    <div class="barra-rodape">
+      <div class="meandro" aria-hidden="true"></div>
+      <button type="button" id="btnConceitos" class="botao-conceitos">
+        <i class="fa-solid fa-graduation-cap"></i> Conceitos de POO
+      </button>
+      <figure class="inscricao">
+        <blockquote lang="grc">ΓΝΩΘΙ ΣΕΑΥΤΟΝ</blockquote>
+        <figcaption>Conhece-te a ti mesmo, inscrição do templo de Apolo em Delfos</figcaption>
+      </figure>
+      <p class="status-api" id="statusApi"><span class="ponto"></span><span class="texto">Verificando a API…</span></p>
+    </div>
+  </aside>
+
+  <div class="fundo-menu" id="fundoMenu" hidden></div>
+
+  <main class="conteudo">
+    <header class="topo-movel">
+      <button type="button" class="botao-icone" id="btnAbrirMenu" aria-label="Abrir menu" aria-controls="barra" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+      <span class="topo-movel-nome">Apolo</span>
+    </header>
+
+    <div class="pagina">
+
+      <!-- ===================== PAINEL ===================== -->
+      <section id="secao-painel" class="secao" hidden>
+        <section class="ceu ceu-dia" id="ceu">
+          <svg class="ceu-arco" viewBox="0 0 600 220" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+            <path d="M40 210 A260 170 0 0 1 560 210" class="arco"/>
+            <g class="estrelas"><circle cx="90" cy="60" r="1.9"/><circle cx="150" cy="120" r="1.2"/><circle cx="220" cy="40" r="1.2"/><circle cx="300" cy="95" r="1.9"/><circle cx="380" cy="30" r="1.2"/><circle cx="430" cy="140" r="1.2"/><circle cx="500" cy="70" r="1.9"/><circle cx="560" cy="120" r="1.2"/><circle cx="260" cy="160" r="1.2"/><circle cx="120" cy="175" r="1.9"/><circle cx="470" cy="185" r="1.2"/><circle cx="340" cy="180" r="1.2"/></g>
+            <g class="astro" id="astro">
+              <g class="sol-grupo">
+                <circle r="34" class="sol-halo"/><circle r="20" class="sol"/>
+                <line x1="26.0" y1="0.0" x2="33.0" y2="0.0" class="raio"/><line x1="22.5" y1="13.0" x2="28.6" y2="16.5" class="raio"/><line x1="13.0" y1="22.5" x2="16.5" y2="28.6" class="raio"/><line x1="0.0" y1="26.0" x2="0.0" y2="33.0" class="raio"/><line x1="-13.0" y1="22.5" x2="-16.5" y2="28.6" class="raio"/><line x1="-22.5" y1="13.0" x2="-28.6" y2="16.5" class="raio"/><line x1="-26.0" y1="0.0" x2="-33.0" y2="0.0" class="raio"/><line x1="-22.5" y1="-13.0" x2="-28.6" y2="-16.5" class="raio"/><line x1="-13.0" y1="-22.5" x2="-16.5" y2="-28.6" class="raio"/><line x1="0.0" y1="-26.0" x2="0.0" y2="-33.0" class="raio"/><line x1="13.0" y1="-22.5" x2="16.5" y2="-28.6" class="raio"/><line x1="22.5" y1="-13.0" x2="28.6" y2="-16.5" class="raio"/>
+              </g>
+              <g class="lua-grupo"><circle r="18" class="lua"/><circle r="16" cx="8" cy="-5" class="lua-sombra"/></g>
+            </g>
+          </svg>
+          <div class="ceu-texto">
+            <p class="ceu-data" id="ceuData"></p>
+            <h1 id="ceuSaudacao">Bom dia.</h1>
+            <p class="ceu-resumo" id="ceuResumo">Consultando o acervo…</p>
+            <div class="ceu-acoes">
+              <a class="botao botao-primario" href="#emprestimos"><i class="fa-solid fa-right-left"></i><span>Registrar empréstimo</span></a>
+              <a class="botao botao-claro" href="#reservas"><i class="fa-regular fa-bookmark"></i><span>Fazer reserva</span></a>
+            </div>
+          </div>
+          <div class="meandro meandro-ceu" aria-hidden="true"></div>
+        </section>
+
+        <section class="numeros" id="painelNumeros" aria-label="Resumo do acervo"></section>
+
+        <div class="colunas-painel">
+          <section class="lista-painel">
+            <header><h2>Empréstimos atrasados</h2><a href="#emprestimos" data-filtro-destino="atrasados">Ver todos</a></header>
+            <ul id="listaAtrasados"><li class="estado"><span class="girando"></span>Carregando…</li></ul>
+          </section>
+          <section class="lista-painel">
+            <header><h2>Reservas aguardando</h2><a href="#reservas">Ver todas</a></header>
+            <ul id="listaReservas"><li class="estado"><span class="girando"></span>Carregando…</li></ul>
+          </section>
+        </div>
+      </section>
+
+      <!-- ===================== LIVROS ===================== -->
+      <section id="secao-livros" class="secao" hidden>
+        <header class="cabecalho">
+          <div>
+            <h1>Livros</h1>
+            <span class="ornamento" aria-hidden="true"></span>
+            <p>Todos os livros do acervo, com autor, editora e categoria.</p>
+          </div>
+        </header>
+
+        <div class="layout-modulo">
+          <section class="painel-form">
+            <div class="painel-form-topo"><i class="fa-solid fa-book"></i><h2>Cadastrar livro</h2></div>
+            <form id="formLivro" class="form-grid" novalidate>
+              <label class="campo">
+                <span class="campo-rotulo">Título
+                  <button type="button" class="poo-info" data-tip="Atributo herdado da CLASSE Material&#10;&#10;@validates('titulo') recusa texto vazio e grava o título normalizado (strip + lower). É assim que a reserva encontra o livro pelo nome.">?</button>
+                </span>
+                <input type="text" id="livroTitulo" maxlength="255" placeholder="Dom Casmurro" required>
+              </label>
+              <label class="campo">
+                <span class="campo-rotulo">ISBN
+                  <button type="button" class="poo-info" data-tip="Atributo EXCLUSIVO da subclasse Livro&#10;&#10;normalizar_isbn() tira pontos e hífens e _validar_isbn() exige 13 dígitos. Os dois são @staticmethod.">?</button>
+                </span>
+                <input type="text" id="livroIsbn" maxlength="17" placeholder="978-85-359-0277-1" required>
+              </label>
+              <div class="linha-dupla">
+                <label class="campo">
+                  <span class="campo-rotulo">Ano
+                    <button type="button" class="poo-info" data-tip="Atributo herdado de Material&#10;&#10;@validates('ano_publi') chama _validar_ano_publi(), que barra ano menor ou igual a zero.">?</button>
+                  </span>
+                  <input type="number" id="livroAno" min="1" placeholder="1899" required>
+                </label>
+                <label class="campo">
+                  <span class="campo-rotulo">Autor
+                    <button type="button" class="poo-info" data-tip="ASSOCIAÇÃO Livro → Autor&#10;&#10;Livro guarda só autor_id, uma chave estrangeira (ForeignKey) para a tabela autor. Revista não tem esse campo.">?</button>
+                  </span>
+                  <select id="livroAutor" required></select>
+                </label>
+              </div>
+              <div class="linha-dupla">
+                <label class="campo">
+                  <span class="campo-rotulo">Editora</span>
+                  <select id="livroEditora" required></select>
+                </label>
+                <label class="campo">
+                  <span class="campo-rotulo">Categoria</span>
+                  <select id="livroCategoria" required></select>
+                </label>
+              </div>
+              <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Cadastrar livro</button>
+            </form>
+            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>O <code>POST /livro</code> chega no <code>LivroService.cadastrar()</code>, que cria um objeto <code>Livro(...)</code>. O construtor do Livro chama <code>super().__init__()</code> para preencher os atributos de <code>Material</code>.</span></p>
+          </section>
+
+          <section class="painel-tabela">
+            <div class="ferramentas">
+              <label class="busca"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="buscaLivros" placeholder="Buscar por título, autor ou ISBN" aria-label="Buscar livros"></label>
+              <label class="alternar"><input type="checkbox" id="inativosLivros"><span class="alternar-trilho" aria-hidden="true"></span><span>Mostrar inativos</span></label>
+            </div>
+            <div class="tabela-rolagem">
+              <table class="tabela">
+                <thead><tr><th class="col-principal">Título</th><th>Autor</th><th>Editora</th><th>Categoria</th><th class="col-numero">Ano</th><th>Status</th><th>Situação</th><th class="col-acoes"><span class="sr">Ações</span></th></tr></thead>
+                <tbody id="tabelaLivros"></tbody>
+              </table>
+            </div>
+            <p class="contagem" id="contagemLivros"></p>
+          </section>
+        </div>
+      </section>
+
+      <!-- ===================== REVISTAS ===================== -->
+      <section id="secao-revistas" class="secao" hidden>
+        <header class="cabecalho">
+          <div>
+            <h1>Revistas</h1>
+            <span class="ornamento" aria-hidden="true"></span>
+            <p>Periódicos do acervo, organizados por edição.</p>
+          </div>
+        </header>
+
+        <div class="layout-modulo">
+          <section class="painel-form">
+            <div class="painel-form-topo"><i class="fa-regular fa-newspaper"></i><h2>Cadastrar revista</h2></div>
+            <form id="formRevista" class="form-grid" novalidate>
+              <label class="campo">
+                <span class="campo-rotulo">Título
+                  <button type="button" class="poo-info" data-tip="HERANÇA: Revista(Material)&#10;&#10;Título, ano, editora e categoria vêm da classe mãe. Revista e Livro têm tabelas próprias ligadas à tabela material (joined-table inheritance).">?</button>
+                </span>
+                <input type="text" id="revistaTitulo" maxlength="255" placeholder="Superinteressante" required>
+              </label>
+              <div class="linha-dupla">
+                <label class="campo">
+                  <span class="campo-rotulo">Edição
+                    <button type="button" class="poo-info" data-tip="Atributo EXCLUSIVO da subclasse Revista&#10;&#10;@validates('edicao') não aceita edição menor ou igual a zero.">?</button>
+                  </span>
+                  <input type="number" id="revistaEdicao" min="1" placeholder="412" required>
+                </label>
+                <label class="campo">
+                  <span class="campo-rotulo">ISSN
+                    <button type="button" class="poo-info" data-tip="Atributo EXCLUSIVO da subclasse Revista&#10;&#10;normalizar_issn() tira o hífen e _validar_issn() exige 8 dígitos.">?</button>
+                  </span>
+                  <input type="text" id="revistaIssn" maxlength="9" placeholder="0104-1789" required>
+                </label>
+              </div>
+              <label class="campo">
+                <span class="campo-rotulo">Ano de publicação</span>
+                <input type="number" id="revistaAno" min="1" placeholder="2024" required>
+              </label>
+              <div class="linha-dupla">
+                <label class="campo">
+                  <span class="campo-rotulo">Editora</span>
+                  <select id="revistaEditora" required></select>
+                </label>
+                <label class="campo">
+                  <span class="campo-rotulo">Categoria</span>
+                  <select id="revistaCategoria" required></select>
+                </label>
+              </div>
+              <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Cadastrar revista</button>
+            </form>
+            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>Como <code>Livro</code> e <code>Revista</code> herdam de <code>Material</code>, as duas aparecem juntas no <code>GET /material</code>, que a tela de Empréstimos usa para listar o acervo.</span></p>
+          </section>
+
+          <section class="painel-tabela">
+            <div class="ferramentas">
+              <label class="busca"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="buscaRevistas" placeholder="Buscar por título ou ISSN" aria-label="Buscar revistas"></label>
+              <label class="alternar"><input type="checkbox" id="inativosRevistas"><span class="alternar-trilho" aria-hidden="true"></span><span>Mostrar inativas</span></label>
+            </div>
+            <div class="tabela-rolagem">
+              <table class="tabela">
+                <thead><tr><th class="col-principal">Título</th><th>ISSN</th><th>Editora</th><th>Categoria</th><th class="col-numero">Ano</th><th>Status</th><th>Situação</th><th class="col-acoes"><span class="sr">Ações</span></th></tr></thead>
+                <tbody id="tabelaRevistas"></tbody>
+              </table>
+            </div>
+            <p class="contagem" id="contagemRevistas"></p>
+          </section>
+        </div>
+      </section>
+
+      <!-- ===================== EMPRÉSTIMOS ===================== -->
+      <section id="secao-emprestimos" class="secao" hidden>
+        <header class="cabecalho">
+          <div>
+            <h1>Empréstimos</h1>
+            <span class="ornamento" aria-hidden="true"></span>
+            <p>Saídas e devoluções de livros e revistas. O prazo de devolução é de 30 dias.</p>
+          </div>
+        </header>
+
+        <div class="layout-modulo">
+          <section class="painel-form">
+            <!-- ETAPA 1: CLIENTE -->
+            <div class="painel-form-topo"><span class="passo" id="passoEmp1">1</span><h2>Cliente</h2></div>
+            <form id="formEmpCliente" class="form-grid" novalidate>
+              <label class="campo">
+                <span class="campo-rotulo">Quem vai levar
+                  <button type="button" class="poo-info" data-tip="Regras no EmprestimoService.cadastrar()&#10;&#10;O cliente precisa estar ativo, ter menos de 4 empréstimos ativos e nenhum ATRASADO. Esta etapa já confere isso antes de enviar.">?</button>
+                </span>
+                <select id="empCliente" required></select>
+              </label>
+              <button type="submit" class="botao botao-primario"><i class="fa-solid fa-arrow-right"></i> Avançar para o material</button>
+            </form>
+
+            <!-- ETAPA 2: MATERIAL -->
+            <div class="painel-form-topo espacado"><span class="passo" id="passoEmp2">2</span><h2>Material</h2></div>
+            <div id="chipEmpCliente" class="chip" hidden>
+              <i class="fa-solid fa-circle-check"></i>
+              <span><strong id="chipEmpNome"></strong> <small id="chipEmpInfo"></small></span>
+              <button type="button" class="botao-icone" id="btnTrocarEmpCliente" title="Trocar cliente" aria-label="Trocar cliente"><i class="fa-solid fa-pen"></i></button>
+            </div>
+            <form id="formEmprestimo" class="form-grid" novalidate>
+              <fieldset id="fieldsetEmprestimo" disabled>
+                <label class="campo">
+                  <span class="campo-rotulo">Livro ou revista
+                    <button type="button" class="poo-info" data-tip="POLIMORFISMO na prática&#10;&#10;A lista vem do GET /material, que devolve livros e revistas juntos como Material. Só aparecem os DISPONIVEL, ou os RESERVADOS para este cliente.">?</button>
+                  </span>
+                  <select id="empMaterial" required></select>
+                </label>
+                <button type="submit" class="botao botao-primario"><i class="fa-solid fa-check"></i> Registrar empréstimo</button>
+              </fieldset>
+            </form>
+            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>O service cria <code>Emprestimo(material_id, cliente_id)</code> e chama <code>material.emprestar()</code>. O <code>status</code> é uma <code>@hybrid_property</code> somente leitura: só os métodos da classe mudam <code>_status</code>.</span></p>
+          </section>
+
+          <section class="painel-tabela">
+            <div class="ferramentas">
+              <div class="abas" role="tablist" aria-label="Filtrar empréstimos">
+                <button type="button" role="tab" class="aba" data-filtro-emp="abertos" aria-selected="true">Em aberto</button>
+                <button type="button" role="tab" class="aba" data-filtro-emp="atrasados" aria-selected="false">Atrasados</button>
+                <button type="button" role="tab" class="aba" data-filtro-emp="todos" aria-selected="false">Todos</button>
+              </div>
+              <label class="busca"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="buscaEmprestimos" placeholder="Buscar por material ou cliente" aria-label="Buscar empréstimos"></label>
+            </div>
+            <div class="tabela-rolagem">
+              <table class="tabela">
+                <thead><tr><th class="col-numero col-id">Nº</th><th class="col-principal">Material</th><th>Cliente</th><th>Emprestado em</th><th>Devolver até</th><th>Devolvido em</th><th>Situação</th><th class="col-acoes"><span class="sr">Ações</span></th></tr></thead>
+                <tbody id="tabelaEmprestimos"></tbody>
+              </table>
+            </div>
+            <p class="contagem" id="contagemEmprestimos"></p>
+          </section>
+        </div>
+      </section>
+
+      <!-- ===================== RESERVAS ===================== -->
+      <section id="secao-reservas" class="secao" hidden>
+        <header class="cabecalho">
+          <div>
+            <h1>Reservas</h1>
+            <span class="ornamento" aria-hidden="true"></span>
+            <p>Pedidos de clientes que aguardam um título ficar disponível. A reserva vale por 10 dias.</p>
+          </div>
+        </header>
+
+        <div class="layout-modulo">
+          <section class="painel-form">
+            <div class="painel-form-topo"><i class="fa-regular fa-bookmark"></i><h2>Fazer reserva</h2></div>
+            <form id="formReserva" class="form-grid" novalidate>
+              <label class="campo">
+                <span class="campo-rotulo">Cliente</span>
+                <select id="resCliente" required></select>
+              </label>
+              <label class="campo">
+                <span class="campo-rotulo">Título
+                  <button type="button" class="poo-info" data-tip="A reserva é por TÍTULO, não por exemplar&#10;&#10;Reserva._normalizar_titulo() faz strip + lower. Se houver um exemplar DISPONIVEL, o service já o vincula. Se o título nem estiver no acervo, a reserva espera: quando ele for cadastrado, LivroService/RevistaService vinculam o exemplar à reserva mais antiga.">?</button>
+                </span>
+                <input type="text" id="resTitulo" list="listaTitulos" maxlength="255" placeholder="Ex.: Dom Casmurro" autocomplete="off" required>
+                <datalist id="listaTitulos"></datalist>
+              </label>
+              <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Fazer reserva</button>
+            </form>
+            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span><b>Atender</b> chama <code>ReservaService.atender_reserva()</code>, que cria um <code>EmprestimoService</code> e reaproveita o <code>cadastrar()</code> dele. Um service usa outro, sem repetir as regras do empréstimo.</span></p>
+          </section>
+
+          <section class="painel-tabela">
+            <div class="ferramentas">
+              <div class="abas" role="tablist" aria-label="Filtrar reservas">
+                <button type="button" role="tab" class="aba" data-filtro-res="abertas" aria-selected="true">Abertas</button>
+                <button type="button" role="tab" class="aba" data-filtro-res="expiradas" aria-selected="false">Expiradas</button>
+                <button type="button" role="tab" class="aba" data-filtro-res="todas" aria-selected="false">Todas</button>
+              </div>
+              <label class="busca"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="buscaReservas" placeholder="Buscar por título ou cliente" aria-label="Buscar reservas"></label>
+            </div>
+            <div class="tabela-rolagem">
+              <table class="tabela">
+                <thead><tr><th class="col-numero col-id">Nº</th><th class="col-principal">Título</th><th>Cliente</th><th>Reservada em</th><th>Exemplar</th><th>Situação</th><th class="col-acoes"><span class="sr">Ações</span></th></tr></thead>
+                <tbody id="tabelaReservas"></tbody>
+              </table>
+            </div>
+            <p class="contagem" id="contagemReservas"></p>
+          </section>
+        </div>
+      </section>
+
+      <!-- ===================== RELATÓRIOS ===================== -->
+      <section id="secao-relatorios" class="secao" hidden>
+        <header class="cabecalho">
+          <div>
+            <h1>Relatórios</h1>
+            <span class="ornamento" aria-hidden="true"></span>
+            <p>O que o oráculo vê no acervo e na circulação, com os dados atuais da API.</p>
+          </div>
+          <button type="button" class="botao botao-secundario" id="btnImprimir"><i class="fa-solid fa-print"></i><span>Imprimir</span></button>
+        </header>
+
+        <section class="numeros numeros-quatro" id="relNumeros" aria-label="Situação do acervo"></section>
+
+        <section class="relatorio">
+          <header><h2>Materiais mais emprestados</h2><p>Todos os empréstimos já registrados, inclusive os devolvidos.</p></header>
+          <div class="relatorio-corpo" id="relRanking"></div>
+        </section>
+        <section class="relatorio">
+          <header><h2>Devoluções atrasadas</h2><p>Empréstimos marcados como ATRASADO pelo agendador, do maior atraso para o menor.</p></header>
+          <div class="relatorio-corpo" id="relAtrasados"></div>
+        </section>
+        <div class="colunas-painel">
+          <section class="relatorio">
+            <header><h2>Acervo por tipo</h2><p>Livros e revistas cadastrados.</p></header>
+            <div class="relatorio-corpo" id="relTipo"></div>
+          </section>
+          <section class="relatorio">
+            <header><h2>Acervo por categoria</h2><p>Quantidade de títulos em cada categoria.</p></header>
+            <div class="relatorio-corpo" id="relCategoria"></div>
+          </section>
+        </div>
+        <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>Os números vêm do <code>MaterialService</code>, que conta no banco com <code>func.count()</code> e <code>group_by()</code>. O ranking é montado aqui no JavaScript, contando os empréstimos com um <code>Map</code>.</span></p>
+      </section>
+
+      <!-- ===================== CLIENTES ===================== -->
+      <section id="secao-clientes" class="secao" hidden>
+        <header class="cabecalho">
+          <div>
+            <h1>Clientes</h1>
+            <span class="ornamento" aria-hidden="true"></span>
+            <p>Leitores cadastrados que podem pegar livros e revistas emprestados.</p>
+          </div>
+        </header>
+
+        <div class="layout-modulo">
+          <section class="painel-form">
+            <div class="painel-form-topo"><i class="fa-regular fa-user"></i><h2>Cadastrar cliente</h2></div>
+            <form id="formCliente" class="form-grid" novalidate>
+              <label class="campo">
+                <span class="campo-rotulo">Nome completo
+                  <button type="button" class="poo-info" data-tip="Atributo da CLASSE Cliente&#10;&#10;@validates('nome') junta espaços repetidos com normalizar_nome() e exige pelo menos 3 letras.">?</button>
+                </span>
+                <input type="text" id="cliNome" maxlength="255" placeholder="Ana Souza" required>
+              </label>
+              <label class="campo">
+                <span class="campo-rotulo">CPF
+                  <button type="button" class="poo-info" data-tip="ENCAPSULAMENTO&#10;&#10;O CPF fica em _cpf e é lido pela @hybrid_property cpf, sem setter. @validates('_cpf') tira pontos e hífen e exige 11 dígitos. Depois do cadastro ele não muda.">?</button>
+                </span>
+                <input type="text" id="cliCpf" maxlength="14" placeholder="000.000.000-00" required>
+              </label>
+              <label class="campo">
+                <span class="campo-rotulo">Telefone
+                  <button type="button" class="poo-info" data-tip="normalizar_telefone() guarda só os dígitos, e _validar_telefone() aceita 10 ou 11.">?</button>
+                </span>
+                <input type="tel" id="cliTelefone" maxlength="15" placeholder="(34) 99999-0000" required>
+              </label>
+              <label class="campo">
+                <span class="campo-rotulo">Rua</span>
+                <input type="text" id="cliRua" maxlength="50" required>
+              </label>
+              <div class="linha-dupla">
+                <label class="campo">
+                  <span class="campo-rotulo">Número</span>
+                  <input type="number" id="cliNumero" min="1" required>
+                </label>
+                <label class="campo">
+                  <span class="campo-rotulo">Complemento <em>opcional</em></span>
+                  <input type="text" id="cliComplemento" maxlength="50">
+                </label>
+              </div>
+              <label class="campo">
+                <span class="campo-rotulo">Bairro</span>
+                <input type="text" id="cliBairro" maxlength="50" required>
+              </label>
+              <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Cadastrar cliente</button>
+            </form>
+            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>Cliente não é apagado: <code>inativar_cliente()</code> muda <code>_is_active</code> para <code>False</code>. Assim o histórico de empréstimos continua ligado a ele.</span></p>
+          </section>
+
+          <section class="painel-tabela">
+            <div class="ferramentas">
+              <label class="busca"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="buscaClientes" placeholder="Buscar por nome, CPF, telefone ou bairro" aria-label="Buscar clientes"></label>
+              <label class="alternar"><input type="checkbox" id="inativosClientes"><span class="alternar-trilho" aria-hidden="true"></span><span>Mostrar inativos</span></label>
+            </div>
+            <div class="tabela-rolagem">
+              <table class="tabela">
+                <thead><tr><th class="col-principal">Nome</th><th>Telefone</th><th class="col-quebra">Endereço</th><th>Situação</th><th class="col-acoes"><span class="sr">Ações</span></th></tr></thead>
+                <tbody id="tabelaClientes"></tbody>
+              </table>
+            </div>
+            <p class="contagem" id="contagemClientes"></p>
+          </section>
+        </div>
+      </section>
+
+      <!-- ===================== AUTORES / EDITORAS / CATEGORIAS ===================== -->
+      <section id="secao-autores" class="secao" hidden>
+        <header class="cabecalho">
+          <div><h1>Autores</h1><span class="ornamento" aria-hidden="true"></span><p>Quem escreveu as obras do acervo.</p></div>
+        </header>
+        <div class="layout-modulo">
+          <section class="painel-form">
+            <div class="painel-form-topo"><i class="fa-solid fa-feather-pointed"></i><h2>Cadastrar autor</h2></div>
+            <form id="formAutor" class="form-grid" novalidate>
+              <label class="campo">
+                <span class="campo-rotulo">Nome
+                  <button type="button" class="poo-info" data-tip="AutorService herda de BaseService&#10;&#10;O cadastrar() devolve 409 se já existir um autor com o mesmo nome.">?</button>
+                </span>
+                <input type="text" id="autorNome" maxlength="255" placeholder="Machado de Assis" required>
+              </label>
+              <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Cadastrar autor</button>
+            </form>
+            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>Autores, editoras e categorias usam o mesmo código nesta tela: uma função recebe o tipo e decide a rota, assim como os três services seguem o mesmo contrato de <code>BaseService</code>.</span></p>
+          </section>
+          <section class="painel-tabela">
+            <div class="ferramentas"><label class="busca"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="buscaAutores" placeholder="Buscar por nome" aria-label="Buscar autores"></label></div>
+            <div class="tabela-rolagem">
+              <table class="tabela"><thead><tr><th class="col-principal">Nome</th><th class="col-numero">Títulos no acervo</th><th class="col-acoes"><span class="sr">Ações</span></th></tr></thead><tbody id="tabelaAutores"></tbody></table>
+            </div>
+            <p class="contagem" id="contagemAutores"></p>
+          </section>
+        </div>
+      </section>
+
+      <section id="secao-editoras" class="secao" hidden>
+        <header class="cabecalho">
+          <div><h1>Editoras</h1><span class="ornamento" aria-hidden="true"></span><p>Casas editoriais responsáveis pelos livros e revistas.</p></div>
+        </header>
+        <div class="layout-modulo">
+          <section class="painel-form">
+            <div class="painel-form-topo"><i class="fa-solid fa-building-columns"></i><h2>Cadastrar editora</h2></div>
+            <form id="formEditora" class="form-grid" novalidate>
+              <label class="campo">
+                <span class="campo-rotulo">Nome
+                  <button type="button" class="poo-info" data-tip="ASSOCIAÇÃO com Material&#10;&#10;Livro e Revista guardam editora_id. A editora não sabe quais materiais tem; quem conta os títulos é esta tela.">?</button>
+                </span>
+                <input type="text" id="editoraNome" maxlength="255" placeholder="Companhia das Letras" required>
+              </label>
+              <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Cadastrar editora</button>
+            </form>
+          </section>
+          <section class="painel-tabela">
+            <div class="ferramentas"><label class="busca"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="buscaEditoras" placeholder="Buscar por nome" aria-label="Buscar editoras"></label></div>
+            <div class="tabela-rolagem">
+              <table class="tabela"><thead><tr><th class="col-principal">Nome</th><th class="col-numero">Títulos no acervo</th><th class="col-acoes"><span class="sr">Ações</span></th></tr></thead><tbody id="tabelaEditoras"></tbody></table>
+            </div>
+            <p class="contagem" id="contagemEditoras"></p>
+          </section>
+        </div>
+      </section>
+
+      <section id="secao-categorias" class="secao" hidden>
+        <header class="cabecalho">
+          <div><h1>Categorias</h1><span class="ornamento" aria-hidden="true"></span><p>Gêneros e assuntos usados para organizar o acervo.</p></div>
+        </header>
+        <div class="layout-modulo">
+          <section class="painel-form">
+            <div class="painel-form-topo"><i class="fa-solid fa-tag"></i><h2>Cadastrar categoria</h2></div>
+            <form id="formCategoria" class="form-grid" novalidate>
+              <label class="campo">
+                <span class="campo-rotulo">Nome
+                  <button type="button" class="poo-info" data-tip="CategoriaService.cadastrar()&#10;&#10;Também devolve 409 para nome repetido. O relatório 'Acervo por categoria' agrupa os materiais por categoria_id.">?</button>
+                </span>
+                <input type="text" id="categoriaNome" maxlength="255" placeholder="Romance" required>
+              </label>
+              <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Cadastrar categoria</button>
+            </form>
+          </section>
+          <section class="painel-tabela">
+            <div class="ferramentas"><label class="busca"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="buscaCategorias" placeholder="Buscar por nome" aria-label="Buscar categorias"></label></div>
+            <div class="tabela-rolagem">
+              <table class="tabela"><thead><tr><th class="col-principal">Nome</th><th class="col-numero">Títulos no acervo</th><th class="col-acoes"><span class="sr">Ações</span></th></tr></thead><tbody id="tabelaCategorias"></tbody></table>
+            </div>
+            <p class="contagem" id="contagemCategorias"></p>
+          </section>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- ===================== TEMPLATES DAS LINHAS ===================== -->
+<template id="linhaLivroTemplate">
+  <tr>
+    <td class="col-principal" data-rotulo="Título"><strong class="t-titulo"></strong><small class="t-detalhe"></small></td>
+    <td data-rotulo="Autor" class="t-autor"></td>
+    <td data-rotulo="Editora" class="t-editora"></td>
+    <td data-rotulo="Categoria" class="t-categoria"></td>
+    <td data-rotulo="Ano" class="col-numero t-ano"></td>
+    <td data-rotulo="Status"><span class="selo t-status"></span></td>
+    <td data-rotulo="Situação"><span class="selo t-situacao"></span></td>
+    <td class="col-acoes"><div class="acoes">
+      <button type="button" class="botao-icone b-editar" title="Editar" aria-label="Editar"><i class="fa-solid fa-pen"></i></button>
+      <button type="button" class="botao-icone b-ativacao"><i class="fa-solid fa-ban"></i></button>
+    </div></td>
+  </tr>
+</template>
+
+<template id="linhaClienteTemplate">
+  <tr>
+    <td class="col-principal" data-rotulo="Nome"><strong class="t-nome"></strong><small class="t-cpf"></small></td>
+    <td data-rotulo="Telefone" class="t-telefone"></td>
+    <td data-rotulo="Endereço" class="col-quebra"><span class="t-endereco"></span><small class="t-bairro"></small></td>
+    <td data-rotulo="Situação"><span class="selo t-situacao"></span></td>
+    <td class="col-acoes"><div class="acoes">
+      <button type="button" class="botao-icone b-editar" title="Editar cliente" aria-label="Editar cliente"><i class="fa-solid fa-pen"></i></button>
+      <button type="button" class="botao-icone b-ativacao"><i class="fa-solid fa-ban"></i></button>
+    </div></td>
+  </tr>
+</template>
+
+<template id="linhaEmprestimoTemplate">
+  <tr>
+    <td class="col-numero col-id t-id" data-rotulo="Nº"></td>
+    <td class="col-principal" data-rotulo="Material"><strong class="t-material"></strong><small class="t-tipo"></small></td>
+    <td data-rotulo="Cliente" class="t-cliente"></td>
+    <td data-rotulo="Emprestado em" class="t-data"></td>
+    <td data-rotulo="Devolver até" class="t-prazo"></td>
+    <td data-rotulo="Devolvido em" class="t-devolucao"></td>
+    <td data-rotulo="Situação"><span class="selo t-status"></span></td>
+    <td class="col-acoes"><div class="acoes">
+      <button type="button" class="botao botao-pequeno botao-secundario b-devolver"><i class="fa-solid fa-rotate-left"></i><span>Registrar devolução</span></button>
+    </div></td>
+  </tr>
+</template>
+
+<template id="linhaReservaTemplate">
+  <tr>
+    <td class="col-numero col-id t-id" data-rotulo="Nº"></td>
+    <td class="col-principal" data-rotulo="Título"><strong class="t-titulo"></strong></td>
+    <td data-rotulo="Cliente" class="t-cliente"></td>
+    <td data-rotulo="Reservada em" class="t-data"></td>
+    <td data-rotulo="Exemplar" class="t-exemplar"></td>
+    <td data-rotulo="Situação"><span class="selo t-status"></span></td>
+    <td class="col-acoes"><div class="acoes">
+      <button type="button" class="botao botao-pequeno botao-secundario b-atender"><i class="fa-solid fa-check"></i><span>Atender</span></button>
+      <button type="button" class="botao-icone perigo b-cancelar" title="Cancelar reserva" aria-label="Cancelar reserva"><i class="fa-solid fa-xmark"></i></button>
+    </div></td>
+  </tr>
+</template>
+
+<template id="linhaCatalogoTemplate">
+  <tr>
+    <td class="col-principal" data-rotulo="Nome"><strong class="t-nome"></strong></td>
+    <td class="col-numero t-quantidade" data-rotulo="Títulos no acervo"></td>
+    <td class="col-acoes"><div class="acoes">
+      <button type="button" class="botao-icone b-editar" title="Renomear" aria-label="Renomear"><i class="fa-solid fa-pen"></i></button>
+    </div></td>
+  </tr>
+</template>
+
+<!-- ===================== JANELAS DE EDIÇÃO ===================== -->
+<div id="modalLivro" class="sobreposicao">
+  <div class="janela">
+    <form id="formEditarLivro" class="modal-corpo" novalidate>
+      <header class="modal-topo">
+        <div><h2>Editar livro</h2><p id="editLivroIsbn"></p></div>
+        <button type="button" class="botao-icone" data-fechar="modalLivro" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="campos">
+        <input type="hidden" id="editLivroId">
+        <label class="campo"><span class="campo-rotulo">Título</span><input type="text" id="editLivroTitulo" maxlength="255" required></label>
+        <label class="campo campo-meia"><span class="campo-rotulo">Ano de publicação</span><input type="number" id="editLivroAno" min="1" required></label>
+        <label class="campo campo-meia"><span class="campo-rotulo">Autor</span><select id="editLivroAutor" required></select></label>
+        <label class="campo campo-meia"><span class="campo-rotulo">Editora</span><select id="editLivroEditora" required></select></label>
+        <label class="campo campo-meia"><span class="campo-rotulo">Categoria</span><select id="editLivroCategoria" required></select></label>
+      </div>
+      <p class="poo-hint" style="margin: 12px 28px 0"><i class="fa-solid fa-lightbulb"></i><span><code>Livro.atualizar()</code> SOBRESCREVE o método da mãe: chama <code>super().atualizar(...)</code> para os campos comuns e depois cuida do <code>autor_id</code>. O ISBN não pode ser editado.</span></p>
+      <footer class="modal-acoes">
+        <button type="button" class="botao botao-secundario" data-fechar="modalLivro">Cancelar</button>
+        <button type="submit" class="botao botao-primario"><i class="fa-solid fa-floppy-disk"></i> Salvar alterações</button>
+      </footer>
+    </form>
+  </div>
+</div>
+
+<div id="modalRevista" class="sobreposicao">
+  <div class="janela">
+    <form id="formEditarRevista" class="modal-corpo" novalidate>
+      <header class="modal-topo">
+        <div><h2>Editar revista</h2><p id="editRevistaIssn"></p></div>
+        <button type="button" class="botao-icone" data-fechar="modalRevista" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="campos">
+        <input type="hidden" id="editRevistaId">
+        <label class="campo"><span class="campo-rotulo">Título</span><input type="text" id="editRevistaTitulo" maxlength="255" required></label>
+        <label class="campo campo-meia"><span class="campo-rotulo">Edição</span><input type="number" id="editRevistaEdicao" min="1" required></label>
+        <label class="campo campo-meia"><span class="campo-rotulo">Ano de publicação</span><input type="number" id="editRevistaAno" min="1" required></label>
+        <label class="campo campo-meia"><span class="campo-rotulo">Editora</span><select id="editRevistaEditora" required></select></label>
+        <label class="campo campo-meia"><span class="campo-rotulo">Categoria</span><select id="editRevistaCategoria" required></select></label>
+      </div>
+      <footer class="modal-acoes">
+        <button type="button" class="botao botao-secundario" data-fechar="modalRevista">Cancelar</button>
+        <button type="submit" class="botao botao-primario"><i class="fa-solid fa-floppy-disk"></i> Salvar alterações</button>
+      </footer>
+    </form>
+  </div>
+</div>
+
+<div id="modalCliente" class="sobreposicao">
+  <div class="janela">
+    <form id="formEditarCliente" class="modal-corpo" novalidate>
+      <header class="modal-topo">
+        <div><h2>Editar cliente</h2><p id="editClienteCpf"></p></div>
+        <button type="button" class="botao-icone" data-fechar="modalCliente" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="campos">
+        <input type="hidden" id="editClienteId">
+        <label class="campo"><span class="campo-rotulo">Nome completo</span><input type="text" id="editClienteNome" maxlength="255" required></label>
+        <label class="campo"><span class="campo-rotulo">Telefone</span><input type="tel" id="editClienteTelefone" maxlength="15" required></label>
+        <label class="campo"><span class="campo-rotulo">Rua</span><input type="text" id="editClienteRua" maxlength="50" required></label>
+        <label class="campo campo-meia"><span class="campo-rotulo">Número</span><input type="number" id="editClienteNumero" min="1" required></label>
+        <label class="campo campo-meia"><span class="campo-rotulo">Complemento <em>opcional</em></span><input type="text" id="editClienteComplemento" maxlength="50"></label>
+        <label class="campo"><span class="campo-rotulo">Bairro</span><input type="text" id="editClienteBairro" maxlength="50" required></label>
+      </div>
+      <p class="poo-hint" style="margin: 12px 28px 0"><i class="fa-solid fa-lightbulb"></i><span>O CPF não aparece aqui de propósito: <code>SchemaClienteAtualizacao</code> não tem o campo, e a entidade não oferece setter para <code>_cpf</code>.</span></p>
+      <footer class="modal-acoes">
+        <button type="button" class="botao botao-secundario" data-fechar="modalCliente">Cancelar</button>
+        <button type="submit" class="botao botao-primario"><i class="fa-solid fa-floppy-disk"></i> Salvar alterações</button>
+      </footer>
+    </form>
+  </div>
+</div>
+
+<div id="modalNome" class="sobreposicao">
+  <div class="janela">
+    <form id="formEditarNome" class="modal-corpo" novalidate>
+      <header class="modal-topo">
+        <div><h2 id="editNomeTitulo">Renomear</h2></div>
+        <button type="button" class="botao-icone" data-fechar="modalNome" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="campos">
+        <input type="hidden" id="editNomeId">
+        <input type="hidden" id="editNomeTipo">
+        <label class="campo"><span class="campo-rotulo">Nome</span><input type="text" id="editNomeValor" maxlength="255" required></label>
+      </div>
+      <footer class="modal-acoes">
+        <button type="button" class="botao botao-secundario" data-fechar="modalNome">Cancelar</button>
+        <button type="submit" class="botao botao-primario"><i class="fa-solid fa-floppy-disk"></i> Salvar nome</button>
+      </footer>
+    </form>
+  </div>
+</div>
+
+<div id="modalConfirmar" class="sobreposicao">
+  <div class="janela">
+    <div class="modal-corpo modal-confirmar">
+      <header class="modal-topo"><div><h2 id="confirmarTitulo"></h2><p id="confirmarMensagem"></p></div></header>
+      <footer class="modal-acoes">
+        <button type="button" class="botao botao-secundario" id="btnConfirmarNao">Voltar</button>
+        <button type="button" class="botao botao-primario" id="btnConfirmarSim">Confirmar</button>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CONCEITOS DE POO ===================== -->
+<div id="modalConceitos" class="sobreposicao">
+  <div class="janela janela-larga">
+    <div class="modal-corpo">
+      <header class="modal-topo">
+        <div><h2><i class="fa-solid fa-graduation-cap" style="color: var(--ouro)"></i> Conceitos de POO &amp; arquitetura</h2>
+        <p>Onde cada conceito aparece no back-end do Apolo, e qual tela usa cada classe.</p></div>
+        <button type="button" class="botao-icone" data-fechar="modalConceitos" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+
+      <div class="conceitos-corpo">
+        <section class="conceito-bloco">
+          <h3><i class="fa-solid fa-sitemap"></i> <code>Material</code>, <code>Livro</code> e <code>Revista</code> <span class="tag-arquivo">modulos/material · livro · revista</span></h3>
+          <p><strong>Herança:</strong> <code>Livro(Material)</code> e <code>Revista(Material)</code>. Cada uma tem a própria tabela, ligada à tabela <code>material</code> pelo <code>id</code>, e a coluna <code>tipo</code> diz qual subclasse criar (<code>polymorphic_on</code>).</p>
+          <div class="duas-colunas">
+            <div>
+              <h4>Atributos</h4>
+              <ul class="lista-membros">
+                <li><code>titulo</code>, <code>ano_publi</code>, <code>categoria_id</code>, <code>editora_id</code>: em Material</li>
+                <li><code>_status</code>, <code>_is_active</code>: privados, lidos por <code>@hybrid_property</code></li>
+                <li><code>isbn</code>, <code>autor_id</code>: só em Livro</li>
+                <li><code>issn</code>, <code>edicao</code>: só em Revista</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Métodos</h4>
+              <ul class="lista-membros">
+                <li><code>atualizar()</code>: sobrescrito em Livro e Revista com <code>super()</code></li>
+                <li><code>emprestar()</code>, <code>reservar()</code>, <code>disponibilizar()</code>: mudam o status</li>
+                <li><code>inativar()</code> / <code>ativar()</code>: nada é apagado</li>
+                <li><code>@validates</code> para título, ano, ISBN, ISSN e edição</li>
+              </ul>
+            </div>
+          </div>
+          <p class="poo-hint"><i class="fa-solid fa-display"></i><span>Telas: Livros, Revistas, Empréstimos (lista de materiais) e Relatórios.</span></p>
+        </section>
+
+        <section class="conceito-bloco">
+          <h3><i class="fa-regular fa-user"></i> <code>Cliente</code> <span class="tag-arquivo">modulos/cliente/entidade/cliente.py</span></h3>
+          <p><strong>Encapsulamento:</strong> <code>_cpf</code> e <code>_is_active</code> são privados. O CPF só é lido pela propriedade <code>cpf</code>, e a situação só muda por <code>inativar_cliente()</code> e <code>ativar_cliente()</code>. Os métodos <code>normalizar_*</code> e <code>_validar_*</code> são <code>@staticmethod</code>: não usam <code>self</code>.</p>
+          <p class="poo-hint"><i class="fa-solid fa-display"></i><span>Tela: Clientes. Também aparece nas etapas de Empréstimo e na Reserva.</span></p>
+        </section>
+
+        <section class="conceito-bloco">
+          <h3><i class="fa-solid fa-right-left"></i> <code>Emprestimo</code> e <code>Reserva</code> <span class="tag-arquivo">modulos/emprestimo · reserva</span></h3>
+          <div class="duas-colunas">
+            <div>
+              <h4>Emprestimo</h4>
+              <ul class="lista-membros">
+                <li><code>devolver()</code>: grava a data e muda para DEVOLVIDO</li>
+                <li><code>verificar_atraso()</code>: prazo de 30 dias</li>
+                <li><code>marcar_atrasado()</code>: chamado pelo agendador de hora em hora</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Reserva</h4>
+              <ul class="lista-membros">
+                <li><code>verificar_expiracao()</code>: prazo de 10 dias</li>
+                <li><code>cancelar()</code> e <code>concluir()</code>: encerram a reserva</li>
+                <li><code>vincular_material()</code>: liga o exemplar que voltou</li>
+              </ul>
+            </div>
+          </div>
+          <p><strong>Associação:</strong> os dois guardam <code>cliente_id</code> e <code>material_id</code>, ou seja, ligam objetos de outras classes.</p>
+        </section>
+
+        <section class="conceito-bloco">
+          <h3><i class="fa-solid fa-layer-group"></i> <code>BaseService</code> e os services <span class="tag-arquivo">compartilhado/base_service.py</span></h3>
+          <p><strong>Abstração:</strong> <code>BaseService(ABC)</code> tem <code>cadastrar()</code> e <code>visualizar()</code> como <code>@abstractmethod</code>, além do <code>salvar()</code> pronto. Oito services herdam dela e são obrigados a implementar os dois métodos. O <code>MaterialService</code> não herda, porque só faz consultas.</p>
+          <p><strong>Injeção de dependência:</strong> o router nunca chama o construtor do service. O FastAPI chama <code>obter_livro_service()</code> via <code>Depends</code>, que recebe a sessão de <code>obter_sessao()</code>.</p>
+        </section>
+
+        <section class="conceito-bloco">
+          <h3><i class="fa-solid fa-triangle-exclamation"></i> Erros e mensagens <span class="tag-arquivo">main.py · tradutor_validacao.py</span></h3>
+          <p>Toda resposta de erro chega no formato <code>{"success": false, "message": "..."}</code>. O <code>TradutorValidacao</code> transforma os erros 422 do Pydantic em frases em português. Este front mostra sempre o <code>data.message</code> no aviso vermelho.</p>
+        </section>
+
+        <section class="conceito-bloco">
+          <h3><i class="fa-solid fa-right-left"></i> Do menu do Python para a tela</h3>
+          <table class="tabela-transicao">
+            <thead><tr><th>Ação na tela</th><th>Rota</th><th>Método no back-end</th></tr></thead>
+            <tbody>
+              <tr><td>Cadastrar livro</td><td><code>POST /livro</code></td><td><code>LivroService.cadastrar()</code> → <code>Livro(...)</code></td></tr>
+              <tr><td>Editar livro</td><td><code>PATCH /livro/{id}</code></td><td><code>Livro.atualizar()</code> (sobrescrito)</td></tr>
+              <tr><td>Inativar cliente</td><td><code>PATCH /cliente/{id}/inativar</code></td><td><code>Cliente.inativar_cliente()</code></td></tr>
+              <tr><td>Registrar empréstimo</td><td><code>POST /emprestimo</code></td><td><code>EmprestimoService.cadastrar()</code></td></tr>
+              <tr><td>Registrar devolução</td><td><code>PATCH /emprestimo/{id}/devolver</code></td><td><code>Emprestimo.devolver()</code> + fila de reservas</td></tr>
+              <tr><td>Fazer reserva</td><td><code>POST /reserva</code></td><td><code>ReservaService.cadastrar()</code></td></tr>
+              <tr><td>Atender reserva</td><td><code>PATCH /reserva/{id}</code></td><td><code>ReservaService.atender_reserva()</code> → <code>EmprestimoService</code></td></tr>
+              <tr><td>Relatórios</td><td><code>GET /material/quantidade/...</code></td><td><code>MaterialService</code> com <code>func.count()</code></td></tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/geral.js"></script>
+<script src="js/painel.js"></script>
+<script src="js/livros.js"></script>
+<script src="js/revistas.js"></script>
+<script src="js/emprestimos.js"></script>
+<script src="js/reservas.js"></script>
+<script src="js/relatorios.js"></script>
+<script src="js/clientes.js"></script>
+<script src="js/catalogo.js"></script>
+<script src="js/navegacao.js"></script>
+</body>
+</html>
