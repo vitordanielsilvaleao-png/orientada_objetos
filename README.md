@@ -39,6 +39,13 @@ O MVP (Minimum Viable Product) contempla as funcionalidades essenciais para o fu
 
 Inicialmente, os materiais contemplados serão **livros e revistas**.
 
+### 📕 Módulo de Revistas
+
+- Cadastro de revistas;
+- Edição de revistas;
+- Inativação de revistas;
+- Consulta de revistas.
+
 ### 📦 Disponibilidade
 
 - Consulta da quantidade de materiais disponíveis no acervo;
@@ -50,6 +57,7 @@ Inicialmente, os materiais contemplados serão **livros e revistas**.
 - Registro de devoluções;
 - Consulta de empréstimos;
 - Reserva de materiais do acervo;
+- Cadastro de reservas;
 - Cancelamento de reservas;
 - Consulta de reservas;
 - Consulta de pendências de devolução;
@@ -64,7 +72,41 @@ O MVP contará inicialmente com três relatórios:
 - Devoluções atrasadas.
 
 ### 👤 Cadastro de Clientes
-- Cadastro, consulta, atualização e ativação/inativação de clientes;
+- Cadastro, consulta, atualização e ativação/inativação de clientes.
+
+## 🧪 Como executar os testes
+
+Para executar os testes automatizados do projeto, utilize o comando:
+
+```bash
+python -m unittest
+```
+
+## 💻 Como abrir o frontend
+
+1. Ajuste `API_URL` em `js/config.js` (padrão: `http://localhost:8000`).
+2. Libere o CORS no FastAPI se o front for servido em outra porta:
+
+```python
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5500"],  # endereço onde o front roda
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
+
+3. Sirva a pasta com qualquer servidor estático, por exemplo `python -m http.server 5500`,
+   ou monte-a no próprio FastAPI (assim não precisa de CORS):
+
+```python
+from fastapi.staticfiles import StaticFiles
+app.mount("/app", StaticFiles(directory="frontend", html=True), name="frontend")
+```
+
+Para ver o front sem a API, abra `index.html?demo`.
 
 ## 🔮 Funcionalidades futuras
 
