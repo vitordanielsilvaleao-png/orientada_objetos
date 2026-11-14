@@ -11,8 +11,8 @@ Uma devolução somente poderá ser registrada para um empréstimo que esteja co
 ### [RN-DEV-003] Devolução de Empréstimo Encerrado
 Caso seja realizada uma tentativa de devolução de um empréstimo já encerrado ou cancelado, a operação deverá ser impedida e o motivo informado.
 
-### [RN-DEV-004] Atualização Automática da Disponibilidade e Fila
-A devolução deverá atualizar automaticamente a disponibilidade do material e verificar imediatamente a existência de reservas pendentes na fila de espera.
+### [RN-DEV-004] Atualização do Status do Exemplar
+A devolução deverá atualizar automaticamente o status do exemplar para `DISPONIVEL` ou `RESERVADO`, dependendo da existência de reservas pendentes.
 
-### [RN-DEV-005] Destinação de Material Reservado e Gestão da Fila
-Caso exista uma reserva ativa para o material devolvido, o sistema deverá processar a fila FIFO: a reserva mais antiga do usuário correspondente terá seu status alterado para atendida/reservada para retirada, e o material será destinado prioritariamente a esse usuário, ajustando os contadores de disponibilidade adequadamente.
+### [RN-DEV-005] Destinação de Material Reservado e Vínculo de Reserva
+Caso exista uma reserva ativa (status `ABERTA`) para o material devolvido, a devolução vincula o material à reserva e altera o status do exemplar para `RESERVADO`. A reserva em si passa a ter o status `ATENDIDA` somente no momento em que o empréstimo correspondente for realizado.

@@ -21,7 +21,7 @@ Uma revista deverá possuir obrigatoriamente título, edição, editora, ISSN e 
 ## Relacionamentos
 
 ### [RN-ACER-005] Autor do Material
-Cada material deverá possuir somente um autor.
+Cada Livro deverá possuir somente um autor. Revistas não possuem autor associado.
 
 ### [RN-ACER-006] Materiais do Autor
 Um autor poderá estar associado a mais de um material.
@@ -35,18 +35,15 @@ Uma categoria poderá ser utilizada por vários materiais.
 ### [RN-ACER-009] Categoria do Material
 Cada material deverá pertencer a somente uma categoria.
 
-## Quantidades
+## Status e Exemplares
 
-### [RN-ACER-010] Quantidade Total
-A quantidade total de um material não poderá ser negativa.
+### [RN-ACER-010] Gestão por Exemplares
+Cada material cadastrado no acervo é gerenciado por exemplares individuais, onde cada unidade possui um status próprio no sistema.
 
-### [RN-ACER-011] Quantidade Disponível
-A quantidade disponível de um material não poderá ser negativa.
-
-### [RN-ACER-012] Limite da Quantidade Disponível
-A quantidade disponível de um material não poderá ser maior que sua quantidade total.
+### [RN-ACER-011] Status do Exemplar
+O exemplar de um material pode assumir os status de `DISPONIVEL`, `EMPRESTADO` ou `RESERVADO`.
 
 ## Status
 
-### [RN-ACER-013] Inativação do Material
+### [RN-ACER-012] Inativação do Material
 Um material que já esteja inativo não poderá ser inativado novamente.
