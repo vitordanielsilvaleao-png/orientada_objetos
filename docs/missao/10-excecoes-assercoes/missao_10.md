@@ -32,3 +32,6 @@ Componente responsável por interceptar e traduzir os erros de validação padr�
 
 ## 5. Reflexão
 O tratamento centralizado de exceções garante consistência nas APIs, facilitando a integração com o front-end e melhorando a manutenibilidade do código ao separar erros de negócio de erros técnicos.
+
+## 6. Commits
+* `docs: adiciona documentacao da missao 10` — Documentação da arquitetura de tratamento de exceções (`ValueError`, `HTTPException`), manipuladores globais no `src/main.py` e tradução de erros 422 via `TradutorValidacao`.
