@@ -101,9 +101,13 @@ O formato segue uma organização baseada em versões e etapas de desenvolviment
 
 ### Padronização dos módulos
 
-- Padronização dos módulos `Material`, `Autor` e `Empréstimo`.
-- Reorganização da entidade, dependências, router, schemas, service e testes do módulo `Empréstimo`.
-- Evolução das validações e normalização de dados das entidades do sistema.
+- Padronização dos módulos `Material`, `Autor`, `Cliente`, `Reserva`, `Livro`, `Revista` e `Empréstimo`, além dos componentes compartilhados.
+- Reorganização das entidades, dependências, routers, schemas, services e testes, conforme a estrutura de cada módulo.
+- Implementação da `BaseService` para centralizar operações e comportamentos comuns dos serviços.
+- Implementação de handlers de erro no `main.py` para padronizar o tratamento de exceções da API.
+- Implementação do `TradutorValidacao` para apresentar mensagens de erro HTTP 422 em português.
+- Aplicação de validações e normalização de dados nas entidades do sistema.
+- Encapsulamento dos atributos `_status` e `_is_active`, com controle de alterações por meio dos métodos das entidades.
 
 ### Atualizações do banco de dados
 
@@ -111,6 +115,8 @@ O formato segue uma organização baseada em versões e etapas de desenvolviment
 - Definido o status inicial `ABERTA` para reservas existentes ativas e `CANCELADA` para reservas existentes inativas.
 - Adicionada a migração `eb118a43784a` para definir `id` como única chave primária de `revista`, mantendo `issn` como campo único.
 - Adicionada a migração `dbf83686c72c` para definir `id` como única chave primária de `livro`, mantendo `isbn` como campo único.
+- Implementação do enum `StatusReserva`, com os estados `ABERTA`, `ATENDIDA`, `CANCELADA` e `EXPIRADA`.
+- Atualização da entidade `Reserva` para utilizar o campo `status`, permitindo controlar o ciclo de vida das reservas.
 
 ### Frontend
 
