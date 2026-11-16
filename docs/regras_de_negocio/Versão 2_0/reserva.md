@@ -1,4 +1,4 @@
-Versão 2.0 - 11/11/2026
+Versão 2.0 - 16/11/2026
 
 # Circulação de Materiais do Acervo
 
@@ -19,8 +19,9 @@ Quando o material retornar ou estiver disponível, a reserva mais antiga na fila
 ### [RN-RES-005] Prazo de Validade da Reserva
 Uma reserva com status `ABERTA` permanecerá válida pelo período máximo de 10 dias.
 
-### [RN-RES-006] Cancelamento Automático da Reserva (Expiração)
-Caso uma reserva `ABERTA` não seja atendida dentro do prazo limite de 10 dias, seu status mudará automaticamente para **EXPIRADA**, liberando o exemplar para o próximo da fila.
+### [RN-RES-006] Expiração Automática da Reserva
+Caso uma reserva `ABERTA` não seja atendida dentro do prazo limite de 10 dias, o método `verificar_expiracao()` altera automaticamente o status da reserva para **EXPIRADA**.
+* **Pendência conhecida na Versão 2.0:** Atualmente, a rotina de expiração altera apenas o status da reserva, mantendo o material com status `RESERVADO` sem transferi-lo automaticamente para o próximo da fila ou retorná-lo para `DISPONIVEL`.
 
 ### [RN-RES-007] Cancelamento de Reserva Ativa
 Uma reserva somente poderá ser cancelada pelo operador/usuário enquanto estiver com o status `ABERTA` na fila.

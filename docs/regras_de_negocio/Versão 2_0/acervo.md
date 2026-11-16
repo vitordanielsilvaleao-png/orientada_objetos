@@ -1,4 +1,4 @@
-Versão 2.0 - 11/11/2026
+Versão 2.0 - 16/11/2026
 
 # Controle de Acervo
 
@@ -35,13 +35,24 @@ Uma categoria poderá ser utilizada por vários materiais.
 ### [RN-ACER-009] Categoria do Material
 Cada material deverá pertencer a somente uma categoria.
 
-## Gestão por Exemplares e Status
+## Quantidades (Regras Removidas na Versão 2.0)
 
-### [RN-ACER-010] Controle por Exemplares Individuais
-O acervo é gerido através de exemplares individuais de cada material, eliminando o controle baseado em contadores numéricos de quantidade.
+### [RN-ACER-010] Quantidade Total *(Removida)*
+Regra descontinuada na Versão 2.0 devido à substituição do controle numérico por controle de status unitário por registro de material.
 
-### [RN-ACER-011] Status do Exemplar
-O exemplar de um material poderá assumir exclusivamente os status de `DISPONIVEL`, `EMPRESTADO` ou `RESERVADO`.
+### [RN-ACER-011] Quantidade Disponível *(Removida)*
+Regra descontinuada na Versão 2.0 devido à substituição do controle numérico por controle de status unitário por registro de material.
 
-### [RN-ACER-012] Inativação do Material
+### [RN-ACER-012] Limite da Quantidade Disponível *(Removida)*
+Regra descontinuada na Versão 2.0 devido à substituição do controle numérico por controle de status unitário por registro de material.
+
+## Status
+
+### [RN-ACER-013] Inativação do Material
 Um material que já esteja inativo não poderá ser inativado novamente.
+
+### [RN-ACER-014] Controle Unitário por Material
+Cada registro de material cadastrado no acervo representa uma unidade física própria, gerida diretamente pelo seu status individual no sistema.
+
+### [RN-ACER-015] Status do Material
+Um material poderá assumir exclusivamente os status de `DISPONIVEL`, `EMPRESTADO` ou `RESERVADO`.
