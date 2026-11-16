@@ -1,7 +1,9 @@
 # Apolo | Front-end
 
+Front-end em HTML, CSS e JavaScript puro para a API Apolo.
 Interface web do **Apolo**, sistema de gerenciamento de biblioteca. O front-end é feito só com HTML, CSS e JavaScript puro (sem frameworks e sem etapa de build) e conversa com a API em FastAPI por meio de `fetch` e JSON.
 
+## Estrutura
 ## Funcionalidades
 
 - **Painel:** céu com sol ou lua conforme a hora do dia, números do acervo e listas de atenção (empréstimos atrasados, reservas abertas).
@@ -29,6 +31,14 @@ Interface web do **Apolo**, sistema de gerenciamento de biblioteca. O front-end 
 ## Estrutura de pastas
 
 ```
+index.html          página única (menu lateral + área de conteúdo)
+css/styles.css      identidade visual
+js/config.js        endereço da API e modo demonstração
+js/api.js           ApiClient: toda a comunicação com o back-end
+js/api-demo.js      ApiDemo: imita a API com dados em memória
+js/ui.js            ícones, avisos (Toast), modais e formulários
+js/paginas.js       uma classe por tela (herdando de PaginaLista)
+js/app.js           App (rotas e menu) e Referencias (cache de nomes)
 frontend/
 ├── index.html          # Página única: menu, 10 seções, templates e janelas
 ├── css/
@@ -44,38 +54,62 @@ frontend/
 │   ├── clientes.js     # Tela de clientes
 │   ├── catalogo.js     # Autores, editoras e categorias
 │   └── navegacao.js    # Menu lateral e início do sistema (carregado por último)
-├── docs/               # Um documento por arquivo do front
-├── FRONTEND.md         # Como o front-end foi construído
 └── README.md
 ```
 
 ## Como rodar
 
+1. Ajuste `API_URL` em `js/config.js` (padrão: `http://localhost:8000`).
+2. Libere o CORS no FastAPI se o front for servido em outra porta:
 ### Pré-requisitos
 
+```python
+from fastapi.middleware.cors import CORSMiddleware
 - A API do Apolo (FastAPI) rodando em `http://localhost:8000`
 - Python 3 (para servir os arquivos) ou a extensão Live Server do VS Code
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5500"],  # endereço onde o front roda
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
 ### Passo a passo
 
+3. Sirva a pasta com qualquer servidor estático, por exemplo `python -m http.server 5500`,
+   ou monte-a no próprio FastAPI (assim não precisa de CORS):
 1. Suba a API na raiz do projeto:
 
+```python
+from fastapi.staticfiles import StaticFiles
+app.mount("/app", StaticFiles(directory="frontend", html=True), name="frontend")
+```
    ```bash
    uvicorn src.main:app --reload
    ```
 
+Para ver o front sem a API, abra `index.html?demo`.
 2. Sirva a pasta do front-end:
 
+## Formato da API
    ```bash
    python -m http.server 5500 --directory src/frontend
    ```
 
+As telas seguem os schemas de resposta do back-end:
 3. Acesse `http://localhost:5500`.
 
+- Status chegam como enums em maiúsculas (`DISPONIVEL`, `ABERTO`, `ATRASADO`, `ABERTA`...); `ROTULOS_STATUS` em `js/ui.js` traduz para o rótulo exibido.
+- Livros e revistas compartilham o `id` da tabela `material`; `Referencias.material()` em `js/app.js` resolve títulos pelo catálogo geral (`GET /material`).
+- Reservas usam o campo `data`; empréstimos usam `data_emprestimo` e `data_devolucao`.
+- O prazo de devolução (`PRAZO_EMPRESTIMO_DIAS` em `js/config.js`) precisa ser igual ao de `Emprestimo.verificar_atraso()` no back-end.
 O indicador no rodapé do menu mostra **"Conectado à API"** (verde) quando o back-end responde e **"API indisponível"** (vermelho) quando não responde.
 
+## Relatórios
 ### Configuração
 
+A tela Relatórios usa o `MaterialRouter` (`/material/quantidade/*` e `/material/emprestados`) e as rotas de empréstimo:
 O endereço da API fica no início do `js/geral.js`:
 
 ```js
@@ -90,6 +124,10 @@ Se a API rodar em outra porta ou máquina, altere só essa constante. O back-end
 Navegador (HTML/CSS/JS)  <-- HTTP/JSON -->  FastAPI  -->  Router → Service → Entidade → MySQL
 ```
 
+- Materiais mais emprestados: contagem de `GET /emprestimo` por `material_id` (não há rota de ranking no back-end).
+- Empréstimos em aberto: `GET /emprestimo/abertos`, com o prazo calculado no front.
+- Devoluções atrasadas: `GET /emprestimo/atrasados`, com o telefone do cliente para contato.
+- Acervo por tipo e por categoria: `GET /material/quantidade/tipo` e `/material/quantidade/categoria`.
 - O **HTML** fica todo no `index.html`; o **JavaScript** só preenche e reage aos eventos.
 - Cada tela é uma `<section id="secao-NOME" hidden>`. O menu usa links `#livros`, `#clientes`... e o `navegacao.js` mostra uma seção por vez conforme o `#` do endereço, sem recarregar a página.
 - As linhas das tabelas vêm de `<template>`, clonados com `template.content.cloneNode(true)` e preenchidos com `textContent`.
@@ -127,26 +165,6 @@ Navegador (HTML/CSS/JS)  <-- HTTP/JSON -->  FastAPI  -->  Router → Service →
 - reserva de título fora do acervo é aceita, e a coluna "Exemplar" indica que ele ainda não existe.
 
 O campo com erro fica vermelho e recebe o foco. O back-end valida tudo novamente: a validação do front serve para avisar mais cedo, não para substituir a do servidor.
-
-## Documentação
-
-- [`FRONTEND.md`](FRONTEND.md): como o front-end foi construído e por quê.
-- [`docs/README.md`](docs/README.md): índice da documentação por arquivo. Cada documento explica variáveis, funções (com a linha), eventos, rotas usadas e perguntas que podem cair na defesa oral.
-
-| Arquivo | Documentação |
-|---|---|
-| `index.html` | [docs/index-html.md](docs/index-html.md) |
-| `css/style.css` | [docs/style-css.md](docs/style-css.md) |
-| `js/geral.js` | [docs/geral-js.md](docs/geral-js.md) |
-| `js/navegacao.js` | [docs/navegacao-js.md](docs/navegacao-js.md) |
-| `js/painel.js` | [docs/painel-js.md](docs/painel-js.md) |
-| `js/livros.js` | [docs/livros-js.md](docs/livros-js.md) |
-| `js/revistas.js` | [docs/revistas-js.md](docs/revistas-js.md) |
-| `js/emprestimos.js` | [docs/emprestimos-js.md](docs/emprestimos-js.md) |
-| `js/reservas.js` | [docs/reservas-js.md](docs/reservas-js.md) |
-| `js/relatorios.js` | [docs/relatorios-js.md](docs/relatorios-js.md) |
-| `js/clientes.js` | [docs/clientes-js.md](docs/clientes-js.md) |
-| `js/catalogo.js` | [docs/catalogo-js.md](docs/catalogo-js.md) |
 
 ## Solução de problemas
 
