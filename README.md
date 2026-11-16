@@ -39,6 +39,13 @@ O MVP (Minimum Viable Product) contempla as funcionalidades essenciais para o fu
 
 Inicialmente, os materiais contemplados serão **livros e revistas**.
 
+### 📘 Módulo de Livros
+
+- Cadastro de livros;
+- Edição de livros;
+- Inativação de livros;
+- Consulta de livros.
+
 ### 📕 Módulo de Revistas
 
 - Cadastro de revistas;
@@ -57,7 +64,6 @@ Inicialmente, os materiais contemplados serão **livros e revistas**.
 - Registro de devoluções;
 - Consulta de empréstimos;
 - Reserva de materiais do acervo;
-- Cadastro de reservas;
 - Cancelamento de reservas;
 - Consulta de reservas;
 - Consulta de pendências de devolução;
@@ -82,31 +88,63 @@ Para executar os testes automatizados do projeto, utilize o comando:
 python -m unittest
 ```
 
+## ⚙️ Como executar a API
+
+1. Crie e ative um ambiente virtual na raiz do projeto.
+
+**Windows (PowerShell):**
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+**Linux/macOS:**
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+2. Instale as dependências:
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Crie o arquivo `.env` na raiz do projeto e configure nele as variáveis de conexão com o banco de dados utilizadas pela aplicação:
+
+```env
+DB_USER=root
+DB_PASSWORD=123456
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=biblioteca
+```
+
+4. Execute as migrações para preparar o banco de dados:
+
+```bash
+alembic upgrade head
+```
+
+5. Inicie a API:
+
+```bash
+python -m uvicorn src.main:app --reload
+```
+
+Por padrão, a API ficará disponível em `http://localhost:8000`.
+
 ## 💻 Como abrir o frontend
 
-1. Ajuste `API_URL` em `js/config.js` (padrão: `http://localhost:8000`).
-2. Libere o CORS no FastAPI se o front for servido em outra porta:
+1. API e frontend devem ser executados em terminais separados, mantendo os dois servidores ativos. Na raiz do projeto, inicie um servidor estático apontando para a pasta `src/frontend`:
 
-```python
-from fastapi.middleware.cors import CORSMiddleware
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5500"],  # endereço onde o front roda
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+```bash
+python -m http.server 5500 --directory src/frontend
 ```
 
-3. Sirva a pasta com qualquer servidor estático, por exemplo `python -m http.server 5500`,
-   ou monte-a no próprio FastAPI (assim não precisa de CORS):
-
-```python
-from fastapi.staticfiles import StaticFiles
-app.mount("/app", StaticFiles(directory="frontend", html=True), name="frontend")
-```
-
-Para ver o front sem a API, abra `index.html?demo`.
+2. Acesse `http://localhost:5500` no navegador.
 
 ## 🔮 Funcionalidades futuras
 
