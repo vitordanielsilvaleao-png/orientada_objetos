@@ -99,6 +99,41 @@ O formato segue uma organização baseada em versões e etapas de desenvolviment
 - Estrutura preparada para utilização de herança entre `Material`, `Livro` e `Revista`.
 - Estrutura preparada para utilização de polimorfismo através do ORM SQLAlchemy.
 
+### Padronização dos módulos
+
+- Padronização dos módulos `Material`, `Autor`, `Cliente`, `Reserva`, `Livro`, `Revista` e `Empréstimo`, além dos componentes compartilhados.
+- Reorganização das entidades, dependências, routers, schemas, services e testes, conforme a estrutura de cada módulo.
+- Implementação da `BaseService` para centralizar operações e comportamentos comuns dos serviços.
+- Implementação de handlers de erro no `main.py` para padronizar o tratamento de exceções da API.
+- Implementação do `TradutorValidacao` para apresentar mensagens de erro HTTP 422 em português.
+- Aplicação de validações e normalização de dados nas entidades do sistema.
+- Encapsulamento dos atributos `_status` e `_is_active`, com controle de alterações por meio dos métodos das entidades.
+
+### Atualizações do banco de dados
+
+- Adicionada a migração `98ea26be709f` para inclusão do campo `status` na tabela `reserva`.
+- Definido o status inicial `ABERTA` para reservas existentes ativas e `CANCELADA` para reservas existentes inativas.
+- Adicionada a migração `eb118a43784a` para definir `id` como única chave primária de `revista`, mantendo `issn` como campo único.
+- Adicionada a migração `dbf83686c72c` para definir `id` como única chave primária de `livro`, mantendo `isbn` como campo único.
+- Implementação do enum `StatusReserva`, com os estados `ABERTA`, `ATENDIDA`, `CANCELADA` e `EXPIRADA`.
+- Atualização da entidade `Reserva` para utilizar o campo `status`, permitindo controlar o ciclo de vida das reservas.
+
+### Frontend
+
+- Estrutura de frontend em HTML, CSS e JavaScript puro organizada em `src/frontend`.
+- Interface de página única com menu lateral e navegação entre telas.
+- Componentes de interface para formulários, modais e notificações.
+- Cliente de comunicação com a API FastAPI.
+- Modo de demonstração com dados em memória.
+- Estrutura de relatórios para consulta de empréstimos, devoluções e distribuição do acervo.
+- Documentação de configuração e execução do frontend adicionada.
+
+### Evolução da documentação
+
+- Documentação das missões 03, 04, 06, 08, 09, 10, 11 e 14.
+- Atualização do diagrama de classes do sistema.
+- Atualização dos requisitos funcionais para a versão 2.0.
+
 ---
 
 ## [0.1.0] - Estrutura inicial
@@ -147,3 +182,4 @@ As alterações deverão ser classificadas conforme sua natureza:
 - `Security` — correções relacionadas à segurança.
 
 As alterações deverão ser registradas de forma incremental durante o desenvolvimento do projeto.
+
