@@ -66,7 +66,6 @@
         <blockquote lang="grc">ΓΝΩΘΙ ΣΕΑΥΤΟΝ</blockquote>
         <figcaption>Conhece-te a ti mesmo, inscrição do templo de Apolo em Delfos</figcaption>
       </figure>
-      <p class="status-api" id="statusApi"><span class="ponto"></span><span class="texto">Verificando a API…</span></p>
     </div>
   </aside>
 
@@ -172,7 +171,6 @@
               </div>
               <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Cadastrar livro</button>
             </form>
-            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>O <code>POST /livro</code> chega no <code>LivroService.cadastrar()</code>, que cria um objeto <code>Livro(...)</code>. O construtor do Livro chama <code>super().__init__()</code> para preencher os atributos de <code>Material</code>.</span></p>
           </section>
 
           <section class="painel-tabela">
@@ -241,7 +239,6 @@
               </div>
               <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Cadastrar revista</button>
             </form>
-            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>Como <code>Livro</code> e <code>Revista</code> herdam de <code>Material</code>, as duas aparecem juntas no <code>GET /material</code>, que a tela de Empréstimos usa para listar o acervo.</span></p>
           </section>
 
           <section class="painel-tabela">
@@ -302,7 +299,6 @@
                 <button type="submit" class="botao botao-primario"><i class="fa-solid fa-check"></i> Registrar empréstimo</button>
               </fieldset>
             </form>
-            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>O service cria <code>Emprestimo(material_id, cliente_id)</code> e chama <code>material.emprestar()</code>. O <code>status</code> é uma <code>@hybrid_property</code> somente leitura: só os métodos da classe mudam <code>_status</code>.</span></p>
           </section>
 
           <section class="painel-tabela">
@@ -352,7 +348,6 @@
               </label>
               <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Fazer reserva</button>
             </form>
-            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span><b>Atender</b> chama <code>ReservaService.atender_reserva()</code>, que cria um <code>EmprestimoService</code> e reaproveita o <code>cadastrar()</code> dele. Um service usa outro, sem repetir as regras do empréstimo.</span></p>
           </section>
 
           <section class="painel-tabela">
@@ -381,7 +376,6 @@
           <div>
             <h1>Relatórios</h1>
             <span class="ornamento" aria-hidden="true"></span>
-            <p>O que o oráculo vê no acervo e na circulação, com os dados atuais da API.</p>
           </div>
           <button type="button" class="botao botao-secundario" id="btnImprimir"><i class="fa-solid fa-print"></i><span>Imprimir</span></button>
         </header>
@@ -406,7 +400,6 @@
             <div class="relatorio-corpo" id="relCategoria"></div>
           </section>
         </div>
-        <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>Os números vêm do <code>MaterialService</code>, que conta no banco com <code>func.count()</code> e <code>group_by()</code>. O ranking é montado aqui no JavaScript, contando os empréstimos com um <code>Map</code>.</span></p>
       </section>
 
       <!-- ===================== CLIENTES ===================== -->
@@ -461,7 +454,6 @@
               </label>
               <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Cadastrar cliente</button>
             </form>
-            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>Cliente não é apagado: <code>inativar_cliente()</code> muda <code>_is_active</code> para <code>False</code>. Assim o histórico de empréstimos continua ligado a ele.</span></p>
           </section>
 
           <section class="painel-tabela">
@@ -497,7 +489,6 @@
               </label>
               <button type="submit" class="botao botao-primario"><i class="fa-solid fa-plus"></i> Cadastrar autor</button>
             </form>
-            <p class="poo-hint"><i class="fa-solid fa-lightbulb"></i><span>Autores, editoras e categorias usam o mesmo código nesta tela: uma função recebe o tipo e decide a rota, assim como os três services seguem o mesmo contrato de <code>BaseService</code>.</span></p>
           </section>
           <section class="painel-tabela">
             <div class="ferramentas"><label class="busca"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="buscaAutores" placeholder="Buscar por nome" aria-label="Buscar autores"></label></div>
@@ -655,7 +646,6 @@
         <label class="campo campo-meia"><span class="campo-rotulo">Editora</span><select id="editLivroEditora" required></select></label>
         <label class="campo campo-meia"><span class="campo-rotulo">Categoria</span><select id="editLivroCategoria" required></select></label>
       </div>
-      <p class="poo-hint" style="margin: 12px 28px 0"><i class="fa-solid fa-lightbulb"></i><span><code>Livro.atualizar()</code> SOBRESCREVE o método da mãe: chama <code>super().atualizar(...)</code> para os campos comuns e depois cuida do <code>autor_id</code>. O ISBN não pode ser editado.</span></p>
       <footer class="modal-acoes">
         <button type="button" class="botao botao-secundario" data-fechar="modalLivro">Cancelar</button>
         <button type="submit" class="botao botao-primario"><i class="fa-solid fa-floppy-disk"></i> Salvar alterações</button>
@@ -703,7 +693,6 @@
         <label class="campo campo-meia"><span class="campo-rotulo">Complemento <em>opcional</em></span><input type="text" id="editClienteComplemento" maxlength="50"></label>
         <label class="campo"><span class="campo-rotulo">Bairro</span><input type="text" id="editClienteBairro" maxlength="50" required></label>
       </div>
-      <p class="poo-hint" style="margin: 12px 28px 0"><i class="fa-solid fa-lightbulb"></i><span>O CPF não aparece aqui de propósito: <code>SchemaClienteAtualizacao</code> não tem o campo, e a entidade não oferece setter para <code>_cpf</code>.</span></p>
       <footer class="modal-acoes">
         <button type="button" class="botao botao-secundario" data-fechar="modalCliente">Cancelar</button>
         <button type="submit" class="botao botao-primario"><i class="fa-solid fa-floppy-disk"></i> Salvar alterações</button>
