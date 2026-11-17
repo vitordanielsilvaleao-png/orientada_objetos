@@ -2,13 +2,18 @@
 
 # Objetivo e planejamento
 
-O objetivo desta missão foi implementar laços de repetição e empréstimos e uma tela de relatórios no front-end.
+O objetivo desta missão foi implementar laços de repetição sobre empréstimos e reservas e uma tela de relatórios no front-end.
 
-Para isso, foram criadas funções de varredura e atualização em lote utilizando laços de repetição no backend `src\scheduler\funcoes_scheduler.py`, e uma interface dedicada a exibição de relatórios no frontend em `src\frontend\js\paginas.js`, capaz de exibir rankings de empréstimos de materiais, tabelas de controle de prazos, resumos quantitativos do acervo, além de permitir a impressão dos relatórios.
+Para isso, foram criadas funções de varredura e atualização em lote utilizando laços de repetição no backend `src\scheduler\funcoes_scheduler.py`, e uma tela dedicada à exibição de relatórios no frontend em `src\frontend\js\relatorios.js`, capaz de exibir o ranking dos materiais mais emprestados, a tabela de devoluções em atraso, os totais do acervo e gráficos por tipo e por categoria, além de permitir a impressão dos relatórios.
 
 # O que foi implementado e por quê
 
-No frontend, foi implementada a classe `PaginaRelatorios`, que gerencia a visualização da página de relatórios com base nos dados da API.
+No frontend, a tela Relatórios (`src\frontend\js\relatorios.js`) é montada por funções que percorrem os dados da API com laços de repetição:
+
+- `carregarRelatorios()`: busca em paralelo os totais, os empréstimos e as quantidades por tipo e por categoria.
+- `desenharRanking()`: percorre os empréstimos com `forEach`, conta as ocorrências por material em um `Map`, ordena com `sort` e mantém os dez primeiros com `slice`.
+- `desenharAtrasados()`: ordena os empréstimos atrasados pelo vencimento e gera uma linha por empréstimo com `map`, calculando os dias de atraso.
+- `desenharTipos()` e `desenharCategorias()`: transformam as quantidades em barras; as categorias além das oito primeiras são somadas com `reduce` em "Outras".
 
 Já no backend, foram criadas as seguintes funções de varredura:
 
@@ -40,6 +45,8 @@ No aspecto visual e de relatórios, ficou evidente como transformar dados brutos
 # Commit(s) associado(s)
 
 feat: Adiciona o front-end com a tela de Relatórios (b0046e01a3f3081a6c359a342cc53c0a9d93fd5e)
+
+feat: adiciona arquivos JavaScript do frontend, com a nova tela de Relatórios em `relatorios.js` (b3f97930bf5a14140d3d8014d702160ea3fd0f88)
 
 refactor: Transforma o método atualizar_status_atrasdo da classe EmprestimoService e o método atualizar_expiracao da classe ReservaService em funções que serão executadas via scheduler (5da0c9851b6635d39f1b0bdb4500b168631b20c2)
 
