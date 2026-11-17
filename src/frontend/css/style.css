@@ -206,19 +206,6 @@ a { color: inherit; }
 }
 .inscricao figcaption { margin-top: 4px; font-size: 0.75rem; line-height: 1.4; color: #8592AE; }
 
-.status-api {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 14px 10px 0;
-  font-size: 0.82rem;
-  color: #93A0BC;
-}
-.status-api .ponto { width: 8px; height: 8px; border-radius: 50%; background: #6C7895; }
-.status-api[data-estado="ok"] .ponto { background: #8DBA6E; box-shadow: 0 0 0 3px rgba(141, 186, 110, 0.2); }
-.status-api[data-estado="erro"] .ponto { background: #E0677A; box-shadow: 0 0 0 3px rgba(224, 103, 122, 0.2); }
-.status-api[data-estado="demo"] .ponto { background: var(--ouro); box-shadow: 0 0 0 3px rgba(214, 169, 58, 0.25); }
-
 .topo-movel { display: none; }
 .fundo-menu { display: none; }
 
@@ -924,4 +911,296 @@ a { color: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ==========================================================================
+   frontend — peças no padrão do projeto oficina-mecanica
+   (ícones do Font Awesome, formulário fixo ao lado da lista, etapas numeradas,
+   balões "?" de POO, dicas e janelas por sobreposição com a classe .show)
+   ========================================================================== */
+
+[hidden] { display: none !important; }
+
+/* Ícones do Font Awesome no lugar dos SVGs */
+.menu-item i { width: 20px; text-align: center; color: #8592AE; transition: color 0.15s; }
+.menu-item:hover i { color: var(--ouro-claro); }
+.menu-item.ativo i { color: var(--ouro); }
+.botao i { font-size: 0.95rem; }
+.botao-icone i { font-size: 0.95rem; }
+.busca i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--tinta-suave); font-size: 0.9rem; }
+.grafico-pos i { color: var(--ouro); font-size: 1.1rem; }
+.lista-painel header a { cursor: pointer; }
+.marca { cursor: pointer; }
+
+.botao-conceitos {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: calc(100% - 20px);
+  margin: 16px 10px 0;
+  padding: 9px 12px;
+  border: 1px solid rgba(214, 169, 58, 0.45);
+  border-radius: var(--raio-p);
+  background: rgba(214, 169, 58, 0.1);
+  color: var(--ouro-claro);
+  font: 600 0.88rem var(--fonte-texto);
+  cursor: pointer;
+}
+.botao-conceitos:hover { background: rgba(214, 169, 58, 0.2); }
+
+/* Seções: só a seção escolhida no menu aparece */
+.secao { animation: entrar-secao 0.2s ease-out; }
+@keyframes entrar-secao { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* Formulário à esquerda, lista à direita (como o layout da oficina) */
+.layout-modulo {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.painel-form {
+  position: sticky;
+  top: 24px;
+  border-top: 3px solid var(--ouro);
+  background: var(--papel);
+  border-radius: var(--raio-g);
+  box-shadow: var(--sombra);
+  padding: 20px 22px 18px;
+}
+
+.painel-form-topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+.painel-form-topo h2 {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-weight: 400;
+  font-size: 1.3rem;
+  color: var(--lapis);
+}
+.painel-form-topo i { color: var(--ouro); }
+.painel-form-topo.espacado { margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--linha); }
+
+.form-grid { display: flex; flex-direction: column; gap: 14px; }
+.form-grid .campo { grid-column: auto; }
+.form-grid .linha-dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid > .botao { width: 100%; margin-top: 4px; }
+.form-grid fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.form-grid fieldset:disabled { opacity: 0.5; }
+
+.campo-rotulo { display: flex; align-items: center; gap: 6px; }
+.campo input.invalido, .campo select.invalido { border-color: var(--granada); box-shadow: 0 0 0 3px rgba(150, 42, 58, 0.15); }
+.campo textarea { font: inherit; }
+
+/* Etapas numeradas 1, 2, 3 */
+.passo {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--lapis);
+  color: var(--ouro-claro);
+  font: 600 0.85rem var(--fonte-texto);
+  flex-shrink: 0;
+}
+.passo.feito { background: var(--louro); color: var(--papel); }
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: var(--raio-p);
+  background: var(--louro-fundo);
+  color: var(--louro);
+  font-size: 0.9rem;
+}
+.chip strong { color: var(--tinta); }
+.chip small { color: var(--tinta-suave); }
+.chip .botao-icone { margin-left: auto; width: 28px; height: 28px; }
+.chip.alerta { background: var(--granada-fundo); color: var(--granada); }
+
+/* Balão "?" que explica qual classe Python está por trás do campo */
+.poo-info {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--ouro);
+  border-radius: 50%;
+  background: var(--ouro-fundo);
+  color: var(--ouro-texto);
+  font: 700 0.7rem/1 var(--fonte-texto);
+  cursor: help;
+}
+.poo-info::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%) translateY(4px);
+  width: 260px;
+  padding: 10px 12px;
+  border-radius: var(--raio-m);
+  background: var(--lapis);
+  color: #E6EAF3;
+  font: 400 0.8rem/1.45 var(--fonte-texto);
+  text-align: left;
+  white-space: pre-line;
+  box-shadow: 0 16px 40px -12px rgba(12, 20, 39, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 50;
+}
+.poo-info:hover::after, .poo-info:focus-visible::after { opacity: 1; transform: translateX(-50%); }
+
+.poo-hint {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--ouro);
+  border-radius: 0 var(--raio-p) var(--raio-p) 0;
+  background: var(--ouro-fundo);
+  color: var(--tinta);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+.poo-hint i { color: var(--ouro-texto); margin-top: 3px; }
+.poo-hint code, .conceito-bloco code, .tabela-transicao code {
+  font-family: ui-monospace, 'DejaVu Sans Mono', Consolas, monospace;
+  font-size: 0.85em;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(19, 32, 59, 0.07);
+}
+
+.cabecalho-acoes { display: flex; align-items: center; gap: 8px; }
+
+/* Aviso único (#toast), como no projeto da oficina */
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+  animation: none;
+}
+.toast.show { opacity: 1; transform: none; pointer-events: auto; }
+.toast i { color: var(--ouro); }
+.toast.err { background: var(--granada); }
+.toast.err i { color: var(--papel); }
+
+/* Janelas por sobreposição: abrem com .show */
+.sobreposicao {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(12, 20, 39, 0.55);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+.sobreposicao.show { opacity: 1; visibility: visible; }
+
+.janela {
+  width: min(560px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  border-radius: var(--raio-g);
+  background: var(--papel);
+  color: var(--tinta);
+  box-shadow: 0 30px 80px -20px rgba(12, 20, 39, 0.55);
+  transform: translateY(10px) scale(0.98);
+  transition: transform 0.22s ease-out;
+}
+.sobreposicao.show .janela { transform: none; }
+.janela-larga { width: min(980px, 100%); }
+
+/* Painel "Conceitos de POO" */
+.conceitos-corpo { padding: 8px 28px 28px; display: flex; flex-direction: column; gap: 16px; }
+.conceito-bloco {
+  padding: 16px 18px;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio-m);
+  background: #FBFBFD;
+}
+.conceito-bloco h3 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-family: var(--fonte-titulo);
+  font-weight: 400;
+  font-size: 1.2rem;
+  color: var(--lapis);
+}
+.conceito-bloco h3 i { color: var(--ouro); }
+.conceito-bloco h4 { margin: 10px 0 4px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--tinta-suave); }
+.conceito-bloco p { margin: 0 0 8px; }
+.tag-arquivo {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--marmore);
+  color: var(--tinta-suave);
+  font: 500 0.75rem ui-monospace, Consolas, monospace;
+}
+.duas-colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.lista-membros { margin: 0; padding-left: 18px; }
+.lista-membros li { margin: 3px 0; font-size: 0.92rem; }
+.conceito-resumo { border-color: var(--ouro); background: var(--ouro-fundo); }
+.tabela-transicao { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.tabela-transicao th { text-align: left; padding: 8px 10px; background: var(--lapis); color: var(--papel); font-weight: 600; }
+.tabela-transicao td { padding: 7px 10px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+
+/* Céu do painel: o JS só escolhe sol ou lua e move o astro */
+.ceu-noite .sol-grupo, .ceu-dia .lua-grupo, .ceu-dia .estrelas { display: none; }
+
+/* A página fica mais larga que a do front antigo, para caber formulário + tabela */
+.pagina { max-width: 1480px; }
+
+/* Abaixo de 1700px a tabela precisa da largura toda: o formulário vai para cima
+   e os campos dele se espalham em colunas */
+@media (max-width: 1699px) {
+  .layout-modulo { grid-template-columns: 1fr; }
+  .painel-form { position: static; }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    align-items: end;
+    gap: 14px 16px;
+  }
+  .form-grid .linha-dupla, .form-grid fieldset { display: contents; }
+  .form-grid > .botao, .form-grid fieldset > .botao { width: auto; justify-self: start; grid-column: 1 / -1; }
+  .chip { max-width: 520px; }
+}
+
+@media (max-width: 700px) {
+  .form-grid .linha-dupla, .duas-colunas { grid-template-columns: 1fr; }
+  .conceitos-corpo { padding: 8px 16px 20px; }
+  .toast { left: 16px; right: 16px; bottom: 16px; }
+  .poo-info::after { width: 220px; }
+}
+
+@media print {
+  .botao-conceitos, .toast, .sobreposicao { display: none !important; }
 }
