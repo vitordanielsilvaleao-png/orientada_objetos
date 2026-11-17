@@ -8,6 +8,12 @@ O formato segue uma organização baseada em versões e etapas de desenvolviment
 
 ## [Unreleased]
 
+---
+
+## [1.0.0] - 2026-11-17
+
+Primeira versão completa do Apolo: API, front-end e documentação das 16 missões.
+
 ### Estrutura do projeto
 
 - Estrutura inicial do projeto organizada em `src`, `tests` e `docs`.
@@ -99,6 +105,14 @@ O formato segue uma organização baseada em versões e etapas de desenvolviment
 - Estrutura preparada para utilização de herança entre `Material`, `Livro` e `Revista`.
 - Estrutura preparada para utilização de polimorfismo através do ORM SQLAlchemy.
 
+### API e regras de negócio
+
+- API em FastAPI com routers para `livro`, `revista`, `autor`, `categoria`, `editora`, `material`, `cliente`, `reserva` e `emprestimo`, registrados em `src/main.py`.
+- Services com as regras de cadastro, empréstimo, devolução e reserva, incluindo a fila de reservas atendida na devolução.
+- Rotas de relatório em `/material` (totais, disponíveis, emprestados, quantidade por tipo e por categoria).
+- Scheduler (APScheduler) que marca empréstimos atrasados e reservas expiradas ao iniciar a API e a cada 60 minutos.
+- Testes unitários das entidades e testes de integração dos services, executados com `python -m unittest`.
+
 ### Padronização dos módulos
 
 - Padronização dos módulos `Material`, `Autor`, `Cliente`, `Reserva`, `Livro`, `Revista` e `Empréstimo`, além dos componentes compartilhados.
@@ -120,19 +134,23 @@ O formato segue uma organização baseada em versões e etapas de desenvolviment
 
 ### Frontend
 
-- Estrutura de frontend em HTML, CSS e JavaScript puro organizada em `src/frontend`.
-- Interface de página única com menu lateral e navegação entre telas.
-- Componentes de interface para formulários, modais e notificações.
-- Cliente de comunicação com a API FastAPI.
-- Modo de demonstração com dados em memória.
-- Estrutura de relatórios para consulta de empréstimos, devoluções e distribuição do acervo.
-- Documentação de configuração e execução do frontend adicionada.
+- Novo front-end em HTML, CSS e JavaScript puro em `src/frontend`, substituindo a primeira versão (classes JavaScript e modo de demonstração).
+- Página única com menu lateral; cada tela é uma `<section>` exibida conforme o `#` do endereço (`navegacao.js`).
+- Um arquivo JavaScript por tela: painel, livros, revistas, empréstimos, reservas, relatórios, clientes e catálogo (autores, editoras e categorias).
+- Comunicação com a API pela função `chamarApi()` (`fetch`), em `js/geral.js`, com mensagens de erro lidas do formato padronizado pelos handlers.
+- Linhas das tabelas geradas a partir de `<template>` e validação dos formulários com as mesmas regras do back-end.
+- Tela de relatórios com totais do acervo, ranking dos mais emprestados, devoluções em atraso e gráficos por tipo e por categoria.
+- Painel "Conceitos de POO" e balões de ajuda ligando cada tela às classes do back-end.
+- README do front-end em `src/frontend/README.md`, com execução, arquitetura e rotas usadas por tela.
 
 ### Evolução da documentação
 
-- Documentação das missões 03, 04, 06, 08, 09, 10, 11 e 14.
-- Atualização do diagrama de classes do sistema.
-- Atualização dos requisitos funcionais para a versão 2.0.
+- Documentação das missões 01 a 16 em `docs/missao/`.
+- Diagrama de classes do sistema em `docs/classes/diagrama/`.
+- Diagrama do banco de dados atualizado em `docs/database/diagrama/`.
+- Regras de negócio atualizadas para a versão 2.0.
+- Requisitos funcionais atualizados para a versão 2.0.
+- README principal com instruções de execução da API, dos testes e do front-end.
 
 ---
 
