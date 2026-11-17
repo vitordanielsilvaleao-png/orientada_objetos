@@ -15,8 +15,7 @@ class Livro(Material):
     isbn: Mapped[str] = mapped_column(
         String(13),
         nullable=False,
-        unique=True,
-        primary_key=True
+        unique=True
     )
 
     autor_id: Mapped[int] = mapped_column(
@@ -51,13 +50,13 @@ class Livro(Material):
     #Validação de dados recebidos
     @validates("isbn")
     def validar_isbn(self, chave, isbn):
-        isbn_normalizado = self._normalizar_isbn(isbn)
+        isbn_normalizado = self.normalizar_isbn(isbn)
         self._validar_isbn(isbn_normalizado)
         return isbn_normalizado
 
     # Métodos para validação e normalização de dados do construtor
     @staticmethod
-    def _normalizar_isbn(isbn):
+    def normalizar_isbn(isbn):
         return isbn.replace(".", "").replace("-", "")
 
     @staticmethod

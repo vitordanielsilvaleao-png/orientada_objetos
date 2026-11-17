@@ -1,6 +1,7 @@
 # importando da biblioteca SQLAlchemy as ferramentas necessárias para criação da entidade Material
 from sqlalchemy import Integer, String, ForeignKey, Boolean, Enum
 from sqlalchemy.orm import Mapped, mapped_column, validates
+from sqlalchemy.ext.hybrid import hybrid_property
 from src.database.database import Base
 from src.compartilhado.enum import StatusMaterial
 
@@ -37,13 +38,16 @@ class Material(Base):
         nullable=False
     )
 
-    status: Mapped[StatusMaterial] = mapped_column(
+    #Atributos privados mapeados para as colunas de mesmo nome, alterados somente pelos métodos de domínio
+    _status: Mapped[StatusMaterial] = mapped_column(
+        "status",
         Enum(StatusMaterial),
         nullable=False,
         default=StatusMaterial.DISPONIVEL
     )
 
-    is_active: Mapped[bool] = mapped_column(
+    _is_active: Mapped[bool] = mapped_column(
+        "is_active",
         Boolean,
         nullable=False,
         default=True
@@ -68,8 +72,17 @@ class Material(Base):
         self.ano_publi = ano_publi
         self.categoria_id = categoria_id
         self.editora_id = editora_id
-        self.is_active = True
-        self.status = StatusMaterial.DISPONIVEL
+        self._is_active = True
+        self._status = StatusMaterial.DISPONIVEL
+
+    #Getters dos atributos somente leitura
+    @hybrid_property
+    def status(self):
+        return self._status
+
+    @hybrid_property
+    def is_active(self):
+        return self._is_active
 
     #Validação de dados recebidos
     @validates("titulo")
@@ -96,7 +109,7 @@ class Material(Base):
 
     @staticmethod
     def _validar_ano_publi(ano_publi):
-        if ano_publi <= 0 or not ano_publi:
+        if not ano_publi or ano_publi <= 0:
             raise ValueError(
                 "O ano de publicação é inválido"
             )
@@ -130,21 +143,27 @@ class Material(Base):
     # [RF-ACER-003] [RN-ACER-013] Inativação do Material
     def inativar(self):
         if self.is_active:
-            self.is_active = False
+            self._is_active = False
         else:
             raise ValueError("Material já inativado")
 
     # Ativação do Material
     def ativar(self):
         if not self.is_active:
-            self.is_active = True
+            self._is_active = True
         else:
             raise ValueError("Material já ativado")
-
-    # Verifica se o Material está ativo
-    def esta_ativo(self):
-        return self.is_active
 
     # Verifica se o Material está ativo e disponível
     def esta_disponivel(self):
         return self.is_active and self.status == StatusMaterial.DISPONIVEL
+
+    #Métodos de domínio para as transições de status do Material
+    def disponibilizar(self):
+        self._status = StatusMaterial.DISPONIVEL
+
+    def reservar(self):
+        self._status = StatusMaterial.RESERVADO
+
+    def emprestar(self):
+        self._status = StatusMaterial.EMPRESTADO

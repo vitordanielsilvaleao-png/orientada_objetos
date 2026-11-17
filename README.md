@@ -39,6 +39,20 @@ O MVP (Minimum Viable Product) contempla as funcionalidades essenciais para o fu
 
 Inicialmente, os materiais contemplados serão **livros e revistas**.
 
+### 📘 Módulo de Livros
+
+- Cadastro de livros;
+- Edição de livros;
+- Inativação de livros;
+- Consulta de livros.
+
+### 📕 Módulo de Revistas
+
+- Cadastro de revistas;
+- Edição de revistas;
+- Inativação de revistas;
+- Consulta de revistas.
+
 ### 📦 Disponibilidade
 
 - Consulta da quantidade de materiais disponíveis no acervo;
@@ -64,7 +78,81 @@ O MVP contará inicialmente com três relatórios:
 - Devoluções atrasadas.
 
 ### 👤 Cadastro de Clientes
-- Cadastro, consulta, atualização e ativação/inativação de clientes;
+- Cadastro, consulta, atualização e ativação/inativação de clientes.
+
+## 🛠️ Tecnologias
+
+| Camada | Tecnologias |
+|---|---|
+| Back-end | Python 3, FastAPI, Uvicorn, Pydantic |
+| Persistência | MySQL, SQLAlchemy (ORM), PyMySQL, Alembic (migrações) |
+| Tarefas automáticas | APScheduler |
+| Front-end | HTML5, CSS3 e JavaScript puro (`fetch`), Google Fonts e Font Awesome |
+| Testes | `unittest` |
+
+## 🧪 Como executar os testes
+
+Para executar os testes automatizados do projeto, utilize o comando:
+
+```bash
+python -m unittest
+```
+
+## ⚙️ Como executar a API
+
+1. Crie e ative um ambiente virtual na raiz do projeto.
+
+**Windows (PowerShell):**
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+**Linux/macOS:**
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+2. Instale as dependências:
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Com o MySQL em execução na porta `3306`, crie o banco de dados:
+
+```sql
+CREATE DATABASE biblioteca;
+```
+
+A conexão usa o usuário `root` com a senha `123456` em `localhost:3306`. Esses dados estão definidos em `src/database/database.py` (usado pela API) e na chave `sqlalchemy.url` do `alembic.ini` (usado pelas migrações). Se o seu MySQL usar outro usuário ou senha, altere os dois arquivos.
+
+4. Execute as migrações para preparar o banco de dados:
+
+```bash
+alembic upgrade head
+```
+
+5. Inicie a API:
+
+```bash
+python -m uvicorn src.main:app --reload
+```
+
+Por padrão, a API ficará disponível em `http://localhost:8000`.
+
+## 💻 Como abrir o frontend
+
+1. API e frontend devem ser executados em terminais separados, mantendo os dois servidores ativos. Na raiz do projeto, inicie um servidor estático apontando para a pasta `src/frontend`:
+
+```bash
+python -m http.server 5500 --directory src/frontend
+```
+
+2. Acesse `http://localhost:5500` no navegador.
 
 ## 🔮 Funcionalidades futuras
 
@@ -93,7 +181,7 @@ A proposta é proporcionar um controle consistente do acervo, aliado à visualiz
 
 ## 🚀 Missões
 
-O desenvolvimento do projeto incorporará progressivamente as 16 missões propostas para o desenvolvimento orientado a objetos:
+O projeto incorpora as 16 missões propostas para o desenvolvimento orientado a objetos. A documentação de cada uma, com o que foi implementado e onde está no código, fica em `docs/missao/`:
 
 - **Missão 01** — Do Mundo Real ao Objeto
 - **Missão 02** — Classes, Objetos e Atributos
@@ -112,14 +200,25 @@ O desenvolvimento do projeto incorporará progressivamente as 16 missões propos
 - **Missão 15** — Arquivos e Persistência
 - **Missão 16** — Integração Final
 
-As missões serão incorporadas ao sistema de forma progressiva, conforme o desenvolvimento do projeto e a evolução de suas funcionalidades.
+A documentação complementar está em `docs/`: regras de negócio e requisitos (versões 1.0 e 2.0), diagrama de classes e diagrama do banco de dados.
 
 ## 📌 Status do projeto
 
-🚧 **Em desenvolvimento**
+✅ **Versão 1.0 concluída**
 
-O projeto está sendo desenvolvido de forma incremental, com a implementação progressiva das funcionalidades previstas para o MVP e, posteriormente, das funcionalidades adicionais.
+As funcionalidades previstas para o MVP estão implementadas na API e no front-end. As alterações de cada versão estão registradas no `CHANGELOG.md`, e as funcionalidades futuras listadas acima poderão ser incorporadas em versões posteriores.
 
 ## 👥 Público-alvo
 
 Bibliotecas que necessitam de uma solução informatizada para auxiliar no gerenciamento e na organização de seu acervo e de suas principais operações.
+
+## 👨‍💻 Integrantes
+
+| Integrante | GitHub |
+|---|---|
+| Ana Gabriela de Faria | [@AnaGFaria](https://github.com/AnaGFaria) |
+| Gustavo Souza | [@gustavosouzags](https://github.com/gustavosouzags) |
+| Heitor | [@heitorteixeira0203-cyber](https://github.com/heitorteixeira0203-cyber) |
+| Henrique Prado | [@Henrique-Single](https://github.com/Henrique-Single) |
+| henoli077 | [@henoli077](https://github.com/henoli077) |
+| Vitor Daniel | [@vitordanielsilvaleao-png](https://github.com/vitordanielsilvaleao-png) |

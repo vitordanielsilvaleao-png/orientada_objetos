@@ -27,12 +27,12 @@ class TestCategoria(unittest.TestCase):
                 nome=None
             )
 
-    def test_atualizar_categoria_normaliza_nome(self):
+    def test_renomear_categoria_normaliza_nome(self):
         categoria = Categoria(
             nome="Romance"
         )
 
-        categoria.atualizar(
+        categoria.renomear(
             "   FICÇÃO CIENTÍFICA   "
         )
 
@@ -41,13 +41,13 @@ class TestCategoria(unittest.TestCase):
             "ficção científica"
         )
 
-    def test_atualizar_categoria_nome_vazio(self):
+    def test_renomear_categoria_nome_vazio(self):
         categoria = Categoria(
             nome="Romance"
         )
 
         with self.assertRaises(ValueError):
-            categoria.atualizar(
+            categoria.renomear(
                 "   "
             )
 

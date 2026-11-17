@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 
-from reserva.depends.depends_reserva import obter_reserva_service
-from reserva.schemas.schema_reserva import SchemaReservaCadastro
-from reserva.service.reserva_service import ReservaService
+from src.modulos.reserva.depends.depends_reserva import obter_reserva_service
+from src.modulos.reserva.schemas.schema_reserva import SchemaReservaCadastro, SchemaReservaResposta
+from src.modulos.reserva.service.reserva_service import ReservaService
 
 
 #Declaração da classe ReservaRouter
@@ -15,11 +15,11 @@ class ReservaRouter:
 
     #Método para adicionar rotas
     def adicionar_rotas(self):
-        self.router.add_api_route("", self.cadastrar, methods=["POST"])
-        self.router.add_api_route("", self.visualizar, methods=["GET"])
-        self.router.add_api_route("/abertas", self.visualizar_abertos, methods=["GET"])
-        self.router.add_api_route("/expiradas", self.visualizar_expiradas, methods=["GET"])
-        self.router.add_api_route("/{reserva_id}", self.inativar, methods=["DELETE"])
+        self.router.add_api_route("", self.cadastrar, methods=["POST"], response_model=SchemaReservaResposta, status_code=status.HTTP_201_CREATED)
+        self.router.add_api_route("", self.visualizar, methods=["GET"], response_model=list[SchemaReservaResposta])
+        self.router.add_api_route("/abertas", self.visualizar_abertos, methods=["GET"], response_model=list[SchemaReservaResposta])
+        self.router.add_api_route("/expiradas", self.visualizar_expiradas, methods=["GET"], response_model=list[SchemaReservaResposta])
+        self.router.add_api_route("/{reserva_id}/cancelar", self.inativar, methods=["PATCH"], response_model=SchemaReservaResposta)
         self.router.add_api_route("/{reserva_id}", self.atender_reserva, methods=["PATCH"])
 
     #Método para cadastro de reservas

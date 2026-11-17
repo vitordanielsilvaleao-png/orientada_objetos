@@ -8,6 +8,12 @@ O formato segue uma organização baseada em versões e etapas de desenvolviment
 
 ## [Unreleased]
 
+---
+
+## [1.0.0] - 2026-11-17
+
+Primeira versão completa do Apolo: API, front-end e documentação das 16 missões.
+
 ### Estrutura do projeto
 
 - Estrutura inicial do projeto organizada em `src`, `tests` e `docs`.
@@ -99,6 +105,53 @@ O formato segue uma organização baseada em versões e etapas de desenvolviment
 - Estrutura preparada para utilização de herança entre `Material`, `Livro` e `Revista`.
 - Estrutura preparada para utilização de polimorfismo através do ORM SQLAlchemy.
 
+### API e regras de negócio
+
+- API em FastAPI com routers para `livro`, `revista`, `autor`, `categoria`, `editora`, `material`, `cliente`, `reserva` e `emprestimo`, registrados em `src/main.py`.
+- Services com as regras de cadastro, empréstimo, devolução e reserva, incluindo a fila de reservas atendida na devolução.
+- Rotas de relatório em `/material` (totais, disponíveis, emprestados, quantidade por tipo e por categoria).
+- Scheduler (APScheduler) que marca empréstimos atrasados e reservas expiradas ao iniciar a API e a cada 60 minutos.
+- Testes unitários das entidades e testes de integração dos services, executados com `python -m unittest`.
+
+### Padronização dos módulos
+
+- Padronização dos módulos `Material`, `Autor`, `Cliente`, `Reserva`, `Livro`, `Revista` e `Empréstimo`, além dos componentes compartilhados.
+- Reorganização das entidades, dependências, routers, schemas, services e testes, conforme a estrutura de cada módulo.
+- Implementação da `BaseService` para centralizar operações e comportamentos comuns dos serviços.
+- Implementação de handlers de erro no `main.py` para padronizar o tratamento de exceções da API.
+- Implementação do `TradutorValidacao` para apresentar mensagens de erro HTTP 422 em português.
+- Aplicação de validações e normalização de dados nas entidades do sistema.
+- Encapsulamento dos atributos `_status` e `_is_active`, com controle de alterações por meio dos métodos das entidades.
+
+### Atualizações do banco de dados
+
+- Adicionada a migração `98ea26be709f` para inclusão do campo `status` na tabela `reserva`.
+- Definido o status inicial `ABERTA` para reservas existentes ativas e `CANCELADA` para reservas existentes inativas.
+- Adicionada a migração `eb118a43784a` para definir `id` como única chave primária de `revista`, mantendo `issn` como campo único.
+- Adicionada a migração `dbf83686c72c` para definir `id` como única chave primária de `livro`, mantendo `isbn` como campo único.
+- Implementação do enum `StatusReserva`, com os estados `ABERTA`, `ATENDIDA`, `CANCELADA` e `EXPIRADA`.
+- Atualização da entidade `Reserva` para utilizar o campo `status`, permitindo controlar o ciclo de vida das reservas.
+
+### Frontend
+
+- Novo front-end em HTML, CSS e JavaScript puro em `src/frontend`, substituindo a primeira versão (classes JavaScript e modo de demonstração).
+- Página única com menu lateral; cada tela é uma `<section>` exibida conforme o `#` do endereço (`navegacao.js`).
+- Um arquivo JavaScript por tela: painel, livros, revistas, empréstimos, reservas, relatórios, clientes e catálogo (autores, editoras e categorias).
+- Comunicação com a API pela função `chamarApi()` (`fetch`), em `js/geral.js`, com mensagens de erro lidas do formato padronizado pelos handlers.
+- Linhas das tabelas geradas a partir de `<template>` e validação dos formulários com as mesmas regras do back-end.
+- Tela de relatórios com totais do acervo, ranking dos mais emprestados, devoluções em atraso e gráficos por tipo e por categoria.
+- Painel "Conceitos de POO" e balões de ajuda ligando cada tela às classes do back-end.
+- README do front-end em `src/frontend/README.md`, com execução, arquitetura e rotas usadas por tela.
+
+### Evolução da documentação
+
+- Documentação das missões 01 a 16 em `docs/missao/`.
+- Diagrama de classes do sistema em `docs/classes/diagrama/`.
+- Diagrama do banco de dados atualizado em `docs/database/diagrama/`.
+- Regras de negócio atualizadas para a versão 2.0.
+- Requisitos funcionais atualizados para a versão 2.0.
+- README principal com instruções de execução da API, dos testes e do front-end.
+
 ---
 
 ## [0.1.0] - Estrutura inicial
@@ -147,3 +200,4 @@ As alterações deverão ser classificadas conforme sua natureza:
 - `Security` — correções relacionadas à segurança.
 
 As alterações deverão ser registradas de forma incremental durante o desenvolvimento do projeto.
+

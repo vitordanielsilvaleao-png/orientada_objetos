@@ -60,7 +60,7 @@ class TestLivroService(unittest.TestCase):
             data = SchemaLivroCadastro(
                 titulo = "teste cadastro livro",
                 ano_publi = 2026,
-                editora_id = 0,
+                editora_id = 2147483647,
                 categoria_id = 1,
                 autor_id = 1,
                 isbn = "8579632584567"
@@ -80,7 +80,7 @@ class TestLivroService(unittest.TestCase):
                 titulo = "teste cadastro livro",
                 ano_publi = 2026,
                 editora_id = 1,
-                categoria_id = 0,
+                categoria_id = 2147483647,
                 autor_id = 1,
                 isbn = "8579632584567"
             )
@@ -100,7 +100,7 @@ class TestLivroService(unittest.TestCase):
                 ano_publi = 2026,
                 editora_id = 1,
                 categoria_id = 1,
-                autor_id = 0,
+                autor_id = 2147483647,
                 isbn = "8579632584567"
             )
 

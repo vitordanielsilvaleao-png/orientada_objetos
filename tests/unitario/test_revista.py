@@ -1,6 +1,6 @@
 import unittest
 
-from src.modulos.revista.revista import Revista
+from src.modulos.revista.entidade.revista import Revista
 
 
 class TestRevista(unittest.TestCase):

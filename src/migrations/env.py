@@ -24,15 +24,13 @@ from src.modulos.material.entidades.editora import Editora
 from src.modulos.material.entidades.categoria import Categoria
 from src.modulos.livro.entidades.livro import Livro
 from src.modulos.livro.entidades.autor import Autor
-from src.modulos.revista.revista import Revista
-from src.modulos.cliente.cliente import Cliente
-from src.modulos.emprestimo.emprestimo import Emprestimo
-from src.modulos.reserva.reserva import Reserva
+from src.modulos.revista.entidade.revista import Revista
+from src.modulos.cliente.entidade.cliente import Cliente
+from src.modulos.emprestimo.entidade.emprestimo import Emprestimo
+from src.modulos.reserva.entidade.reserva import Reserva
 
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
-print(Base.metadata, flush=True)
-print(list(target_metadata.tables.keys()), flush=True)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

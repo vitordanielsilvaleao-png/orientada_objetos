@@ -8,9 +8,9 @@ from src.compartilhado.enum import StatusMaterial, StatusEmprestimo
 from src.modulos.material.entidades.editora import Editora
 from src.modulos.material.entidades.categoria import Categoria
 from src.modulos.livro.entidades.autor import Autor
-from src.modulos.reserva.reserva import Reserva
-from src.modulos.emprestimo.emprestimo import Emprestimo
-from src.modulos.cliente.cliente import Cliente
+from src.modulos.reserva.entidade.reserva import Reserva
+from src.modulos.emprestimo.entidade.emprestimo import Emprestimo
+from src.modulos.cliente.entidade.cliente import Cliente
 from src.modulos.livro.entidades.livro import Livro
 from src.database.database import db
 
@@ -70,7 +70,7 @@ class TestEmprestimoService(unittest.TestCase):
                 material_id=livro.id
             )
 
-            livro.status = StatusMaterial.RESERVADO
+            livro.reservar()
 
             sessao.add(reserva_nova)
             sessao.commit()
@@ -90,6 +90,7 @@ class TestEmprestimoService(unittest.TestCase):
             self.assertEqual(emprestimo.status, StatusEmprestimo.ABERTO)
             self.assertEqual(emprestimo.data_devolucao, None)
             self.assertEqual(livro.status, StatusMaterial.EMPRESTADO)
+            self.assertFalse(reserva_nova.is_active)
 
             sessao.delete(emprestimo)
             sessao.delete(reserva_nova)
@@ -121,7 +122,7 @@ class TestEmprestimoService(unittest.TestCase):
                 material_id=livro.id
             )
 
-            livro.status = StatusMaterial.RESERVADO
+            livro.reservar()
 
             sessao.add(reserva_nova)
             sessao.commit()
@@ -195,7 +196,7 @@ class TestEmprestimoService(unittest.TestCase):
 
             data = SchemaEmprestimoCadastro(
                 cliente_id=cliente.id,
-                material_id=0,
+                material_id=2147483647,
             )
 
             emprestimo_service = EmprestimoService(sessao)
@@ -203,9 +204,38 @@ class TestEmprestimoService(unittest.TestCase):
             with self.assertRaises(HTTPException) as contexto:
                 emprestimo_service.cadastrar(data)
 
-            self.assertEqual(contexto.exception.status_code, 400)
+            self.assertEqual(contexto.exception.status_code, 404)
 
             sessao.delete(cliente)
+            sessao.commit()
+
+        finally:
+            sessao.close()
+
+    def test_cadastrar_emprestimo_cliente_inexistente(self):
+        sessao = db.session()
+        try:
+
+            livro, categoria, editora, autor = self.criar_livro(sessao)
+
+            data = SchemaEmprestimoCadastro(
+                cliente_id=2147483647,
+                material_id=livro.id,
+            )
+
+            emprestimo_service = EmprestimoService(sessao)
+
+            with self.assertRaises(HTTPException) as contexto:
+                emprestimo_service.cadastrar(data)
+
+            self.assertEqual(contexto.exception.status_code, 404)
+
+            sessao.delete(livro)
+            sessao.commit()
+
+            sessao.delete(categoria)
+            sessao.delete(editora)
+            sessao.delete(autor)
             sessao.commit()
 
         finally:
@@ -256,7 +286,7 @@ class TestEmprestimoService(unittest.TestCase):
                 material_id=livro.id,
             )
 
-            livro.status = StatusMaterial.EMPRESTADO
+            livro.emprestar()
 
             emprestimo_service = EmprestimoService(sessao)
 
@@ -290,12 +320,12 @@ class TestEmprestimoService(unittest.TestCase):
 
             emprestimo = Emprestimo(
                 cliente_id=cliente.id,
-                material_id=livro2.id,
-                data_emprestimo= data_atrasada,
-                status = StatusEmprestimo.ATRASADO
+                material_id=livro2.id
             )
+            emprestimo.data_emprestimo = data_atrasada
+            emprestimo.marcar_atrasado()
 
-            livro2.status = StatusMaterial.EMPRESTADO
+            livro2.emprestar()
 
             sessao.add(emprestimo)
             sessao.commit()
@@ -357,7 +387,7 @@ class TestEmprestimoService(unittest.TestCase):
                     material_id=livro.id
                 )
 
-                livro.status = StatusMaterial.EMPRESTADO
+                livro.emprestar()
 
                 emprestimos.append(emprestimo)
 
@@ -459,11 +489,10 @@ class TestEmprestimoService(unittest.TestCase):
 
             emprestimo = Emprestimo(
                 cliente_id=cliente.id,
-                material_id=livro.id,
-                status=StatusEmprestimo.ATRASADO,
-                data_emprestimo=data_atrasada
-
+                material_id=livro.id
             )
+            emprestimo.data_emprestimo = data_atrasada
+            emprestimo.marcar_atrasado()
 
             sessao.add(emprestimo)
             sessao.commit()
@@ -665,6 +694,7 @@ class TestEmprestimoService(unittest.TestCase):
     def criar_cliente(self, sessao):
 
         cliente_novo = Cliente(
+            cpf=f"{random.randint(0, 99999999999):011d}",
             nome=f"Teste Emprestimo {random.randint(1, 999999)}",
             bairro="Centro",
             rua="Afonso Pena",

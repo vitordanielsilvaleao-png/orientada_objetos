@@ -1,7 +1,8 @@
 import unittest
 from fastapi import HTTPException
+from pydantic import ValidationError
 
-from src.modulos.livro.schemas.schemas_autor import SchemaAutorCadastro
+from src.modulos.livro.schemas.schemas_autor import SchemaAutorCadastro, SchemaAutorAtualizacao
 from src.modulos.livro.services.autor_service import AutorService
 from src.modulos.livro.entidades.autor import Autor
 from src.database.database import db
@@ -31,14 +32,8 @@ class TestAutorService(unittest.TestCase):
 
         try:
 
-            data = SchemaAutorCadastro(nome="")
-
-            autor_service = AutorService(sessao)
-
-            with self.assertRaises(ValueError):
-                autor_service.cadastrar(data)
-
-            sessao.commit()
+            with self.assertRaises(ValidationError):
+                SchemaAutorCadastro(nome="")
 
         finally:
             sessao.close()
@@ -52,8 +47,10 @@ class TestAutorService(unittest.TestCase):
 
             autor_service = AutorService(sessao)
 
-            with self.assertRaises(ValueError):
+            with self.assertRaises(HTTPException) as contexto:
                 autor_service.cadastrar(data)
+
+            self.assertEqual(contexto.exception.status_code, 422)
 
             sessao.commit()
 
@@ -66,13 +63,15 @@ class TestAutorService(unittest.TestCase):
         try:
 
             autor_novo = self.criar_autor(sessao)
-            
+
             data = SchemaAutorCadastro(nome=autor_novo.nome)
 
             autor_service = AutorService(sessao)
 
-            with self.assertRaises(HTTPException):
+            with self.assertRaises(HTTPException) as contexto:
                 autor_service.cadastrar(data)
+
+            self.assertEqual(contexto.exception.status_code, 409)
 
             sessao.delete(autor_novo)
             sessao.commit()
@@ -86,9 +85,9 @@ class TestAutorService(unittest.TestCase):
         try:
 
             autor_service = AutorService(sessao)
-        
+
             lista_autor = autor_service.visualizar()
-        
+
             for autor in lista_autor:
                 self.assertIsInstance(autor, Autor)
 
@@ -99,18 +98,18 @@ class TestAutorService(unittest.TestCase):
         sessao = db.session()
 
         try:
-        
+
             autor_service = AutorService(sessao)
-        
+
             autor_novo = self.criar_autor(sessao)
-        
-            data = "César"
-        
+
+            data = SchemaAutorAtualizacao(nome="César")
+
             autor_service.atualizar(autor_novo.id, data)
             sessao.refresh(autor_novo)
-        
+
             self.assertEqual(autor_novo.nome, "césar")
-        
+
             sessao.delete(autor_novo)
             sessao.commit()
 
@@ -121,16 +120,14 @@ class TestAutorService(unittest.TestCase):
         sessao = db.session()
 
         try:
-        
-            autor_service = AutorService(sessao)
-        
-            autor_novo = self.criar_autor(sessao)
-        
-            data = ""
 
-            with self.assertRaises(ValueError):
-                autor_service.atualizar(autor_novo.id, data)
-        
+            autor_service = AutorService(sessao)
+
+            autor_novo = self.criar_autor(sessao)
+
+            with self.assertRaises(ValidationError):
+                SchemaAutorAtualizacao(nome="")
+
             sessao.delete(autor_novo)
             sessao.commit()
 
@@ -141,16 +138,18 @@ class TestAutorService(unittest.TestCase):
         sessao = db.session()
 
         try:
-        
-            autor_service = AutorService(sessao)
-        
-            autor_novo = self.criar_autor(sessao)
-        
-            data = "     "
 
-            with self.assertRaises(ValueError):
+            autor_service = AutorService(sessao)
+
+            autor_novo = self.criar_autor(sessao)
+
+            data = SchemaAutorAtualizacao(nome="     ")
+
+            with self.assertRaises(HTTPException) as contexto:
                 autor_service.atualizar(autor_novo.id, data)
-        
+
+            self.assertEqual(contexto.exception.status_code, 409)
+
             sessao.delete(autor_novo)
             sessao.commit()
 
@@ -163,17 +162,19 @@ class TestAutorService(unittest.TestCase):
         try:
 
             autor_service = AutorService(sessao)
-                    
-            autor_novo = self.criar_autor(sessao)
-                    
-            data = "César"
 
-            with self.assertRaises(HTTPException):
-                autor_service.atualizar(250, data)
+            autor_novo = self.criar_autor(sessao)
+
+            data = SchemaAutorAtualizacao(nome="César")
+
+            with self.assertRaises(HTTPException) as contexto:
+                autor_service.atualizar(2147483647, data)
+
+            self.assertEqual(contexto.exception.status_code, 404)
 
             sessao.delete(autor_novo)
             sessao.commit()
-            
+
         finally:
             sessao.close()
 
@@ -183,19 +184,21 @@ class TestAutorService(unittest.TestCase):
         try:
 
             autor_service = AutorService(sessao)
-                    
+
             autor_novo = self.criar_autor(sessao)
             autor_para_atualizar = self.criar_autor_para_atualizacao(sessao)
-                    
-            data = autor_novo.nome
 
-            with self.assertRaises(HTTPException):
+            data = SchemaAutorAtualizacao(nome=autor_novo.nome)
+
+            with self.assertRaises(HTTPException) as contexto:
                 autor_service.atualizar(autor_para_atualizar.id, data)
+
+            self.assertEqual(contexto.exception.status_code, 409)
 
             sessao.delete(autor_novo)
             sessao.delete(autor_para_atualizar)
             sessao.commit()
-            
+
         finally:
             sessao.close()
 

@@ -1,7 +1,8 @@
 import unittest
 from fastapi import HTTPException
+from pydantic import ValidationError
 
-from src.modulos.material.schemas.schemas_editora import SchemaEditoraCadastro
+from src.modulos.material.schemas.schemas_editora import SchemaEditoraCadastro, SchemaEditoraAtualizacao
 from src.modulos.material.service.editora_service import EditoraService
 from src.modulos.material.entidades.editora import Editora
 from src.database.database import db
@@ -32,12 +33,8 @@ class TestEditoraService(unittest.TestCase):
 
         try:
 
-            data = SchemaEditoraCadastro(nome="")
-
-            editora_service = EditoraService(sessao)
-
-            with self.assertRaises(ValueError):
-                editora_service.cadastrar(data)
+            with self.assertRaises(ValidationError):
+                SchemaEditoraCadastro(nome="")
 
         finally:
             sessao.close()
@@ -51,8 +48,10 @@ class TestEditoraService(unittest.TestCase):
 
             editora_service = EditoraService(sessao)
 
-            with self.assertRaises(ValueError):
+            with self.assertRaises(HTTPException) as contexto:
                 editora_service.cadastrar(data)
+
+            self.assertEqual(contexto.exception.status_code, 422)
 
         finally:
             sessao.close()
@@ -69,8 +68,10 @@ class TestEditoraService(unittest.TestCase):
 
             editora_service = EditoraService(sessao)
 
-            with self.assertRaises(HTTPException):
+            with self.assertRaises(HTTPException) as contexto:
                 editora_service.cadastrar(data)
+
+            self.assertEqual(contexto.exception.status_code, 409)
 
             sessao.delete(editora_nova)
             sessao.commit()
@@ -102,7 +103,7 @@ class TestEditoraService(unittest.TestCase):
 
             editora_nova = self.criar_editora(sessao)
 
-            data = " Editora Atualizada "
+            data = SchemaEditoraAtualizacao(nome=" Editora Atualizada ")
 
             editora_service.atualizar(editora_nova.id, data)
 
@@ -128,10 +129,8 @@ class TestEditoraService(unittest.TestCase):
 
             editora_nova = self.criar_editora(sessao)
 
-            data = ""
-
-            with self.assertRaises(ValueError):
-                editora_service.atualizar(editora_nova.id, data)
+            with self.assertRaises(ValidationError):
+                SchemaEditoraAtualizacao(nome="")
 
             sessao.delete(editora_nova)
             sessao.commit()
@@ -148,10 +147,12 @@ class TestEditoraService(unittest.TestCase):
 
             editora_nova = self.criar_editora(sessao)
 
-            data = "   "
+            data = SchemaEditoraAtualizacao(nome="   ")
 
-            with self.assertRaises(ValueError):
+            with self.assertRaises(HTTPException) as contexto:
                 editora_service.atualizar(editora_nova.id, data)
+
+            self.assertEqual(contexto.exception.status_code, 409)
 
             sessao.delete(editora_nova)
             sessao.commit()
@@ -168,10 +169,12 @@ class TestEditoraService(unittest.TestCase):
 
             editora_nova = self.criar_editora(sessao)
 
-            data = "Editora Atualizada"
+            data = SchemaEditoraAtualizacao(nome="Editora Atualizada")
 
-            with self.assertRaises(HTTPException):
-                editora_service.atualizar(250, data)
+            with self.assertRaises(HTTPException) as contexto:
+                editora_service.atualizar(2147483647, data)
+
+            self.assertEqual(contexto.exception.status_code, 404)
 
             sessao.delete(editora_nova)
             sessao.commit()
@@ -191,13 +194,15 @@ class TestEditoraService(unittest.TestCase):
                 sessao
             )
 
-            data = editora_nova.nome
+            data = SchemaEditoraAtualizacao(nome=editora_nova.nome)
 
-            with self.assertRaises(HTTPException):
+            with self.assertRaises(HTTPException) as contexto:
                 editora_service.atualizar(
                     editora_para_atualizar.id,
                     data
                 )
+
+            self.assertEqual(contexto.exception.status_code, 409)
 
             sessao.delete(editora_nova)
             sessao.delete(editora_para_atualizar)

@@ -4,8 +4,6 @@ from sqlalchemy.orm import Mapped, mapped_column, validates
 from src.modulos.material.entidades.material import Material
 
 # Criação da entidade Revista que herda atributos da entidade Material
-
-
 class Revista(Material):
     __tablename__ = "revista"
 
@@ -17,8 +15,7 @@ class Revista(Material):
     issn: Mapped[str] = mapped_column(
         String(8),
         nullable=False,
-        unique=True,
-        primary_key=True
+        unique=True
     )
 
     edicao: Mapped[int] = mapped_column(
@@ -53,7 +50,7 @@ class Revista(Material):
     #Validação de dados recebidos
     @validates("issn")
     def validar_issn(self, chave, issn):
-        issn_normalizado = self._normalizar_issn(issn)
+        issn_normalizado = self.normalizar_issn(issn)
         self._validar_issn(issn_normalizado)
         return issn_normalizado
 
@@ -64,7 +61,7 @@ class Revista(Material):
 
     # Métodos para validação e normalização de dados do construtor
     @staticmethod
-    def _normalizar_issn(issn):
+    def normalizar_issn(issn):
         return issn.replace(".", "").replace("-", "")
 
     @staticmethod
