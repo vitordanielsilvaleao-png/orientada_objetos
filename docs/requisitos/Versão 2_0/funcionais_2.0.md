@@ -268,9 +268,9 @@ O sistema deverá permitir que o usuário visualize um relatório que contemple 
 **Prioridade:** Importante  
 **Situação na Versão 2.0:** Implementado no código do front-end.
 
-**Verificação:** A classe `PaginaRelatorios`, no arquivo `src/frontend/js/paginas.js`, possui a funcionalidade `desenharRanking()`.
+**Verificação:** A tela Relatórios, no arquivo `src/frontend/js/relatorios.js`, possui a função `desenharRanking()`.
 
-O relatório consulta os empréstimos, contabiliza as ocorrências por material e apresenta um ranking dos dez materiais mais emprestados.
+O relatório consulta os empréstimos (`GET /emprestimo`), contabiliza as ocorrências por material e apresenta um ranking dos dez materiais mais emprestados (`LIMITE_RANKING`).
 
 #### [RF-REL-002] Relatório - Empréstimos em Aberto
 
@@ -279,7 +279,7 @@ O sistema deverá permitir que o usuário visualize um relatório que contemple 
 **Prioridade:** Importante  
 **Situação na Versão 2.0:** Implementado no código do front-end.
 
-**Verificação:** A classe `PaginaRelatorios` possui a funcionalidade `desenharAbertos()`, que consulta os empréstimos em aberto e apresenta informações como material, cliente, data do empréstimo, prazo de devolução e dias restantes.
+**Verificação:** Os empréstimos em aberto são exibidos na tela Empréstimos, no arquivo `src/frontend/js/emprestimos.js`. O filtro "Em aberto" (`filtroEmprestimos = "abertos"`, padrão da tela) consulta `GET /emprestimo/abertos`, e a função `renderizarEmprestimos()` apresenta material, tipo, cliente, data do empréstimo, prazo de devolução e situação.
 
 #### [RF-REL-003] Relatório - Devoluções em Atraso
 
@@ -288,9 +288,9 @@ O sistema deverá permitir que o usuário visualize um relatório que contemple 
 **Prioridade:** Importante  
 **Situação na Versão 2.0:** Implementado no código do front-end.
 
-**Verificação:** A classe `PaginaRelatorios` possui a funcionalidade `desenharAtrasados()`, que consulta os empréstimos atrasados e apresenta dados como material, cliente, telefone, prazo de devolução e dias de atraso.
+**Verificação:** A tela Relatórios, no arquivo `src/frontend/js/relatorios.js`, possui a função `desenharAtrasados()`, que consulta os empréstimos atrasados (`GET /emprestimo/atrasados`) e apresenta material, cliente, telefone, data de vencimento e dias de atraso.
 
-**Observação geral dos relatórios:** A existência das funcionalidades foi confirmada no código do front-end da branch `develop`. Não foram executados testes de integração entre a interface e a API. Deve ser conferida a compatibilidade entre `CONFIG.PRAZO_EMPRESTIMO_DIAS`, utilizado no front-end, e o prazo de 30 dias definido na entidade `Emprestimo`.
+**Observação geral dos relatórios:** A existência das funcionalidades foi confirmada no código do front-end da branch `develop`. Não foram executados testes de integração entre a interface e a API. A constante `PRAZO_EMPRESTIMO_DIAS`, em `src/frontend/js/geral.js`, vale 30 dias, o mesmo prazo definido na entidade `Emprestimo`.
 
 ---
 
